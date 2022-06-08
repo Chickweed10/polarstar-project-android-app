@@ -1,0 +1,4 @@
+com/example/polarstarproject/BuildConfig.java
+ com.example.polarstarproject.BuildConfig
+com/example/polarstarproject/MainActivity.java
+ com.example.polarstarproject.MainActivity

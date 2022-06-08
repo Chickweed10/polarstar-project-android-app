@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1028168912102",
+    "firebase_url": "https://polarstarproject-7034b-default-rtdb.firebaseio.com",
+    "project_id": "polarstarproject-7034b",
+    "storage_bucket": "polarstarproject-7034b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028168912102:android:705940b523de339a103f27",
+        "android_client_info": {
+          "package_name": "com.example.polarstarproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1028168912102-58e608bsel02hteilp0pej35rurvm4q0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.polarstarproject",
+            "certificate_hash": "85f2da9d58c935e63609996220f96647a7937c78"
+          }
+        },
+        {
+          "client_id": "1028168912102-b9m5kns89t33eiuj8400cjr8chj0foc8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAo0oyQJ-RIxBaRPL0-8YE5mzcZbWbi70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1028168912102-b9m5kns89t33eiuj8400cjr8chj0foc8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
