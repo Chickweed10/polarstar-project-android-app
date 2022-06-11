@@ -1,4 +1,4 @@
-#Wed Jun 08 19:18:34 KST 2022
-base.0=C\:\\User\\GitK\\PolarstarProject\\PolarstarProject\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+#Sat Jun 11 21:41:13 KST 2022
+base.0=C\:\\Users\\9993e\\Desktop\\PolarstarProject\\PolarstarProject\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 renamed.0=classes.dex
 path.0=classes.dex

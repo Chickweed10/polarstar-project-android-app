@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\User\\GitK\\PolarstarProject\\PolarstarProject\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
+            "outputFile": "C:\\Users\\9993e\\Desktop\\PolarstarProject\\PolarstarProject\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\guswj\\.gradle\\caches\\transforms-2\\files-2.1\\d0d7028bcd39ddead633f23d395f684d\\material-1.6.1\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
+                    "source": "C:\\Users\\9993e\\.gradle\\caches\\transforms-2\\files-2.1\\d0d7028bcd39ddead633f23d395f684d\\material-1.6.1\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
