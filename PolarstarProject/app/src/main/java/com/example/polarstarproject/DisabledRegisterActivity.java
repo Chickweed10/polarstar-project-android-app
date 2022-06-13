@@ -269,7 +269,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
+                if (emailDuplicateCheckFlag != 1 && !snapshot.exists()) {
                     emailDuplicateCheckFlag = 2;
                     Toast.makeText(DisabledRegisterActivity.this, "이메일 인증 성공",
                             Toast.LENGTH_SHORT).show();
@@ -311,7 +311,6 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
-                verificationCodeFlag = 1;
                 Toast.makeText(DisabledRegisterActivity.this, "인증번호가 전송되었습니다. 60초 이내에 입력해주세요.",
                         Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "인증번호 전송 성공");
@@ -413,6 +412,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.joinPNReq: //인증번호 전송
+                verificationCodeFlag = 1;
                 sendVerificationCode();
                 break;
 

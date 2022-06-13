@@ -1,4 +1,4 @@
-#Sat Jun 11 21:41:13 KST 2022
+#Mon Jun 13 14:21:11 KST 2022
 base.0=C\:\\Users\\9993e\\Desktop\\PolarstarProject\\PolarstarProject\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 renamed.0=classes.dex
 path.0=classes.dex
