@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
+ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
 MERGED from [com.google.firebase:firebase-analytics:21.0.0] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\9cdeec87f9f4ede688e9a6352cb27979\firebase-analytics-21.0.0\AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.firebase:firebase-database:20.0.5] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\f89fc192b677db8f50f36345e82f3faf\firebase-database-20.0.5\AndroidManifest.xml:15:1-38:12
 MERGED from [com.google.firebase:firebase-auth:21.0.5] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\a3888492e9150ed616656f19b0a75acf\firebase-auth-21.0.5\AndroidManifest.xml:17:1-73:12
@@ -72,20 +72,20 @@ MERGED from [androidx.arch.core:core-runtime:2.1.0] C:\Users\9993e\.gradle\cache
 MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\247177494534e4d91632b39146818674\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\656e13537e0de86a8a57c1cb5f755ccc\print-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.1.0] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\b7945bf92cbc79ca6bdbdc8b9dfe9b82\annotation-experimental-1.1.0\AndroidManifest.xml:17:1-24:12
-INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
+INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
 	package
 		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:3:5-43
 		INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
+		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
 		INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml
 	android:versionCode
 		INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-33:12
+		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:1-37:12
 		INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:2:11-69
@@ -110,7 +110,7 @@ MERGED from [com.google.android.gms:play-services-measurement-sdk-api:21.0.0] C:
 	android:name
 		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:6:22-64
 application
-ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:8:5-31:19
+ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:8:5-35:19
 MERGED from [com.google.firebase:firebase-analytics:21.0.0] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\9cdeec87f9f4ede688e9a6352cb27979\firebase-analytics-21.0.0\AndroidManifest.xml:7:5-20
 MERGED from [com.google.firebase:firebase-analytics:21.0.0] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\9cdeec87f9f4ede688e9a6352cb27979\firebase-analytics-21.0.0\AndroidManifest.xml:7:5-20
 MERGED from [com.google.firebase:firebase-database:20.0.5] C:\Users\9993e\.gradle\caches\transforms-2\files-2.1\f89fc192b677db8f50f36345e82f3faf\firebase-database-20.0.5\AndroidManifest.xml:28:5-36:19
@@ -207,6 +207,10 @@ ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main
 		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:28:13-36
 	android:name
 		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:27:13-47
+activity#com.example.polarstarproject.WebViewActivity
+ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:31:9-33:20
+	android:name
+		ADDED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml:32:13-44
 uses-sdk
 INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\9993e\Desktop\PolarstarProject\PolarstarProject\app\src\main\AndroidManifest.xml

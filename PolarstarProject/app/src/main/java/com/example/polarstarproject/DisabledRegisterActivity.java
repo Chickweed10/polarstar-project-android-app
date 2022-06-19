@@ -1,13 +1,23 @@
 package com.example.polarstarproject;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,8 +48,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 public class DisabledRegisterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -52,18 +65,18 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+    private FirebaseStorage storage = FirebaseStorage.getInstance();;
+    private StorageReference storageRef, riversRef;
 
-    public static final int PICK_FROM_ALBUM = 1;
     private Uri imageUri;
     private String pathUri;
-    private File tempFile;
 
     private static final String TAG = "Register";
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
     String VID = "", sex = "남";
-    int certificationFlag = 0, emailDuplicateCheckFlag = 0, verificationCodeFlag = 0; //인증 여부 판단, 이메일 중복 여부 판단 (0: 기본값, 1: 중복, 2: 통과), 인증번호 요청 예외 처리
+    int certificationFlag = 0, emailDuplicateCheckFlag = 0, phoneNumberDuplicateCheckFlag = 0, verificationCodeFlag = 0;
+    //인증 여부 판단, 이메일 중복 여부 판단 (0: 기본값, 1: 중복, 2: 통과), 전화번호 중복 여부 판단 (0: 기본값, 1: 중복), 인증번호 요청 예외 처리
 
 
     @Override
@@ -109,15 +122,21 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 }
             }
         });
+        joinRoadAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(DisabledRegisterActivity.this, WebViewActivity.class);
+                startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
+            }
+        });
+
     }
 
     //회원가입
     private void signUp(String profileImage, String email, String password, String name,
                         String phoneNumber, String birth, String sex,
                         String address, String detailAddress, String disabilityLevel) {
-
-        Log.d(TAG, "signUp:" + email);
-
+        
         //공란 검사 및 예외 처리
         if (!validateForm()) {
             return; //공란, 예외 있으면 return
@@ -129,13 +148,14 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             public void onComplete(@NonNull Task<AuthResult> task) {
                 //가입 성공시
                 if (task.isSuccessful()) {
+                    firebaseImageUpload(); //이미지 등록
                     Disabled disabled = new Disabled(profileImage, email, password, name,
                             phoneNumber, birth, sex, address, detailAddress, disabilityLevel);
 
                     reference.child("users").child("disabled").child(phoneNumber).setValue(disabled);
 
                     //가입이 이루어져을시 가입 화면을 빠져나감.
-                    /*Intent intent = new Intent(DisabledRegisterActivity.this, UserSelectActivity.class);
+                    /*Intent intent = new Intent(DisabledRegisterActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();*/
                     Toast.makeText(DisabledRegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
@@ -180,6 +200,13 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             joinPW.setError(null);
         }
 
+        if (password.length() < 6) { //비밀번호가 6자리 미만일 경우
+            joinPW.setError("비밀번호를 6자리 이상 입력해주세요.");
+            valid = false;
+        } else {
+            joinPW.setError(null);
+        }
+
         String passwordCheck = joinPWCk.getText().toString();
         if (TextUtils.isEmpty(passwordCheck)) { //비밀번호 editText가 공란이면
             joinPWCk.setError("비밀번호를 확인해주세요.");
@@ -209,6 +236,11 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             valid = false;
         } else {
             joinPhoneNum.setError(null);
+        }
+
+        if(phoneNumberDuplicateCheckFlag == 1) { //중복된 전화번호면
+            joinPhoneNum.setError("중복된 전화번호입니다.");
+            valid = false;
         }
 
         if (certificationFlag == 0) { //인증번호가 일치하지 않으면
@@ -245,6 +277,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         return valid;
     }
     private void emailDuplicateCheck(String email){ //이메일 중복 검사
+        emailDuplicateCheckFlag = 0; //이메일 중복 flag 값 초기화
         reference.child("users").child("disabled").orderByChild("email").equalTo(email). //장애인 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -265,7 +298,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                     }
                 });
 
-        reference.child("users").child("Guardian").orderByChild("email").equalTo(email). //보호자 user 검사
+        reference.child("users").child("guardian").orderByChild("email").equalTo(email). //보호자 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -286,33 +319,55 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             }
         });
     }
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) { //인증번호 확인
-       mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "인증 성공");
-                            Toast.makeText(DisabledRegisterActivity.this, "인증 성공",
-                                    Toast.LENGTH_SHORT).show();
-                            certificationFlag = 1;
-                        } else {
-                            Toast.makeText(DisabledRegisterActivity.this, "인증 실패",
-                                    Toast.LENGTH_SHORT).show();
-                            Log.w(TAG, "인증 실패", task.getException());
-                        }
-                    }
-                });
-    }
 
+    private void phoneNumberDuplicateCheck(String phoneNumber){ //전화번호 중복 검사
+        phoneNumberDuplicateCheckFlag = 0; //전화번호 중복 flag 값 초기화
+        reference.child("users").child("disabled").orderByChild("phoneNumber").equalTo(phoneNumber). //장애인 user 검사
+                addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+
+                } else {
+                    phoneNumberDuplicateCheckFlag = 1;
+                    Toast.makeText(DisabledRegisterActivity.this, "중복된 전화번호입니다.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        reference.child("users").child("guardian").orderByChild("phoneNumber").equalTo(phoneNumber). //보호자 user 검사
+                addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (phoneNumberDuplicateCheckFlag != 1 && !snapshot.exists()) {
+                    sendVerificationCode();
+                } else {
+                    phoneNumberDuplicateCheckFlag = 1;
+                    Toast.makeText(DisabledRegisterActivity.this, "중복된 전화번호입니다.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     private void sendVerificationCode(){ //인증번호 전송
         PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
                 Toast.makeText(DisabledRegisterActivity.this, "인증번호가 전송되었습니다. 60초 이내에 입력해주세요.",
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
                 Log.d(TAG, "인증번호 전송 성공");
             }
 
@@ -332,11 +387,12 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             }
         };
 
-        String pn = joinPhoneNum.getText().toString();
-        if(pn.charAt(0) == '0'){
-            pn = pn.substring(1);
+        String pn = joinPhoneNum.getText().toString(); //국가번호 변환
+        if(pn.charAt(0) == '0'){ //앞자리 0으로 시작할 시
+            pn = pn.substring(1); //앞자라 0 제외
         }
 
+        mAuth.setLanguageCode("kr");
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(mAuth)
                         .setPhoneNumber("+82"+ pn)       //핸드폰 번호
@@ -345,66 +401,79 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                         .setCallbacks(mCallbacks)
                         .build();
         PhoneAuthProvider.verifyPhoneNumber(options);
-        mAuth.setLanguageCode("kr");
-    }
-    private void gotoAlbum() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-        startActivityForResult(intent, PICK_FROM_ALBUM);
     }
 
-    public String getPath(Uri uri) {
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) { //인증번호 확인
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "인증 성공");
+                            Toast.makeText(DisabledRegisterActivity.this, "인증 성공",
+                                    Toast.LENGTH_SHORT).show();
+                            certificationFlag = 1;
+                        } else {
+                            Toast.makeText(DisabledRegisterActivity.this, "인증 실패",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "인증 실패", task.getException());
+                        }
+                    }
+                });
+    }
 
-        String[] proj = {MediaStore.Images.Media.DATA};
-        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
-
-        Cursor cursor = cursorLoader.loadInBackground();
-        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-        cursor.moveToFirst();
-        return cursor.getString(index);
+    private void gotoAlbum() { //갤러리 이동
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 0);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 0) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(requestCode == 0) { //프로필 사진
             if (resultCode == RESULT_OK) {
+                imageUri = intent.getData();
                 Glide.with(getApplicationContext())
-                        .load(data.getData())
+                        .load(intent.getData())
                         .into(joinBtProfl); //버튼에 이미지 업로드
             }
         }
+        else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호
+            if (resultCode == RESULT_OK) {
+                String data = intent.getExtras().getString("data");
+                if(data != null) {
+                    joinRoadAddress.setText(data);
+                }
+            }
+        }
+
+    }
+
+    private void firebaseImageUpload() { //파이어베이스 이미지 등록
+        storageRef = storage.getReference();
+        riversRef = storageRef.child("profile/"+joinPhoneNum.getText().toString());
+        UploadTask uploadTask = riversRef.putFile(imageUri);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "사진 업로드 실패", e);
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.w(TAG, "사진 업로드 성공");
+            }
+        });
     }
 
     @Override
     public void onClick(View v) { //버튼 클릭 이벤트
         switch (v.getId()) {
             case R.id.joinBtProfl: //프로필 이미지 등록
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, 0);
-
-                /*storage = FirebaseStorage.getInstance("gs://polarstarproject-7034b.appspot.com");
-                storageRef = storage.getReference();
-                storageRef.child("test.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        //이미지 로드 성공시
-
-                        Glide.with(getApplicationContext())
-                                .load(uri)
-                                .into(joinBtProfl);
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        //이미지 로드 실패시
-                        Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
+                gotoAlbum();
                 break;
                 
             case R.id.joinBtEmailCk: //이메일 중복 확인
@@ -412,16 +481,16 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.joinPNReq: //인증번호 전송
+                phoneNumberDuplicateCheck(joinPhoneNum.getText().toString());
                 verificationCodeFlag = 1;
-                sendVerificationCode();
                 break;
 
             case R.id.joinPNReqCk: //인증번호 확인
-                if(joinPNCk.getText().toString().isEmpty()){
+                if(joinPNCk.getText().toString().isEmpty()){ //공란인 경우
                     Toast.makeText(DisabledRegisterActivity.this, "인증번호를 입력해주세요.",
                             Toast.LENGTH_SHORT).show();
                 }
-                else if(verificationCodeFlag == 0){
+                else if(verificationCodeFlag == 0){ //인증요청을 안한 경우
                     Toast.makeText(DisabledRegisterActivity.this, "인증요청을 해주세요.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -432,7 +501,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.joinBt: //회원가입
-                signUp(pathUri, joinEmail.getText().toString(), joinPW.getText().toString(), joinName.getText().toString(),
+                signUp("profile/"+joinPhoneNum.getText().toString(), joinEmail.getText().toString(), joinPW.getText().toString(), joinName.getText().toString(),
                         joinPhoneNum.getText().toString(), joinBirth.getText().toString(), sex,
                         joinRoadAddress.getText().toString(), joinDetailAddress.getText().toString(), joinDrDisG.getSelectedItem().toString());
         }
