@@ -3071,6 +3071,7 @@ id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
+id webView
 id west
 id wide
 id withText
@@ -3176,6 +3177,7 @@ layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_disabled_register
 layout activity_main
+layout activity_webview
 layout browser_actions_context_menu_page
 layout browser_actions_context_menu_row
 layout custom_dialog

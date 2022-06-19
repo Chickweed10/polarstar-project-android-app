@@ -3070,6 +3070,7 @@ int id view_tree_saved_state_registry_owner 0x7f0901fb
 int id view_tree_view_model_store_owner 0x7f0901fc
 int id visible 0x7f0901fd
 int id visible_removing_fragment_view_tag 0x7f0901fe
+int id webView 0x7f090209
 int id west 0x7f0901ff
 int id wide 0x7f090200
 int id withText 0x7f090201
@@ -3175,6 +3176,7 @@ int layout abc_select_dialog_material 0x7f0c001a
 int layout abc_tooltip 0x7f0c001b
 int layout activity_disabled_register 0x7f0c001c
 int layout activity_main 0x7f0c001d
+int layout activity_webview 0x7f0c007a
 int layout browser_actions_context_menu_page 0x7f0c001e
 int layout browser_actions_context_menu_row 0x7f0c001f
 int layout custom_dialog 0x7f0c0020
