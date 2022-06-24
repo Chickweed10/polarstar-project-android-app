@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".KakaoLoginActivity">
+
+
+    // 로그인 시 보이기 위하여 gone로 설정해줍니다.
+
+    <ImageView
+        android:id="@+id/lgnBtKao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="83dp"
+        android:src="@drawable/kakao_login_medium_wide"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/lgoutBt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:text="로그아웃"
+        android:visibility="invisible" />
+
+
+</RelativeLayout>
