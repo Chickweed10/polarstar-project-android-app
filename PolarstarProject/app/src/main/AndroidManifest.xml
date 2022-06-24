@@ -44,12 +44,16 @@
             android:name=".UserSelectActivity"
             android:exported="true">
         </activity>
+        
+        <activity
+            android:name=".WebViewActivity">
+        </activity>
 
         <activity android:name=".DisabledRegisterActivity" />
         <activity android:name=".KakaoLoginActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".FindActivity" />
-
+        
     </application>
 
 </manifest>

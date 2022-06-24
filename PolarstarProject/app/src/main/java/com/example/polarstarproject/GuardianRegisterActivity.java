@@ -132,7 +132,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                             reference.child("users").child("guardian").child(phoneNumber).setValue(guardian);
 
                             //가입이 이루어져을시 가입 화면을 빠져나감.
-                    /*Intent intent = new Intent(DisabledRegisterActivity.this, UserSelectActivity.class);
+                    /*Intent intent = new Intent(DisabledRegisterActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();*/
                             Toast.makeText(GuardianRegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
