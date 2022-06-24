@@ -18,6 +18,9 @@ allprojects {
         google()
         mavenCentral()
         jcenter() // Warning: this repository is going to shut down soon
+
+        //KAKAO
+        maven {url 'http://devrepo.kakao.com/nexus/content/groups/public/'}
     }
 }
 
