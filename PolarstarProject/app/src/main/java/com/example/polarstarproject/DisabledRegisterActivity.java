@@ -59,7 +59,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     EditText joinEmail, joinPW, joinPWCk, joinName, joinPhoneNum, joinPNCk, joinBirth, joinRoadAddress, joinDetailAddress;
     Spinner joinDrDisG;
     RadioGroup joinBtGender;
-    Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinBt;
+    Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinFdAdd, joinBt;
     ImageButton joinBtProfl;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -69,9 +69,9 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     private StorageReference storageRef, riversRef;
 
     private Uri imageUri;
-    private String pathUri;
+    private String pathUri = "profile/default.png";
 
-    private static final String TAG = "Register";
+    private static final String TAG = "DisabledRegister";
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
     String VID = "", sex = "남";
@@ -82,7 +82,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_disabled_register);//회원가입 xml 파일 이름
+        setContentView(R.layout.activity_register_duser);//회원가입 xml 파일 이름
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -101,12 +101,14 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         joinRoadAddress = (EditText) findViewById(R.id.joinRoadAddress); //도로명 주소
         joinDetailAddress = (EditText) findViewById(R.id.joinDetailAddress); //상세 주소
         joinDrDisG = (Spinner)findViewById(R.id.joinDrDisG); //장애등급
+        joinFdAdd = (Button) findViewById(R.id.joinFdAdd); //우편번호 찾기
         joinBt = (Button) findViewById(R.id.joinBt); //회원가입
 
         joinBtProfl.setOnClickListener(this);
         joinBtEmailCk.setOnClickListener(this);
         joinPNReq.setOnClickListener(this);
         joinPNReqCk.setOnClickListener(this);
+        joinFdAdd.setOnClickListener(this);
         joinBt.setOnClickListener(this);
 
         joinBtGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -122,13 +124,6 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 }
             }
         });
-        joinRoadAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(DisabledRegisterActivity.this, WebViewActivity.class);
-                startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
-            }
-        });
 
     }
 
@@ -136,7 +131,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     private void signUp(String profileImage, String email, String password, String name,
                         String phoneNumber, String birth, String sex,
                         String address, String detailAddress, String disabilityLevel) {
-        
+
         //공란 검사 및 예외 처리
         if (!validateForm()) {
             return; //공란, 예외 있으면 return
@@ -144,30 +139,32 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(DisabledRegisterActivity.this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                //가입 성공시
-                if (task.isSuccessful()) {
-                    firebaseImageUpload(); //이미지 등록
-                    Disabled disabled = new Disabled(profileImage, email, password, name,
-                            phoneNumber, birth, sex, address, detailAddress, disabilityLevel);
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //가입 성공시
+                        if (task.isSuccessful()) {
+                            if(imageUri != null){ //프로필 설정 했을 시
+                                firebaseImageUpload(); //이미지 등록
+                            }
+                            Disabled disabled = new Disabled(profileImage, email, password, name,
+                                    phoneNumber, birth, sex, address, detailAddress, disabilityLevel);
 
-                    reference.child("users").child("disabled").child(phoneNumber).setValue(disabled);
+                            reference.child("users").child("disabled").child(phoneNumber).setValue(disabled);
 
-                    //가입이 이루어져을시 가입 화면을 빠져나감.
-                    /*Intent intent = new Intent(DisabledRegisterActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();*/
-                    Toast.makeText(DisabledRegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    task.getException().printStackTrace();
-                    Toast.makeText(DisabledRegisterActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
-                    return;  //해당 메소드 진행을 멈추고 빠져나감.
-                }
+                            //가입이 이루어져을시 가입 화면을 빠져나감.
+                            Intent intent = new Intent(DisabledRegisterActivity.this, GuardianRegisterActivity.class);
+                            startActivity(intent);
+                            finish();
+                            Toast.makeText(DisabledRegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            task.getException().printStackTrace();
+                            Toast.makeText(DisabledRegisterActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                            return;  //해당 메소드 진행을 멈추고 빠져나감.
+                        }
 
-            }
-        });
+                    }
+                });
     }
 
     //폼 빈칸 체크
@@ -280,23 +277,23 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         emailDuplicateCheckFlag = 0; //이메일 중복 flag 값 초기화
         reference.child("users").child("disabled").orderByChild("email").equalTo(email). //장애인 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (!snapshot.exists()) {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
 
-                        } else {
-                            emailDuplicateCheckFlag = 1;
-                            Toast.makeText(DisabledRegisterActivity.this, "중복된 이메일입니다.",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
+                } else {
+                    emailDuplicateCheckFlag = 1;
+                    Toast.makeText(DisabledRegisterActivity.this, "중복된 이메일입니다.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+            }
+        });
 
         reference.child("users").child("guardian").orderByChild("email").equalTo(email). //보호자 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
@@ -453,7 +450,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
     private void firebaseImageUpload() { //파이어베이스 이미지 등록
         storageRef = storage.getReference();
-        riversRef = storageRef.child("profile/"+joinPhoneNum.getText().toString());
+        riversRef = storageRef.child(pathUri);
         UploadTask uploadTask = riversRef.putFile(imageUri);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -475,7 +472,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             case R.id.joinBtProfl: //프로필 이미지 등록
                 gotoAlbum();
                 break;
-                
+
             case R.id.joinBtEmailCk: //이메일 중복 확인
                 emailDuplicateCheck(joinEmail.getText().toString());
                 break;
@@ -500,8 +497,16 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
                 break;
 
+            case R.id.joinFdAdd:
+                Intent i = new Intent(DisabledRegisterActivity.this, WebViewActivity.class);
+                startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
+                break;
+
             case R.id.joinBt: //회원가입
-                signUp("profile/"+joinPhoneNum.getText().toString(), joinEmail.getText().toString(), joinPW.getText().toString(), joinName.getText().toString(),
+                if(imageUri != null){
+                    pathUri = "profile/"+joinPhoneNum.getText().toString();
+                }
+                signUp(pathUri, joinEmail.getText().toString(), joinPW.getText().toString(), joinName.getText().toString(),
                         joinPhoneNum.getText().toString(), joinBirth.getText().toString(), sex,
                         joinRoadAddress.getText().toString(), joinDetailAddress.getText().toString(), joinDrDisG.getSelectedItem().toString());
         }

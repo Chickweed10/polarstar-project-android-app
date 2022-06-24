@@ -6,8 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".GlobalApplication"
-
         android:allowBackup="true"
         android:icon="@drawable/polaris_roughly"
         android:label="@string/app_name"
@@ -15,19 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PolarstarProject">
 
-        <!-- 카카오 로그인 -->
         <activity
-            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:name=".UserSelectActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
-                <data android:host="oauth"
-                    android:scheme="kakao$71c576cef191a5f3a9bc15471c9eaea7" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -41,16 +29,14 @@
         </activity>
 
         <activity
-            android:name=".UserSelectActivity"
-            android:exported="true">
+            android:name=".GuardianRegisterActivity">
         </activity>
-        
+
         <activity
             android:name=".WebViewActivity">
         </activity>
 
         <activity android:name=".DisabledRegisterActivity" />
-        <activity android:name=".KakaoLoginActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".FindActivity" />
         
