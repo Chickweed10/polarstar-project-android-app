@@ -39,7 +39,7 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:icon="@drawable/polaris_roughly"
-        android:label="@string/app_name"
+        android:label="북극성"
         android:roundIcon="@drawable/polaris_roughly"
         android:supportsRtl="true"
         android:testOnly="true"
@@ -57,13 +57,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" >
-        </activity>
-        <activity android:name="com.example.polarstarproject.WebViewActivity" >
-        </activity>
         <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
+        <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
+        <activity android:name="com.example.polarstarproject.WebViewActivity" />
         <activity android:name="com.example.polarstarproject.LoginActivity" />
         <activity android:name="com.example.polarstarproject.FindActivity" />
+        <activity android:name="com.example.polarstarproject.ConnectActivity" />
 
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"

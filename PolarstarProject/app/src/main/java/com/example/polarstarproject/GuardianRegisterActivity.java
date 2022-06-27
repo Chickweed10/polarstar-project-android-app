@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
+import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,7 +43,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GuardianRegisterActivity extends AppCompatActivity implements View.OnClickListener{
     EditText joinEmailN, joinPWN, joinPWCkN, joinNameN, joinPhoneNumN, joinPNCkN, joinBirthN, joinRoadAddressN, joinDetailAddressN;
@@ -182,6 +186,14 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
 
             }
         });
+    }
+
+    private boolean emailFormCheck(String email) { //이메일 형식 검사
+        String regx = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+        Pattern pattern = Pattern.compile(regx);
+        Matcher matcher = pattern.matcher(email);
+
+        return matcher.matches();
     }
 
     /////////////////////////////////////////전화번호////////////////////////////////////////
@@ -337,7 +349,10 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
 
                             reference.child("guardian").child(uid).setValue(guardian);
 
-                            //가입이 이루어져을시 가입 화면을 빠져나감.
+                            //연결 코드 생성
+                            createConnectionCode(uid);
+
+                            //가입이 이루어졌을시 가입 화면을 빠져나감.
                             /*Intent intent = new Intent(GuardianRegisterActivity.this, GuardianRegisterActivity.class);
                             startActivity(intent);
                             finish();*/
@@ -351,6 +366,52 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
 
                     }
                 });
+    }
+
+    /////////////////////////////////////////연결 코드 생성////////////////////////////////////////
+    private void createConnectionCode(String uid){
+        String myCode;
+
+        Random random = new Random();
+        int length = 10; //코드 길이
+
+        StringBuffer newWord = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int choice = random.nextInt(3);
+            switch(choice) {
+                case 0:
+                    newWord.append((char)((int)random.nextInt(25)+97)); //소문자 랜덤 생성
+                    break;
+                case 1:
+                    newWord.append((char)((int)random.nextInt(25)+65)); //대문자 랜덤 생성
+                    break;
+                case 2:
+                    newWord.append((char)((int)random.nextInt(10)+48)); //숫자 랜덤 생성
+                    break;
+                default:
+                    break;
+            }
+        }
+        myCode = newWord.toString();
+
+        reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myCode). //장애인 user 검사
+                addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    Connect connect = new Connect(myCode, ""); //connect에 내 코드 생성
+                    reference.child("connect").child("guardian").child(uid).setValue(connect);
+                } else {
+                    createConnectionCode(uid);
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     /////////////////////////////////////////공란 검사 및 예외 처리////////////////////////////////////////
@@ -372,6 +433,11 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
 
         if (emailDuplicateCheckFlag == 1) { //이메일이 중복일 경우
             joinEmailN.setError("중복된 이메일입니다.");
+            valid = false;
+        }
+
+        if(emailFormCheck(email) == false){ //이메일 형식 오류인 경우
+            joinEmailN.setError("잘못된 이메일입니다.");
             valid = false;
         }
 
