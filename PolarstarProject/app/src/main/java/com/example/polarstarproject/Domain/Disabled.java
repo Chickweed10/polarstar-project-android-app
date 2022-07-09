@@ -12,6 +12,10 @@ public class Disabled { //장애인
     public String detailAddress;
     public String disabilityLevel;
 
+    public Disabled(){
+
+    }
+
     public Disabled(String profileImage, String email, String password, String name,
                     String phoneNumber, String birth, String sex,
                     String address, String detailAddress, String disabilityLevel) {

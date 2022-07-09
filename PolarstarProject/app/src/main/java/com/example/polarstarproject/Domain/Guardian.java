@@ -11,6 +11,10 @@ public class Guardian { //보호자
     public String address;
     public String detailAddress;
 
+    public Guardian(){
+
+    }
+
     public Guardian(String profileImage, String email, String password, String name,
                     String phoneNumber, String birth, String sex,
                     String address, String detailAddress) {

@@ -39,7 +39,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final String TAG = "Connect";
     int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
-    boolean validationCounterpartyCodeFlag = false;
     String findMyCode = null; //내 코드값
 
     @Override
