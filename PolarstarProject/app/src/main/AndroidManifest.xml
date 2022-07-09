@@ -34,7 +34,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".FindActivity" />
         <activity android:name=".ConnectActivity"  />
-        
+        <activity android:name=".OtherInformationCheckActivity"  />
+
     </application>
 
 </manifest>
