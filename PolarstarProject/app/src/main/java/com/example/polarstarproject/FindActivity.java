@@ -95,8 +95,8 @@ public class FindActivity extends AppCompatActivity {
                             //이메일 보이게함
                             tEmail.setText("이메일: "+Id);
                             tEmail.setVisibility(View.VISIBLE);
-                            tPassword.setText("비밀번호: "+Password);
-                            tPassword.setVisibility(View.VISIBLE);
+                            //tPassword.setText("비밀번호: "+Password);
+                            //tPassword.setVisibility(View.VISIBLE);
                             certificationFlag = 1;
                         } else {
                             Toast.makeText(FindActivity.this, "인증 실패",
