@@ -10,6 +10,7 @@
 
     <!-- 인터넷 사용 권한 허용 -->
     <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- 위치 권한 권한 허용 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -18,20 +19,16 @@
     <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
     <!-- <uses-sdk android:minSdkVersion="14"/> -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <queries>
-        <package android:name="com.kakao.talk" />
-        <package android:name="com.kakao.talk.alpha" />
-        <package android:name="com.kakao.talk.sandbox" />
-        <package android:name="com.kakao.onetalk" />
 
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-
-            <category android:name="android.intent.category.BROWSABLE" />
-
-            <data android:scheme="https" />
-        </intent>
+        <!-- Needs to be explicitly declared on Android R+ -->
+        <package android:name="com.google.android.apps.maps" />
     </queries>
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -48,29 +45,31 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/Theme.PolarstarProject" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCbE6jwIYDx9ZQ5CzrIU2jOihcxsrjVTyM" />
+
+        <activity android:name="com.example.polarstarproject.MainActivity" />
+        <activity android:name="com.example.polarstarproject.UserSelectActivity" />
+        <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
+        <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
+        <activity android:name="com.example.polarstarproject.WebViewActivity" />
+        <activity android:name="com.example.polarstarproject.LoginActivity" />
+        <activity android:name="com.example.polarstarproject.FindActivity" />
+        <activity android:name="com.example.polarstarproject.ConnectActivity" />
+        <activity android:name="com.example.polarstarproject.OtherInformationCheckActivity" />
         <activity
-            android:name="com.example.polarstarproject.UserSelectActivity"
+            android:name="com.example.polarstarproject.RealTimeLocationActivity"
             android:exported="true" >
-        </activity>
-        <activity
-            android:name="com.example.polarstarproject.LoginActivity"
-            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
-
-        <activity android:name="com.example.polarstarproject.MainActivity" />
-
-        <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
-        <activity android:name="com.example.polarstarproject.WebViewActivity" />
-        <activity android:name="com.example.polarstarproject.LoginActivity" />
-
-        <activity android:name="com.example.polarstarproject.FindActivity" />
-        <activity android:name="com.example.polarstarproject.ConnectActivity" />
 
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"
@@ -130,14 +129,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.kakao.sdk.auth.TalkAuthCodeActivity"
+            android:name="com.google.android.libraries.places.widget.AutocompleteActivity"
             android:exported="false"
-            android:launchMode="singleTask"
-            android:theme="@style/TransparentCompat" />
-        <activity
-            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/TransparentCompat" />
+            android:label="@string/places_autocomplete_label"
+            android:theme="@style/PlacesAutocompleteOverlay"
+            android:windowSoftInputMode="adjustResize" >
+        </activity> <!-- Needs to be explicitly declared on P+ -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <provider
             android:name="com.google.firebase.provider.FirebaseInitProvider"
@@ -167,19 +167,6 @@
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
-        <activity
-            android:name="com.kakao.auth.authorization.authcode.KakaoWebViewActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:label="@string/com_kakao_login_button"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustResize" >
-        </activity>
-
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.example.polarstarproject.androidx-startup"
@@ -191,6 +178,23 @@
                 android:name="androidx.lifecycle.ProcessLifecycleInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <service
+            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+            android:exported="false" >
+            <meta-data
+                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+                android:value="cct" />
+        </service>
+        <service
+            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
+        </service>
+
+        <receiver
+            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
