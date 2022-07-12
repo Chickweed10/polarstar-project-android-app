@@ -10,6 +10,10 @@
 
     <!-- 인터넷 사용 권한 허용 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 위치 권한 권한 허용 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
     <!-- <uses-sdk android:minSdkVersion="14"/> -->
@@ -49,7 +53,7 @@
             android:exported="true" >
         </activity>
         <activity
-            android:name="com.example.polarstarproject.MainActivity"
+            android:name="com.example.polarstarproject.LoginActivity"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,9 +62,13 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
+
+        <activity android:name="com.example.polarstarproject.MainActivity" />
+
         <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
         <activity android:name="com.example.polarstarproject.WebViewActivity" />
         <activity android:name="com.example.polarstarproject.LoginActivity" />
+
         <activity android:name="com.example.polarstarproject.FindActivity" />
         <activity android:name="com.example.polarstarproject.ConnectActivity" />
 
