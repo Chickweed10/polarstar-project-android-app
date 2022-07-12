@@ -12,7 +12,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/polaris_roughly"
-        android:label="@string/app_name"
+        android:label="북극성"
         android:roundIcon="@drawable/polaris_roughly"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolarstarProject">
@@ -32,18 +32,18 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".GuardianRegisterActivity">
-        </activity>
-
-        <activity
-            android:name=".WebViewActivity">
-        </activity>
-
         <activity android:name=".DisabledRegisterActivity" />
+
         <activity android:name=".MainActivity" />
+
+        <activity android:name=".GuardianRegisterActivity"  />
+        <activity android:name=".WebViewActivity" />
+        <activity android:name=".LoginActivity" />
+
         <activity android:name=".FindActivity" />
-        
+        <activity android:name=".ConnectActivity"  />
+        <activity android:name=".OtherInformationCheckActivity"  />
+
     </application>
 
 </manifest>

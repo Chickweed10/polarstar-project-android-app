@@ -88,8 +88,8 @@ public class LoginActivity extends AppCompatActivity {
                                             autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
                                         //}
                                     }
-                                    //Intent intent = new Intent(LoginActivity.this, 넘어갈Activity.class);
-                                    //startActivity(intent);
+                                    Intent intent = new Intent(LoginActivity.this, ConnectActivity.class);
+                                    startActivity(intent);
 
                                 } else {
                                     Toast.makeText(LoginActivity.this,
