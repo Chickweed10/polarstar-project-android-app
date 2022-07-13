@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,9 +31,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference reference = database.getReference();
+    private FirebaseAuth mAuth;
+    private FirebaseUser user; //firebase 변수
+    
     private static final String TAG = "RealTimeLocation";
     private GoogleMap map;
     private CameraPosition cameraPosition;
@@ -65,6 +77,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
 
         setContentView(R.layout.activity_realtime_location);
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsListener = new GPSListener();
@@ -294,5 +309,26 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             myLocationMarker.position(curPoint);
             myMarker = map.addMarker(myLocationMarker);
         }
+    }
+
+    private void firebaseUpdateLocation(double latitude, double longitude) { //firebase에 실시간 위치 저장
+        RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
+
+        reference.child("realtimelocation").child(user.getUid()).setValue(realTimeLocation)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Write was successful!
+                        Log.d(TAG,"firebase 저장 성공");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        Log.d(TAG,"firebase 저장 실패");
+                    }
+                });
+
     }
 }

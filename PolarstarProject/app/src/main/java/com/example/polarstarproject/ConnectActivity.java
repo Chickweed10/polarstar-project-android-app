@@ -167,10 +167,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                         reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
 
-                        //가입이 이루어져을시 가입 화면을 빠져나감.
-                        /*Intent intent = new Intent(ConnectActivity.this, 보호자 메인 기능화면.class);
+                        //매칭 성공시 가입 화면을 빠져나감.
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
-                        finish();*/
+                        finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
                     }
                     else {
@@ -188,7 +188,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             Log.w(TAG, "미확인 유저(uid 오류)");
         }
     }
-
+    
     /////////////////////////////////////////버튼 클릭 이벤트////////////////////////////////////////
     @Override
     public void onClick(View v) {
