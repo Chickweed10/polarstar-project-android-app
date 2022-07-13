@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,12 +19,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.polarstarproject.Domain.Connect;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity"; //로그용 태그
+
     public static Context context_main; // 다른 엑티비티에서의 접근을 위해 사용
     private PermissionSupport permission; // 권한설정 클래스 선언
     public String setId, setPassword;
@@ -34,6 +45,13 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox autoCheck;
     private FirebaseAuth firebaseAuth;
 
+    /////////////////////////////화면 넘어가기 용 변수////////////////////////////
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference reference = database.getReference();
+    private FirebaseUser user;
+    int classificationUserFlag = 0, connectCheckFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 연결 여부 확인 (0: 연결안됨, 1: 연결됨)
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         context_main = this;
 
         firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
 
         //등록하기
         mLoginBtn = findViewById(R.id.lgnBt);
@@ -88,8 +107,8 @@ public class LoginActivity extends AppCompatActivity {
                                             autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
                                         //}
                                     }
-                                    Intent intent = new Intent(LoginActivity.this, ConnectActivity.class);
-                                    startActivity(intent);
+
+                                    classificationUser(user.getUid()); //연결 여부 확인해서 화면 넘어가기
 
                                 } else {
                                     Toast.makeText(LoginActivity.this,
@@ -184,6 +203,133 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_SHORT).show();
                 }
                 break;
+        }
+    }
+
+    /////////////////////////////////////////사용자 구별////////////////////////////////////////
+    private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
+        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null){
+                    classificationUserFlag = 1;
+                    connectCheck(user, classificationUserFlag); //연결 여부 확인
+                }
+                else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(uid); //보호자 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null){
+                    classificationUserFlag = 2;
+                    connectCheck(user, classificationUserFlag); //연결 여부 확인
+                }
+                else {
+                    Log.w(TAG, "본인 확인 오류");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /////////////////////////////////////////연결 여부 확인////////////////////////////////////////
+    private void connectCheck(FirebaseUser user, int classificationUserFlag){
+        if(classificationUserFlag == 1) { //장애인 테이블 검사
+            Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Connect myConnect = new Connect();
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        myConnect = ds.getValue(Connect.class);
+                    }
+
+                    if(myConnect.getCounterpartyCode() != null){
+                        connectCheckFlag = 1;
+                        skipScreen(connectCheckFlag); //화면 넘어가기
+                    }
+                    else {
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else if(classificationUserFlag == 2){ //보호자 테이블 검사
+            Query disabledQuery = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
+            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Connect myConnect = new Connect();
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        myConnect = ds.getValue(Connect.class);
+                    }
+
+                    if(myConnect.getCounterpartyCode() != null){
+                        connectCheckFlag = 1;
+                        skipScreen(connectCheckFlag); //화면 넘어가기
+                    }
+                    else {
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    public void skipScreen(int connectCheckFlag){
+        if(connectCheckFlag == 0){ //상대방과 연결되어있지 않은 경우
+            Intent intent = new Intent(LoginActivity.this, ConnectActivity.class);
+            startActivity(intent);
+        }
+        else { //이미 연결되어 있는 경우
+            if(classificationUserFlag == 1){ //장애인
+                /*Intent intent = new Intent(ConnectActivity.this, 장애인 메인 기능화면.class);
+                        startActivity(intent);
+                        finish();*/
+            }
+            else if(classificationUserFlag == 2){ //보호자
+                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
+                startActivity(intent);
+                finish();
+            }
+            else {
+                Log.w(TAG, "본인 확인 오류");
+            }
         }
     }
 

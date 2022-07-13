@@ -50,9 +50,17 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCbE6jwIYDx9ZQ5CzrIU2jOihcxsrjVTyM" />
+            android:value="AIzaSyAYY9Vq7F0gn7BsCj65Rzx4oDahqxso8BI" />
 
-        <activity android:name="com.example.polarstarproject.MainActivity" />
+        <activity
+            android:name="com.example.polarstarproject.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name="com.example.polarstarproject.UserSelectActivity" />
         <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
         <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
@@ -64,11 +72,6 @@
         <activity
             android:name="com.example.polarstarproject.RealTimeLocationActivity"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service
