@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class FindActivity extends AppCompatActivity {
     EditText findPhoneNum, findPNCk;
     Button findPNReq, findPNReqCk;
-    TextView tEmail, tPassword;
+    TextView tEmail;
     String Id = ((LoginActivity)LoginActivity.context_main).setId;
     String Password = ((LoginActivity)LoginActivity.context_main).setPassword;
 
@@ -53,7 +53,6 @@ public class FindActivity extends AppCompatActivity {
         findPNCk = (EditText) findViewById(R.id.findPNCk); //인증번호 요청
         findPNReqCk = (Button) findViewById(R.id.findPNReqCk); //인증번호 확인
         tEmail = (TextView) findViewById(R.id.tEmail);
-        tPassword = (TextView) findViewById(R.id.tPassword);
 
         findPNReq.setOnClickListener(new View.OnClickListener() {
 
