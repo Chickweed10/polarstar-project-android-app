@@ -246,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
                     connectCheck(user, classificationUserFlag); //연결 여부 확인
                 }
                 else {
-                    Log.w(TAG, "본인 확인 오류");
+
                 }
             }
 
@@ -318,9 +318,9 @@ public class LoginActivity extends AppCompatActivity {
         }
         else { //이미 연결되어 있는 경우
             if(classificationUserFlag == 1){ //장애인
-                /*Intent intent = new Intent(ConnectActivity.this, 장애인 메인 기능화면.class);
-                        startActivity(intent);
-                        finish();*/
+                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
+                startActivity(intent);
+                finish();
             }
             else if(classificationUserFlag == 2){ //보호자
                 Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);

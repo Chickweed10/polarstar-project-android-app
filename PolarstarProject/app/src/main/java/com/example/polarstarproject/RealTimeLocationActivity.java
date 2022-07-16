@@ -11,12 +11,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,8 +38,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -63,9 +72,17 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     Marker myMarker;
     MarkerOptions myLocationMarker;
+    Marker counterpartyMarker;
+    MarkerOptions counterpartyLocationMarker;
+
+    LatLng counterpartyCurPoint;
 
     LocationManager manager;
     GPSListener gpsListener;
+
+    Connect myConnect;
+    String counterpartyUID = "";
+    int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +112,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        counterpartyLocationScheduler();
     }
 
     @Override
@@ -182,6 +201,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
+                                    firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -189,6 +209,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
+                                    firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -223,10 +244,29 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             myLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
             myMarker = map.addMarker(myLocationMarker);
         }
-        else {
+        else if (myLocationMarker != null){
             myMarker.remove(); // 마커삭제
             myLocationMarker.position(curPoint);
             myMarker = map.addMarker(myLocationMarker);
+        }
+
+        if(counterpartyMarker == null){
+            counterpartyLocationMarker = new MarkerOptions();
+            counterpartyLocationMarker.position(curPoint);
+
+            int height = 300;
+            int width = 300;
+            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
+            Bitmap b=bitmapdraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
+
+            counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+        }
+        else if (counterpartyMarker != null){
+            counterpartyMarker.remove(); // 마커삭제
+            counterpartyLocationMarker.position(curPoint);
+            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
         }
     }
 
@@ -244,7 +284,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 if (location != null) {
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
+                    LatLng curPoint = new LatLng(latitude, longitude);
 
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
+                    firebaseUpdateLocation(latitude, longitude); //firebase 실시간 위치 저장
                     showCurrentLocation(latitude, longitude);
                 }
 
@@ -256,7 +299,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 if (location != null) {
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
+                    LatLng curPoint = new LatLng(latitude, longitude);
 
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
+                    firebaseUpdateLocation(latitude, longitude); //firebase 실시간 위치 저장
                     showCurrentLocation(latitude,longitude);
                 }
 
@@ -279,9 +325,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         public void onLocationChanged(Location location) { // 위치 변경 시 호출
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
-
             LatLng curPoint = new LatLng(latitude, longitude);
 
+            firebaseUpdateLocation(latitude, longitude); //firebase 실시간 위치 저장
             showMyLocationMarker(curPoint);
         }
 
@@ -318,8 +364,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        // Write was successful!
-                        Log.d(TAG,"firebase 저장 성공");
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -329,6 +374,164 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         Log.d(TAG,"firebase 저장 실패");
                     }
                 });
+    }
 
+    /////////////////////////////////////////상대방 위치////////////////////////////////////////
+    private void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
+        Timer timer = new Timer();
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //1초마다 실행
+                classificationUser(user.getUid());
+            }
+        };
+        timer.schedule(timerTask,0,1000);
+    }
+
+    /////////////////////////////////////////사용자 구별////////////////////////////////////////
+    private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
+        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    classificationUserFlag = 1;
+                    getOtherUID();
+                }
+                else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(uid); //보호자 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    classificationUserFlag = 2;
+                    getOtherUID();
+                }
+                else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
+    private void getOtherUID(){
+        if(classificationUserFlag == 1) { //내가 장애인이고, 상대방이 보호자일 경우
+            Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        counterpartyUID = ds.getKey();
+                    }
+
+                    if(counterpartyUID != null  && !counterpartyUID.isEmpty()){
+                        counterpartyMarker();
+                    }
+                    else {
+                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "상대방 인적사항 확인 오류");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
+            Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        counterpartyUID = ds.getKey();
+                    }
+
+                    if(counterpartyUID != null  && !counterpartyUID.isEmpty()){
+                        counterpartyMarker();
+                    }
+                    else {
+                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "상대방 인적사항 확인 오류");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else { //올바르지 않은 사용자
+            Log.w(TAG, "상대방 인적사항 확인 오류");
+        }
+    }
+
+    /////////////////////////////////////////실시간 위치 마커////////////////////////////////////////
+    private void counterpartyMarker() {
+        reference.child("realtimelocation").orderByKey().equalTo(counterpartyUID). //상대방 실시간 위치 검색
+                addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                RealTimeLocation realTimeLocation = new RealTimeLocation();
+                for(DataSnapshot ds : snapshot.getChildren()){
+                    realTimeLocation = ds.getValue(RealTimeLocation.class);
+                }
+                if (!snapshot.exists()) {
+                    Log.w(TAG, "상대방 실시간 위치 오류");
+                }
+                else {
+                    counterpartyCurPoint = new LatLng(realTimeLocation.latitude, realTimeLocation.longitude);
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        if(counterpartyCurPoint != null){
+            if (counterpartyLocationMarker == null) { //마커가 없었을 경우
+                counterpartyLocationMarker.position(counterpartyCurPoint);
+                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+            }
+            else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
+                counterpartyMarker.remove(); // 마커삭제
+                counterpartyLocationMarker.position(counterpartyCurPoint);
+                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+            }
+        }
     }
 }
