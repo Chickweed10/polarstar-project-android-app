@@ -58,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         context_main = this;
 
+        connectCheckFlag = 0;
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         //등록하기
@@ -217,7 +219,7 @@ public class LoginActivity extends AppCompatActivity {
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null){
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
                     connectCheck(user, classificationUserFlag); //연결 여부 확인
                 }
@@ -241,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null){
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 2;
                     connectCheck(user, classificationUserFlag); //연결 여부 확인
                 }
@@ -269,12 +271,12 @@ public class LoginActivity extends AppCompatActivity {
                         myConnect = ds.getValue(Connect.class);
                     }
 
-                    if(myConnect.getCounterpartyCode() != null){
+                    if(myConnect.getCounterpartyCode() != null && !myConnect.getCounterpartyCode().isEmpty()){
                         connectCheckFlag = 1;
                         skipScreen(connectCheckFlag); //화면 넘어가기
                     }
                     else {
-
+                        skipScreen(connectCheckFlag); //화면 넘어가기
                     }
                 }
 
@@ -294,12 +296,12 @@ public class LoginActivity extends AppCompatActivity {
                         myConnect = ds.getValue(Connect.class);
                     }
 
-                    if(myConnect.getCounterpartyCode() != null){
+                    if(myConnect.getCounterpartyCode() != null && !myConnect.getCounterpartyCode().isEmpty()){
                         connectCheckFlag = 1;
                         skipScreen(connectCheckFlag); //화면 넘어가기
                     }
                     else {
-
+                        skipScreen(connectCheckFlag); //화면 넘어가기
                     }
                 }
 
@@ -312,6 +314,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void skipScreen(int connectCheckFlag){
+        System.out.println("실행" + connectCheckFlag);
         if(connectCheckFlag == 0){ //상대방과 연결되어있지 않은 경우
             Intent intent = new Intent(LoginActivity.this, ConnectActivity.class);
             startActivity(intent);
