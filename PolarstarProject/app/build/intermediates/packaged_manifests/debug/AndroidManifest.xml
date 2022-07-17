@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
     <!-- <uses-sdk android:minSdkVersion="14"/> -->
@@ -61,18 +63,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.polarstarproject.LoginActivity" />
         <activity android:name="com.example.polarstarproject.UserSelectActivity" />
         <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
         <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
         <activity android:name="com.example.polarstarproject.WebViewActivity" />
-        <activity android:name="com.example.polarstarproject.LoginActivity" />
         <activity android:name="com.example.polarstarproject.FindActivity" />
         <activity android:name="com.example.polarstarproject.ConnectActivity" />
+        <activity android:name="com.example.polarstarproject.RealTimeLocationActivity" />
+        <activity android:name="com.example.polarstarproject.RouteActivity" />
+        <activity android:name="com.example.polarstarproject.Myinfo_DuserActivity" />
         <activity android:name="com.example.polarstarproject.OtherInformationCheckActivity" />
-        <activity
-            android:name="com.example.polarstarproject.RealTimeLocationActivity"
-            android:exported="true" >
-        </activity>
 
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"

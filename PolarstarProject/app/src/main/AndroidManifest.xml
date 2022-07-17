@@ -39,18 +39,19 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".LoginActivity" />
         <activity android:name=".UserSelectActivity" />
         <activity android:name=".DisabledRegisterActivity" />
         <activity android:name=".GuardianRegisterActivity"  />
         <activity android:name=".WebViewActivity" />
-
         <activity android:name=".FindActivity" />
         <activity android:name=".ConnectActivity" />
+        <activity android:name=".RealTimeLocationActivity" />
+        <activity android:name=".RouteActivity" />
+        <activity android:name=".Myinfo_DuserActivity" />
         <activity android:name=".OtherInformationCheckActivity" />
 
-        <activity android:name=".RealTimeLocationActivity"
-            android:exported="true">
-        </activity>
+
 
 
     </application>
