@@ -93,7 +93,7 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
     }
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
-    private void getOtherUID(){
+    private void getOtherUID(FirebaseUser user){
         classificationUser(user.getUid());
 
         if(classificationUserFlag == 1) { //내가 장애인이고, 상대방이 보호자일 경우
@@ -101,6 +101,7 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
             query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         counterpartyUID = ds.getKey();
                     }
@@ -149,12 +150,11 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
         else { //올바르지 않은 사용자
             Log.w(TAG, "상대방 인적사항 확인 오류");
         }
-
     }
 
     /////////////////////////////////////////상대방 정보 가져오기////////////////////////////////////////
     private void otherInformationCheck(){
-        getOtherUID();
+        getOtherUID(user);
 
         if(classificationUserFlag == 1){ //내가 장애인일 경우 보호자 정보 띄움
             Query guardianQuery = reference.child("guardian").orderByKey().equalTo(counterpartyUID); //보호자 테이블 조회
