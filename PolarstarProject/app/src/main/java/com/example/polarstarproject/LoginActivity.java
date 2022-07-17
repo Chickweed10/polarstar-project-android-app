@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         context_main = this;
 
         firebaseAuth = FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
 
         //등록하기
         mLoginBtn = findViewById(R.id.lgnBt);
@@ -99,15 +98,16 @@ public class LoginActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                     if(autoCheck.isChecked()) {
                                         //if(setId == null && setPassword == null) {
-                                            // 로그인 데이터 저장
-                                            autoLoginEdit.putString("Id", mEmailText.getText().toString().trim());
-                                            autoLoginEdit.putString("Password", mPasswordText.getText().toString().trim());
-                                            autoLoginEdit.commit(); // commit 해야지만 저장됨
+                                        // 로그인 데이터 저장
+                                        autoLoginEdit.putString("Id", mEmailText.getText().toString().trim());
+                                        autoLoginEdit.putString("Password", mPasswordText.getText().toString().trim());
+                                        autoLoginEdit.commit(); // commit 해야지만 저장됨
 
-                                            autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
+                                        autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
                                         //}
                                     }
 
+                                    user = firebaseAuth.getCurrentUser();
                                     classificationUser(user.getUid()); //연결 여부 확인해서 화면 넘어가기
 
                                 } else {

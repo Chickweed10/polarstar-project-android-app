@@ -9,17 +9,21 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.health.SystemHealthManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.RealTimeLocation;
+import com.example.polarstarproject.Domain.Route;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,6 +49,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,7 +63,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
     private FirebaseUser user; //firebase 변수
-    
+
     private static final String TAG = "RealTimeLocation";
     private GoogleMap map;
     private CameraPosition cameraPosition;
@@ -82,7 +92,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     Connect myConnect;
     String counterpartyUID = "";
-    int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
+    int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
+    double routeLatitude, routeLongitude; //장애인 경로 저장
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +105,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
 
         setContentView(R.layout.activity_realtime_location);
+
+        MapsInitializer.initialize(this);
+        count = 0; //카운트 초기화
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -191,6 +205,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             if (locationPermissionGranted) { //위치 권한 있을 경우
                 @SuppressLint("MissingPermission") Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
@@ -250,26 +265,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             myMarker = map.addMarker(myLocationMarker);
         }
 
-        if(counterpartyMarker == null){
-            counterpartyLocationMarker = new MarkerOptions();
-            counterpartyLocationMarker.position(curPoint);
-
-            int height = 300;
-            int width = 300;
-            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
-            Bitmap b=bitmapdraw.getBitmap();
-            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
-
-            counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
-        }
         else if (counterpartyMarker != null){
             counterpartyMarker.remove(); // 마커삭제
-            counterpartyLocationMarker.position(curPoint);
-            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("MissingPermission")
     public void realTimeDeviceLocation() {
         try {
@@ -321,6 +322,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     class GPSListener implements LocationListener {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onLocationChanged(Location location) { // 위치 변경 시 호출
             double latitude = location.getLatitude();
@@ -358,6 +360,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void firebaseUpdateLocation(double latitude, double longitude) { //firebase에 실시간 위치 저장
+        routeLatitude = latitude;
+        routeLongitude = longitude;
+
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
         reference.child("realtimelocation").child(user.getUid()).setValue(realTimeLocation)
@@ -371,10 +376,54 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Write failed
-                        Log.d(TAG,"firebase 저장 실패");
+                        Log.d(TAG,"firebase 실시간 위치 저장 실패");
                     }
                 });
     }
+
+    private void routeScheduler(){ //경로 저장용 스케쥴러
+        Log.d(TAG,"경로 저장용 스케쥴러 실행");
+        Timer timer = new Timer();
+
+        TimerTask timerTask = new TimerTask() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                //30초마다 실행
+                firebaseUpdateRoute(routeLatitude, routeLongitude);
+            }
+        };
+        timer.schedule(timerTask,0,30000);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void firebaseUpdateRoute(double latitude, double longitude) { //firebase에 경로용 위치 저장
+        LocalTime localTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String nowTime = localTime.format(formatter); //현재 시간 구하기
+
+        Route route = new Route(nowTime, latitude,longitude);
+
+        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
+        String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        reference.child("route").child(user.getUid()).child(nowDate).child(nowTime).setValue(route)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        Log.d(TAG,"firebase 경로용 위치 저장 실패");
+                    }
+                });
+    }
+
+
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
     private void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
@@ -439,6 +488,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
+
+
     }
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
@@ -467,6 +518,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 }
             });
+            if(count == 0){
+                routeScheduler(); //장애인 경로 저장 함수 호출
+            }
+            count++;
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
             Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
@@ -524,7 +579,16 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         if(counterpartyCurPoint != null){
             if (counterpartyLocationMarker == null) { //마커가 없었을 경우
+                counterpartyLocationMarker = new MarkerOptions();
                 counterpartyLocationMarker.position(counterpartyCurPoint);
+
+                int height = 300;
+                int width = 300;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
+
+                counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                 counterpartyMarker = map.addMarker(counterpartyLocationMarker);
             }
             else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
