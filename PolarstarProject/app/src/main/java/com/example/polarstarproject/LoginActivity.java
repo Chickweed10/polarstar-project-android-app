@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 
         onCheckPermission(); //위치권한 메소드
 
-        // SharedPreferences 사용해서 앱에 데이터 저장&불러오기기
+        // SharedPreferences 사용해서 앱에 데이터 저장&불러오기
         SharedPreferences auto = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
         SharedPreferences.Editor autoLoginEdit = auto.edit();
 
@@ -314,7 +314,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void skipScreen(int connectCheckFlag){
-        System.out.println("실행" + connectCheckFlag);
         if(connectCheckFlag == 0){ //상대방과 연결되어있지 않은 경우
             Intent intent = new Intent(LoginActivity.this, ConnectActivity.class);
             startActivity(intent);

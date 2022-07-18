@@ -27,6 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class ConnectActivity extends AppCompatActivity implements View.OnClickListener{
     TextView tvMyCode;
     EditText editOtherCode;
@@ -111,6 +114,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         });
+        
+        skipScreen(); //화면 넘어가기
     }
 
     /////////////////////////////////////////1:1 매칭////////////////////////////////////////
@@ -133,9 +138,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
 
                         //매칭 성공시 가입 화면을 빠져나감.
-                        /*Intent intent = new Intent(ConnectActivity.this, 장애인 메인 기능화면.class);
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
-                        finish();*/
+                        finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
 
                     }
@@ -188,7 +193,81 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             Log.w(TAG, "미확인 유저(uid 오류)");
         }
     }
-    
+
+    /////////////////////////////////////////연결 여부 확인 후 화면 넘어가기////////////////////////////////////////
+    private void skipScreen(){
+        Timer timer = new Timer();
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //1초마다 실행
+                connectCheck();
+            }
+        };
+        timer.schedule(timerTask,0,1000);
+    }
+
+    private void connectCheck(){
+        if(classificationUserFlag == 1) { //내가 장애인인 경우
+            Query query = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid());
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //내 테이블에서 counterpartyCode 존재 검사
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Connect connect = new Connect();
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        connect = ds.getValue(Connect.class);
+                    }
+
+                    if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){
+                        //매칭 시 화면을 빠져나감.
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else {
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else if(classificationUserFlag == 2) { //내가 보호자인 경우
+            Query query = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid());
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //내 테이블에서 counterpartyCode 존재 검사
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Connect connect = new Connect();
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        connect = ds.getValue(Connect.class);
+                    }
+
+                    if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){
+                        //매칭 시 화면을 빠져나감.
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else {
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else { //올바르지 않은 사용자
+            Log.w(TAG, "미확인 유저(uid 오류)");
+        }
+    }
+
     /////////////////////////////////////////버튼 클릭 이벤트////////////////////////////////////////
     @Override
     public void onClick(View v) {

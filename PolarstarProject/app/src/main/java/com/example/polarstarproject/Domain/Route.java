@@ -24,12 +24,27 @@ public class Route { //장애인 이동경로
         this.longitude = longitude;
     }
 
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("nowTime", nowTime);
-        result.put("latitude", latitude);
-        result.put("longitude", longitude);
+    public void setNowTime(String nowTime) {
+        this.nowTime = nowTime;
+    }
 
-        return result;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getNowTime() {
+        return nowTime;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }
