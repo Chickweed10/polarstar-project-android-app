@@ -325,7 +325,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
             else if(classificationUserFlag == 2){ //보호자
-                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RouteActivity.class);
                 startActivity(intent);
                 finish();
             }

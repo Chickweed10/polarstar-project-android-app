@@ -10,20 +10,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Route;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CustomCap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,9 +37,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener{
@@ -51,6 +52,9 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final int DEFAULT_ZOOM = 15;
 
     ArrayList<LatLng> arrayPoints;
+
+    Connect myConnect;
+    String counterpartyUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +81,60 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         map.setMyLocationEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
 
-        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
-        String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        getOtherUID();
+    }
 
-        Query routeQuery = reference.child("route").child(user.getUid()).orderByKey().equalTo("2022-07-19");
+    /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
+    private void getOtherUID(){
+        Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자와 매칭된 장애인 uid 가져오기
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                counterpartyUID = ds.getKey();
+                            }
+
+                            if(counterpartyUID != null && !counterpartyUID.isEmpty()){
+                                disabledRoute();
+                            }
+                            else {
+                                Toast.makeText(RouteActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "상대방 인적사항 확인 오류");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+                else {
+                    Log.w(TAG, "내 인적사항 확인 오류");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /////////////////////////////////////////경로 그리기////////////////////////////////////////
+    private void disabledRoute(){
+        Query routeQuery = reference.child("route").child(counterpartyUID).orderByKey().equalTo("2022-07-19");
         routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -108,6 +162,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+
     private void drawPolyline(){
         int size = arrayPoints.size() / 2;
         LatLng routeLocation = new LatLng(arrayPoints.get(size).latitude, arrayPoints.get(size).longitude);
@@ -117,15 +172,20 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.RED);
-        polylineOptions.width(5);
+        polylineOptions.width(8);
         polylineOptions.addAll(arrayPoints);
+        polylineOptions.startCap(new RoundCap());
+        polylineOptions.endCap(new CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.ic_arrow), 150));
 
         map.addPolyline(polylineOptions);
     }
 
 
     @Override
-    public void onClick(View view) {
-
+    public void onClick(View v) {
+        /*switch (v.getId()) {
+            case R.id.: //날짜 버튼 클릭
+                getOtherUID(); //매칭 장애인 경로 가져오기
+                break;*/
     }
 }
