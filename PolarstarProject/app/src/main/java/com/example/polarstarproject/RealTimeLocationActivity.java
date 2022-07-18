@@ -58,7 +58,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -360,6 +360,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void firebaseUpdateLocation(double latitude, double longitude) { //firebase에 실시간 위치 저장
+        if(classificationUserFlag == 1){
+            if(count == 0){
+                routeScheduler(); //장애인 경로 저장 함수 호출
+            }
+            count++;
+        }
+
         routeLatitude = latitude;
         routeLongitude = longitude;
 
@@ -389,11 +396,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void run() {
-                //30초마다 실행
+                //10초마다 실행
                 firebaseUpdateRoute(routeLatitude, routeLongitude);
             }
         };
-        timer.schedule(timerTask,0,30000);
+        timer.schedule(timerTask,0,10000);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -518,10 +525,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 }
             });
-            if(count == 0){
-                routeScheduler(); //장애인 경로 저장 함수 호출
-            }
-            count++;
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
             Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
