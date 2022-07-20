@@ -45,7 +45,7 @@
                 android:textSize="12dp" />
 
             <EditText
-                android:id="@+id/mProflName"
+                android:id="@+id/mProflNameN"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -56,7 +56,7 @@
                 android:textSize="14dp" />
 
             <EditText
-                android:id="@+id/mProflPhoneNum"
+                android:id="@+id/mProflPhoneNumN"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -82,19 +82,19 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/mProflEmail"
+                    android:id="@+id/mProflEmailN"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
-                    android:hint="이메일 입력"
+                    android:hint="(ex. OOO@mail.com)"
                     android:text="이메일"
                     android:inputType="textEmailAddress"
                     android:textSize="14dp" />
 
                 <Button
-                    android:id="@+id/mProflBtEmailCk"
+                    android:id="@+id/mProflBtEmailCkN"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:layout_marginStart="10dp"
@@ -119,7 +119,7 @@
                     android:textSize="14dp" />
 
                 <Button
-                    android:id="@+id/mProflBtPWChage"
+                    android:id="@+id/mProflBtPWChageN"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:layout_marginStart="10dp"
@@ -140,7 +140,7 @@
                 android:textSize="12dp" />
 
             <EditText
-                android:id="@+id/mProflAddress"
+                android:id="@+id/mProflAddressN"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -151,7 +151,7 @@
                 android:textSize="14dp" />
 
             <EditText
-                android:id="@+id/mProflBirth"
+                android:id="@+id/mProflBirthN"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -168,7 +168,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/mProflGender"
+                    android:id="@+id/textView14"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -178,7 +178,7 @@
                     android:textSize="14dp" />
 
                 <RadioGroup
-                    android:id="@+id/mProflBtGender"
+                    android:id="@+id/mProflBtGenderN"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -188,7 +188,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <RadioButton
-                        android:id="@+id/mProflBtGenderM"
+                        android:id="@+id/mProflBtGenderMN"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -196,7 +196,7 @@
                         android:text="남" />
 
                     <RadioButton
-                        android:id="@+id/mProflBtGenderF"
+                        android:id="@+id/mProflBtGenderFN"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
@@ -206,36 +206,8 @@
             </LinearLayout>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/mProflDisG"
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="4dp"
-                    android:ems="10"
-                    android:hint="장애 정도 "
-                    android:textSize="14dp" />
-
-                <Spinner
-                    android:id="@+id/mProflDrDisG"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="50dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="50dp"
-                    android:layout_weight="1"
-                    android:entries="@array/test">
-
-                </Spinner>
-            </LinearLayout>
-
             <Button
-                android:id="@+id/mProflBtEdit"
+                android:id="@+id/mProflBtEditN"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

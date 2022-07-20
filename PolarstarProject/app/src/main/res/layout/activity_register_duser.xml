@@ -156,7 +156,7 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="0dp"
                     android:ems="10"
-                    android:hint="생년월일 (ex. 20201231)"
+                    android:hint="생년월일 (ex. 19001231)"
                     android:inputType="number" />
 
                 <RadioGroup
