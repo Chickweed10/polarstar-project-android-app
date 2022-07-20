@@ -2,12 +2,9 @@ package com.example.polarstarproject;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 public class Myinfo_DuserActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     ImageView Profl;
-    TextView Name, Email, PhoneNum, Birth, Address, DrDisG;
+    TextView DrDisG;
+    EditText Name, Email, PhoneNum, Birth, Address;
     Button Bt;
 
 
@@ -39,13 +37,14 @@ public class Myinfo_DuserActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference(); //DatabaseReference의 인스턴스
 
         Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
-        Name = (TextView) findViewById(R.id.Name); //이름
-        Email = (TextView) findViewById(R.id.Email); //이메일
-        PhoneNum = (TextView) findViewById(R.id.PhoneNum); //전화번호
-        Birth = (TextView) findViewById(R.id.Birth); //생년월일
-        Address = (TextView) findViewById(R.id.Address); //주소
-        DrDisG = (TextView)findViewById(R.id.DrDisG); //장애등급
-        Bt = (Button) findViewById(R.id.Bt); //프로필 수정
+        Name = (EditText) findViewById(R.id.mProflName); //이름
+        Email = (EditText) findViewById(R.id.mProflEmail); //이메일
+        PhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //전화번호
+        Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
+        Address = (EditText) findViewById(R.id.mProflAddress); //주소
+        DrDisG = (TextView)findViewById(R.id.mProflDisG); //장애정도 (pre.장애등급)
+        //장애정도 변경필요?_cogy //DrDisG -> 드롭메뉴 생김
+        Bt = (Button) findViewById(R.id.mProflBtEdit); //프로필 수정
 
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //현재 로그인한 유저
