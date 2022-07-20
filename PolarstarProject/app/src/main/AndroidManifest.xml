@@ -50,6 +50,7 @@
         <activity android:name=".RouteActivity" />
         <activity android:name=".Myinfo_DuserActivity" />
         <activity android:name=".OtherInformationCheckActivity" />
+        <activity android:name=".RangeSettingActivity" />
 
 
 
