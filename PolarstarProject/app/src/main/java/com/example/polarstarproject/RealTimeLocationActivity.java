@@ -3,6 +3,7 @@ package com.example.polarstarproject;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,6 +14,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.health.SystemHealthManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -59,6 +62,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
+    public static Context context_R; // 다른 엑티비티에서의 접근을 위해 사용
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -73,7 +78,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private final LatLng defaultLocation = new LatLng(37.56, 126.97);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private boolean locationPermissionGranted;
+    public boolean locationPermissionGranted;
 
     private Location lastKnownLocation;
 
@@ -98,13 +103,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context_R = this;
+        setContentView(R.layout.activity_realtime_location);
 
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
-
-        setContentView(R.layout.activity_realtime_location);
 
         MapsInitializer.initialize(this);
         count = 0; //카운트 초기화
@@ -128,6 +133,17 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         mapFragment.getMapAsync(this);
 
         counterpartyLocationScheduler();
+
+        //거주지 버튼 클릭시 액티비티 전환
+        Button goSet = (Button) findViewById(R.id.goSet);
+        goSet.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(), RangeSettingActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
