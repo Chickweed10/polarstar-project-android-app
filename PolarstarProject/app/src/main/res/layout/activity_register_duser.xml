@@ -233,7 +233,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="50dp"
-                android:text="장애등급" />
+                android:text="장애 정도" />
 
             <Spinner
                 android:id="@+id/joinDrDisG"
