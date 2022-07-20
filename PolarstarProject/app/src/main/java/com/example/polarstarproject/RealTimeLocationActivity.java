@@ -2,16 +2,22 @@ package com.example.polarstarproject;
 
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.health.SystemHealthManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,9 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -49,12 +57,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,11 +97,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private static final String KEY_LOCATION = "location";
 
     Marker myMarker;
-    MarkerOptions myLocationMarker;
+    MarkerOptions myLocationMarker; //내 위치 마커
     Marker counterpartyMarker;
-    MarkerOptions counterpartyLocationMarker;
+    MarkerOptions counterpartyLocationMarker; //상대방 위치 마커
 
-    LatLng counterpartyCurPoint;
+    LatLng counterpartyCurPoint; //상대방 위치
 
     LocationManager manager;
     GPSListener gpsListener;
@@ -94,6 +110,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     String counterpartyUID = "";
     int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
     double routeLatitude, routeLongitude; //장애인 경로 저장
+
+    double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
+    double distance;
+    private final double DEFAULTDISTANCE= 1;
+    private final String DEFAULT = "DEFAULT";
+    int departureFlag,arrivalFlag = 0; //출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
+    String counterpartyName; //상대방 이름
+    Intent notificationIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +132,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         MapsInitializer.initialize(this);
         count = 0; //카운트 초기화
-
+        
+        createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
+        notificationIntent = new Intent(this, RealTimeLocationActivity.class);       // 클릭시 실행할 activity를 지정
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
@@ -360,16 +388,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void firebaseUpdateLocation(double latitude, double longitude) { //firebase에 실시간 위치 저장
-        if(classificationUserFlag == 1){
-            if(count == 0){
-                routeScheduler(); //장애인 경로 저장 함수 호출
-            }
-            count++;
-        }
-
         routeLatitude = latitude;
         routeLongitude = longitude;
 
+        Log.d(TAG,"실시간 " +user.getUid() + " 위치: " + latitude + " " + longitude);
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
         reference.child("realtimelocation").child(user.getUid()).setValue(realTimeLocation)
@@ -390,17 +412,19 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     private void routeScheduler(){ //경로 저장용 스케쥴러
         Log.d(TAG,"경로 저장용 스케쥴러 실행");
-        Timer timer = new Timer();
+        if(classificationUserFlag == 1){
+            Timer timer = new Timer();
 
-        TimerTask timerTask = new TimerTask() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void run() {
-                //10초마다 실행
-                firebaseUpdateRoute(routeLatitude, routeLongitude);
-            }
-        };
-        timer.schedule(timerTask,0,10000);
+            TimerTask timerTask = new TimerTask() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void run() {
+                    //10초마다 실행
+                    firebaseUpdateRoute(routeLatitude, routeLongitude);
+                }
+            };
+            timer.schedule(timerTask,0,10000);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -459,6 +483,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
+                    if(count == 0){
+                        routeScheduler(); //장애인 경로 저장 함수 호출
+                    }
+                    count++;
                     getOtherUID();
                 }
                 else {
@@ -599,6 +627,186 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 counterpartyLocationMarker.position(counterpartyCurPoint);
                 counterpartyMarker = map.addMarker(counterpartyLocationMarker);
             }
+
+            if(classificationUserFlag == 2){ //보호자일 경우
+                reference.child("disabled").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
+                        addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Disabled disabled = new Disabled();
+                        for(DataSnapshot ds : snapshot.getChildren()){
+                            disabled = ds.getValue(Disabled.class);
+                        }
+                        if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
+                            counterpartyName = disabled.getName();
+                            departureArrivalNotification(); //장애인 출도착 알림
+                        }
+                        else {
+                            Log.w(TAG, "상대방 이름 불러오기 오류");
+                            return;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
         }
     }
+
+    /////////////////////////////////////////장애인 집 출발&도착 알림////////////////////////////////////////
+    private void departureArrivalNotification(){
+        reference.child("disabled").child(counterpartyUID).orderByKey().equalTo("address"). //장애인 집 주소 가져오기
+                addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String address = null;
+                for(DataSnapshot ds : snapshot.getChildren()){
+                    address = ds.getValue().toString();
+                }
+                if (!snapshot.exists()) {
+                    Log.w(TAG, "장애인 집 주소 오류");
+                }
+                else { //장애인 집 주소 받아오면
+                    String finalAddress = address.substring(7);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            geoCoding(finalAddress);
+                        }
+                    }).start();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void geoCoding(String address) {
+        try{
+            BufferedReader bufferedReader;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            String query = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + URLEncoder.encode(address, "UTF-8");
+            URL url = new URL(query);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            if(conn != null) {
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", BuildConfig.CLIENT_ID);
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY", BuildConfig.CLIENT_SECRET);
+                conn.setDoInput(true);
+
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == 200) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                } else {
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                }
+
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line + "\n");
+                }
+
+                int indexFirst;
+                int indexLast;
+
+                indexFirst = stringBuilder.indexOf("\"x\":\"");
+                indexLast = stringBuilder.indexOf("\",\"y\":");
+                disabledAddressLongitude = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
+
+                indexFirst = stringBuilder.indexOf("\"y\":\"");
+                indexLast = stringBuilder.indexOf("\",\"distance\":");
+                disabledAddressLatitude = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
+
+                bufferedReader.close();
+                conn.disconnect();
+        }
+    } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //경도(longitude)가 X, 위도(latitude)가 Y
+        distance = Math.sqrt(((counterpartyCurPoint.longitude-disabledAddressLongitude)*(counterpartyCurPoint.longitude-disabledAddressLongitude))+((counterpartyCurPoint.latitude-disabledAddressLatitude)*(counterpartyCurPoint.latitude-disabledAddressLatitude)));
+
+        if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
+            if(departureFlag == 0){ //아직 출발 안했을 경우
+                if(distance*1000 > DEFAULTDISTANCE) {
+                    departureNotification(DEFAULT, 1); //출발 알림 울리기
+                    departureFlag = 1; //출발함
+                    arrivalFlag = 0; //도착 플래그 초기화
+                }
+            }
+
+            if(arrivalFlag == 0){ //아직 도착안했을 경우
+                if(departureFlag == 1){ //출발함
+                    if(distance*1000 < DEFAULTDISTANCE) {
+                        arrivalNotification(DEFAULT, 2); //도착 알림 울리기
+                        arrivalFlag = 1; //도착함
+                        departureFlag = 0; //출발 플래그 초기화
+                    }
+                }
+            }
+        }
+    }
+
+    private void createNotificationChannel(String channelId, String channelName, int importance) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId, channelName, importance));
+        }
+    }
+
+    private void departureNotification(String channelId, int id) { //출발 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 집에서 출발하였습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+    private void arrivalNotification(String channelId, int id) { //도착 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 집으로 도착하였습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+
 }
