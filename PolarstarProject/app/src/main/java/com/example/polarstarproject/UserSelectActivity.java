@@ -7,21 +7,21 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class UserSelectActivity extends AppCompatActivity{
-    //Button btNonDisU, btDisU;
+public class UserSelectActivity extends AppCompatActivity implements View.OnClickListener{
+    Button btNonDisU, btDisU;
 
-    /*@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.); //보호자, 장애인 선택 xml
+        setContentView(R.layout.activity_user_select); //보호자, 장애인 선택 xml
 
         btNonDisU = (Button) findViewById(R.id.btNonDisU); //보호자 버튼
         btDisU = (Button) findViewById(R.id.btDisU); //장애인 버튼
 
         btNonDisU.setOnClickListener(this);
         btDisU.setOnClickListener(this);
-    }*/
-    /*@Override
+    }
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btNonDisU: //보호자 버튼 클릭 시
@@ -32,5 +32,5 @@ public class UserSelectActivity extends AppCompatActivity{
                 Intent DisabledIntent = new Intent(this, DisabledRegisterActivity.class);
                 startActivity(DisabledIntent);
         }
-    }*/
+    }
 }
