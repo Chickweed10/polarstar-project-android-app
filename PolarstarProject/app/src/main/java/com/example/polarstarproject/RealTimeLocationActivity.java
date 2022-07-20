@@ -32,8 +32,10 @@ import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
+import com.example.polarstarproject.Domain.Guardian;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
+import com.example.polarstarproject.Domain.TrackingStatus;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -93,7 +95,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private final LatLng defaultLocation = new LatLng(37.56, 126.97);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public boolean locationPermissionGranted;
+    public boolean locationPermissionGranted; //위치 권한
 
     private Location lastKnownLocation;
 
@@ -254,12 +256,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             lastKnownLocation = task.getResult();
-                            if (lastKnownLocation != null) { //실시간 위치 조회 성공
+                            if (lastKnownLocation != null) { //최근 위치 조회 성공
                                 if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
-                                    firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
+                                    //firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -267,7 +269,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
-                                    firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
+                                    //firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -315,7 +317,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("MissingPermission")
-    public void realTimeDeviceLocation() {
+    public void realTimeDeviceLocation() { //실시간 위치 갱신
         try {
             Location location = null;
 
@@ -381,12 +383,20 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         }
         @Override
-        public void onProviderEnabled(String provider) {
-
+        public void onProviderEnabled(String provider) { //추적가능 시 호출
+            Log.d(TAG,"추적가능 호출");
+            if(classificationUserFlag == 1){
+                TrackingStatus trackingStatus = new TrackingStatus(0);
+                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
+            }
         }
         @Override
-        public void onProviderDisabled(String provider) { // 위치 접근불가 시 호출
-            //firebase에 특정 값 넣어서 보호자에게 추적 불가 알림 뜨게 하기
+        public void onProviderDisabled(String provider) { //추적불가 시 호출
+            Log.d(TAG,"추적불가 호출");
+            if(classificationUserFlag == 1){ //보호자에게 추적 불가 알림 뜨게 하기
+                TrackingStatus trackingStatus = new TrackingStatus(1);
+                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
+            }
         }
     }
 
@@ -405,8 +415,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private void firebaseUpdateLocation(double latitude, double longitude) { //firebase에 실시간 위치 저장
         routeLatitude = latitude;
         routeLongitude = longitude;
-
-        Log.d(TAG,"실시간 " +user.getUid() + " 위치: " + latitude + " " + longitude);
+        
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
         reference.child("realtimelocation").child(user.getUid()).setValue(realTimeLocation)
@@ -568,6 +577,15 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 }
             });
+
+            if (!locationPermissionGranted){ //위치 권한 없는 경우 보호자에게 추적 불가 알림 뜨게 하기
+                TrackingStatus trackingStatus = new TrackingStatus(1);
+                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
+            }
+            else { //위치 권한 있는 경우 상태 0으로 설정
+                TrackingStatus trackingStatus = new TrackingStatus(0);
+                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
+            }
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
             Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
@@ -655,6 +673,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
                             counterpartyName = disabled.getName();
                             departureArrivalNotification(); //장애인 출도착 알림
+                            trackingStatusCheck(); //추적불가 알림
                         }
                         else {
                             Log.w(TAG, "상대방 이름 불러오기 오류");
@@ -823,5 +842,46 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         notificationManager.notify(id, builder.build());
     }
 
+    /////////////////////////////////////////장애인 추적불가 알림////////////////////////////////////////
+    private void trackingStatusCheck() {
+        Query disabledQuery = reference.child("trackingstatus").orderByKey().equalTo(counterpartyUID); //추적불가 상태 검사
+        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                TrackingStatus trackingStatus = new TrackingStatus();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    trackingStatus = ds.getValue(TrackingStatus.class);
+                }
 
+                if(trackingStatus.getStatus() == 1){ //추적 불가 상태
+                    trackingStatusNotification(DEFAULT, 3);
+                }
+                else { //추적 가능
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void trackingStatusNotification(String channelId, int id){
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님을 추적할 수 없습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
 }
