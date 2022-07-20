@@ -32,6 +32,7 @@ import androidx.loader.content.CursorLoader;
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
+import com.example.polarstarproject.Domain.EmailVerified;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -375,14 +376,16 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
                             Disabled disabled = new Disabled(pathUri, email, password, name,
                                     phoneNumber, birth, sex, address, detailAddress, disabilityLevel);
-
                             reference.child("disabled").child(uid).setValue(disabled);
+
+                            EmailVerified emailVerified = new EmailVerified(false);
+                            reference.child("emailverified").child(uid).setValue(emailVerified); //이메일 유효성 초기화
 
                             //연결 코드 생성
                             createConnectionCode(uid);
 
                             //가입이 이루어졌을시 가입 화면을 빠져나감.
-                            Intent intent = new Intent(DisabledRegisterActivity.this, GuardianRegisterActivity.class);
+                            Intent intent = new Intent(DisabledRegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                             Toast.makeText(DisabledRegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
