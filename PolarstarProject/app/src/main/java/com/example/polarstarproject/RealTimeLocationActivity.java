@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
+import com.example.polarstarproject.Domain.EmailVerified;
 import com.example.polarstarproject.Domain.Guardian;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
@@ -164,7 +165,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         counterpartyLocationScheduler();
 
         //거주지 버튼 클릭시 액티비티 전환
-        Button goSet = (Button) findViewById(R.id.goSet);
+        /*Button goSet = (Button) findViewById(R.id.goSet);
         goSet.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -172,7 +173,27 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 Intent intent = new Intent(getApplicationContext(), RangeSettingActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
+    }
+    
+    @Override
+    protected void onStart(){ //이메일 인증 변수
+        super.onStart();
+
+        if(user.isEmailVerified()) {
+            EmailVerified emailVerified = new EmailVerified(true);
+            reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
+
+            Log.d(TAG, "메일 인증 성공");
+        }
+        else{
+            EmailVerified emailVerified = new EmailVerified(false);
+            reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
+
+            Toast.makeText(RealTimeLocationActivity.this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show(); //이메일 인증 요구 토스트 알림
+
+            Log.d(TAG, "메일 인증 실패");
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.polarstarproject;
 
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.polarstarproject.Domain.Disabled;
@@ -27,13 +29,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnClickListener{
     private DatabaseReference mDatabase;
     ImageView Profl;
     TextView DrDisG;
     EditText Name, Email, PhoneNum, Birth, Address;
-    Button Bt;
+    Button Bt, mProflBtEmailCk;
 
     private FirebaseAuth mAuth;
     private FirebaseUser user; //firebase 변수
@@ -83,7 +88,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         mDatabase.child("disabled").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Disabled user = snapshot.getValue(Disabled.class);
+                /*Disabled user = snapshot.getValue(Disabled.class);
                 Uri uri = Uri.parse("gs://polarstarproject-7034b.appspot.com/"+user.profileImage+".jpeg");
                 Toast.makeText(getApplicationContext(),"데이터"+uri, Toast.LENGTH_LONG).show();
                 Profl.setImageURI(uri);
@@ -92,7 +97,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 PhoneNum.setText("전화번호: " + user.phoneNumber);
                 Birth.setText("생년월일: " + user.birth);
                 Address.setText("주소: " + user.address + user.detailAddress);
-                DrDisG.setText("장애등급: " + user.disabilityLevel);
+                DrDisG.setText("장애등급: " + user.disabilityLevel);*/
             }
 
             @Override
@@ -100,6 +105,51 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 Toast.makeText(getApplicationContext(),"데이터를 가져오는데 실패했습니다" , Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    /////////////////////////////////////////이메일 인증////////////////////////////////////////
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        if(user.isEmailVerified()) {
+            EmailVerified emailVerified = new EmailVerified(true);
+            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
+
+            mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
+
+            Log.d(TAG, "메일 인증 성공");
+        }
+        else{
+            EmailVerified emailVerified = new EmailVerified(false);
+            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
+
+            mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
+
+            Log.d(TAG, "메일 인증 실패");
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if(user.isEmailVerified()) {
+            EmailVerified emailVerified = new EmailVerified(true);
+            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
+
+            mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
+
+            Log.d(TAG, "메일 인증 성공");
+        }
+        else{
+            EmailVerified emailVerified = new EmailVerified(false);
+            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
+
+            mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
+
+            Log.d(TAG, "메일 인증 실패");
+        }
     }
 
     private void emailVerifiedButton(){
@@ -112,37 +162,22 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void emailAuthentication(){
-        Log.d(TAG, "메일 유효성" + user.isEmailVerified());
         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()) {
-                    if(user.isEmailVerified()){ //이메일 인증 성공
-                        EmailVerified emailVerified = new EmailVerified(true);
-                        mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
+                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일을 전송하였습니다.", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "인증 메일 전송 성공");
 
-                        mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
-
-                        Toast.makeText(Myinfo_DuserActivity.this, "인증 메일 전송 완료", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "메일 인증 성공");
-                    }
-                    else {
-                        EmailVerified emailVerified = new EmailVerified(false);
-                        mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
-
-                        mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
-
-                        Toast.makeText(Myinfo_DuserActivity.this, "유효하지 않은 메일입니다.", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "메일 인증 실패");
-                    }
+                    mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
                 }
                 else {
                     EmailVerified emailVerified = new EmailVerified(false);
-                    mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
+                    mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
 
                     mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
 
-                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일 전송 실패", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일을 전송하지 못했습니다.", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "인증 메일 전송 실패");
                 }
             }
