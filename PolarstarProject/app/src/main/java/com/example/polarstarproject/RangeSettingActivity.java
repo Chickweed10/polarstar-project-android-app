@@ -1,29 +1,29 @@
 package com.example.polarstarproject;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -50,16 +50,25 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RangeSettingActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class RangeSettingActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
     private FirebaseUser user; //firebase 변수
 
-    private static final String TAG = "RealTimeLocation";
+    private static final String TAG = "RangeSetting";
     private GoogleMap map;
     private CameraPosition cameraPosition;
 
@@ -74,6 +83,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
     Marker counterpartyMarker;
     MarkerOptions counterpartyLocationMarker;
@@ -83,20 +93,36 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     public int rad = 0;
 
     LatLng counterpartyCurPoint;
+    public LatLng rPoint;
 
     LocationManager manager;
 
     Connect myConnect;
     String counterpartyUID = "";
 
+    double disabledAddressLat, disabledAddressLng; //장애인 집 주소 위도 경도
+
+    EditText rName;
+    TextView rangeAddress;
+    Button btnSet, btnAdd;
+    SeekBar seekBar;
+    TextView tvDis;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rangesetting);
 
-        Button btnSet = findViewById(R.id.btnSet);
-        SeekBar seekBar = findViewById(R.id.seekBar);
-        TextView tvDis = findViewById(R.id.tvDis);
+        rName = findViewById(R.id.rName);
+        rName.setText("집");
+        seekBar = findViewById(R.id.seekBar);
+        tvDis = findViewById(R.id.tvDis);
+        rangeAddress = findViewById(R.id.rangeAddress);
+        btnSet = findViewById(R.id.btnSet);
+        btnAdd = findViewById(R.id.btnAdd);
+
+        btnSet.setOnClickListener(this);
+        btnAdd.setOnClickListener(this);
 
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
@@ -167,7 +193,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         this.map = map;
 
         getLocationPermission(); //위치 권한 설정
-        counterpartyLocationScheduler(); //상대방 위치 띄우기
+        classificationUser(user.getUid()); //상대방 마지막 위치 띄우기
     }
 
     private void getLocationPermission() { //위치 권한 확인 및 설정
@@ -200,19 +226,6 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
-    /////////////////////////////////////////상대방 위치////////////////////////////////////////
-    private void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
-        Timer timer = new Timer();
-
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                //1초마다 실행
-                classificationUser(user.getUid());
-            }
-        };
-        timer.schedule(timerTask,0,1000);
-    }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
@@ -284,6 +297,29 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                 else {
                     counterpartyCurPoint = new LatLng(realTimeLocation.latitude, realTimeLocation.longitude);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(counterpartyCurPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
+                    Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
+                    if(counterpartyCurPoint != null){
+                        if (counterpartyLocationMarker == null) { //마커가 없었을 경우
+                            counterpartyLocationMarker = new MarkerOptions();
+                            counterpartyLocationMarker.position(counterpartyCurPoint);
+
+                            int height = 300;
+                            int width = 300;
+                            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
+                            Bitmap b=bitmapdraw.getBitmap();
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
+
+                            counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+                            Log.w(TAG, "첫 마커 위치 "+ counterpartyCurPoint);
+
+                        }
+                        else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
+                            counterpartyMarker.remove(); // 마커삭제
+                            counterpartyLocationMarker.position(counterpartyCurPoint);
+                            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+                        }
+                    }
                     return;
                 }
             }
@@ -293,27 +329,151 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
             }
         });
+    }
+    /////////////////////////////////////////////////////////////////////////////////
+    private void mapMarker() {
+        reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()). //저장명으로 접근
+                addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Range myRangeP = new Range();
+                for(DataSnapshot ds : snapshot.getChildren()){
+                    myRangeP = ds.getValue(Range.class);
+                }
+                if (!snapshot.exists()) {
+                    Log.w(TAG, "상대방 실시간 위치 오류");
+                }
+                else {
+                    counterpartyCurPoint = new LatLng(myRangeP.latitude, myRangeP.longitude);
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(counterpartyCurPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
+                    Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
+                    if(counterpartyCurPoint != null){
+                        if (counterpartyLocationMarker == null) { //마커가 없었을 경우
+                            counterpartyLocationMarker = new MarkerOptions();
+                            counterpartyLocationMarker.position(counterpartyCurPoint);
 
-        if(counterpartyCurPoint != null){
-            if (counterpartyLocationMarker == null) { //마커가 없었을 경우
-                counterpartyLocationMarker = new MarkerOptions();
-                counterpartyLocationMarker.position(counterpartyCurPoint);
+                            int height = 300;
+                            int width = 300;
+                            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
+                            Bitmap b=bitmapdraw.getBitmap();
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
 
-                int height = 300;
-                int width = 300;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
+                            counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+                            Log.w(TAG, "첫 마커 위치 "+ counterpartyCurPoint);
 
-                counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+                        }
+                        else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
+                            counterpartyMarker.remove(); // 마커삭제
+                            counterpartyLocationMarker.position(counterpartyCurPoint);
+                            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+                        }
+                    }
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
-            else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
-                counterpartyMarker.remove(); // 마커삭제
-                counterpartyLocationMarker.position(counterpartyCurPoint);
-                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+        });
+    }
+    /////////////////////////////////////////////////////////////////////////////////////
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호
+            if (resultCode == RESULT_OK) {
+                String data = intent.getExtras().getString("data");
+                if(data != null) {
+                    rangeAddress.setText(data);
+                    new Thread(() -> {
+                        geoC(data.substring(7));
+                        //여기서 파이어베이스에 저장하고
+                        Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
+                        Log.w(TAG, "로그: "+ disabledAddressLat+disabledAddressLng+rad);
+                        reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange);
+                    }).start();
+                    mapMarker();
+                    //설정범위 이탈 알림 생성``
+                }
             }
         }
+    }
+
+    public void geoC(String address) { //주소를 위도 경도로 바꿔줌
+        try {
+            BufferedReader bufferedReader;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            String query = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + URLEncoder.encode(address, "UTF-8");
+            URL url = new URL(query);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            if (conn != null) {
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", BuildConfig.CLIENT_ID);
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY", BuildConfig.CLIENT_SECRET);
+                conn.setDoInput(true);
+
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == 200) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                } else {
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                }
+
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line + "\n");
+                }
+
+                int indexFirst;
+                int indexLast;
+
+                indexFirst = stringBuilder.indexOf("\"x\":\"");
+                indexLast = stringBuilder.indexOf("\",\"y\":");
+                disabledAddressLng = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
+
+                indexFirst = stringBuilder.indexOf("\"y\":\"");
+                indexLast = stringBuilder.indexOf("\",\"distance\":");
+                disabledAddressLat = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
+
+                bufferedReader.close();
+                conn.disconnect();
+                rPoint = new LatLng(disabledAddressLng, disabledAddressLat);
+            }
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnAdd: //우편번호 검색
+                Intent i = new Intent(RangeSettingActivity.this, WebViewActivity.class);
+                startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
+                break;
+
+            case R.id.btnSet:
+                Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
+                reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange);
+
+                break;
+        }
+
     }
 }
