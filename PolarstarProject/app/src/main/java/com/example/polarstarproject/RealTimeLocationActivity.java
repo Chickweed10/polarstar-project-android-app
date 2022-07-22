@@ -2,6 +2,7 @@ package com.example.polarstarproject;
 
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -18,6 +19,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -88,13 +90,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private FirebaseUser user; //firebase 변수
 
     private static final String TAG = "RealTimeLocation";
-    private GoogleMap map;
+    public GoogleMap map;
     private CameraPosition cameraPosition;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private final LatLng defaultLocation = new LatLng(37.56, 126.97);
-    private static final int DEFAULT_ZOOM = 15;
+    public static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public boolean locationPermissionGranted; //위치 권한
 
@@ -110,8 +112,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     LatLng counterpartyCurPoint; //상대방 위치
 
-    LocationManager manager;
-    GPSListener gpsListener;
+    public LocationManager manager;
+    public GPSListener gpsListener;
 
     Connect myConnect;
     String counterpartyUID = "";
@@ -175,11 +177,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         });*/
     }
-    
+
+    /////////////////////////////////////////안드로이드 생명주기////////////////////////////////////////
     @Override
-    protected void onStart(){ //이메일 인증 변수
+    protected void onStart(){ //Activity가 사용자에게 보여지면
         super.onStart();
 
+        //이메일 유효성 검사
         if(user.isEmailVerified()) {
             EmailVerified emailVerified = new EmailVerified(true);
             reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
@@ -197,6 +201,28 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     @Override
+    protected void onResume(){ //Activity가 사용자와 상호작용하면
+        super.onResume();
+
+        stopLocationService(); //백그라운드 서비스 종료
+    }
+
+    @Override
+    protected void onPause(){ //Activity가 잠시 멈추면
+        super.onPause();
+
+        startLocationService(); //백그라운드 서비스 실행
+    }
+
+    @Override
+    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
+        super.onStop();
+
+        startLocationService(); //백그라운드 서비스 실행
+    }
+
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) { //활동 일시중지 시, 상태저장
         if (map != null) {
             outState.putParcelable(KEY_CAMERA_POSITION, map.getCameraPosition());
@@ -205,6 +231,73 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         super.onSaveInstanceState(outState);
     }
 
+    /////////////////////////////////////////백그라운드 서비스////////////////////////////////////////
+    private boolean isLocationServiceRunning() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager != null) {
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                if (LocationService.class.getName().equals(service.service.getClassName())) {
+                    if (service.foreground) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private void startLocationService() { //서비스 실행
+        if (!isLocationServiceRunning()) {
+            Intent intent = new Intent(getApplicationContext(), LocationService.class);
+            intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
+            startService(intent);
+            Toast.makeText(this, "Location service started", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopLocationService() { //서비스 종료
+        if (isLocationServiceRunning()) {
+            Intent intent = new Intent(getApplicationContext(), LocationService.class);
+            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
+            startService(intent);
+            Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void realTimeDeviceLocationBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 실시간 위치 갱신
+        firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
+    }
+
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
+    public void firebaseUpdateRouteBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 firebase에 경로용 위치 저장
+        LocalTime localTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String nowTime = localTime.format(formatter); //현재 시간 구하기
+
+        Route route = new Route(nowTime, latitude,longitude);
+
+        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
+        String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        reference.child("route").child(user.getUid()).child(nowDate).child(nowTime).setValue(route)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        Log.d(TAG,"firebase 경로용 위치 저장 실패");
+                    }
+                });
+    }*/
+
+
+    /////////////////////////////////////////지도 초기 설정////////////////////////////////////////
     @Override
     public void onMapReady(GoogleMap map) { //첫 시작 시, map 준비
         this.map = map;
@@ -237,6 +330,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
+                startLocationService();
             }
         }
         else {
@@ -244,6 +338,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
         updateLocationUI();
     }
+
 
     @SuppressLint("MissingPermission")
     private void updateLocationUI() { //권한에 따른 UI 내 위치 이동 버튼 업데이트
@@ -354,7 +449,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     LatLng curPoint = new LatLng(latitude, longitude);
 
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
-                    firebaseUpdateLocation(latitude, longitude); //firebase 실시간 위치 저장
+                    firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
                     showCurrentLocation(latitude, longitude);
                 }
 
@@ -369,7 +464,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     LatLng curPoint = new LatLng(latitude, longitude);
 
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
-                    firebaseUpdateLocation(latitude, longitude); //firebase 실시간 위치 저장
+                    firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
                     showCurrentLocation(latitude,longitude);
                 }
 
@@ -395,7 +490,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             double longitude = location.getLongitude();
             LatLng curPoint = new LatLng(latitude, longitude);
 
-            firebaseUpdateLocation(latitude, longitude); //firebase 실시간 위치 저장
+            firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
             showMyLocationMarker(curPoint);
         }
 
@@ -407,7 +502,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         public void onProviderEnabled(String provider) { //추적가능 시 호출
             Log.d(TAG,"추적가능 호출");
             if(classificationUserFlag == 1){
-                TrackingStatus trackingStatus = new TrackingStatus(0);
+                TrackingStatus trackingStatus = new TrackingStatus(true);
                 reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
             }
         }
@@ -415,7 +510,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         public void onProviderDisabled(String provider) { //추적불가 시 호출
             Log.d(TAG,"추적불가 호출");
             if(classificationUserFlag == 1){ //보호자에게 추적 불가 알림 뜨게 하기
-                TrackingStatus trackingStatus = new TrackingStatus(1);
+                TrackingStatus trackingStatus = new TrackingStatus(false);
                 reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
             }
         }
@@ -433,7 +528,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
 
-    private void firebaseUpdateLocation(double latitude, double longitude) { //firebase에 실시간 위치 저장
+    private void firebaseUpdateLocation(FirebaseUser user, double latitude, double longitude) { //firebase에 실시간 위치 저장
         routeLatitude = latitude;
         routeLongitude = longitude;
         
@@ -464,16 +559,16 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void run() {
-                    //10초마다 실행
-                    firebaseUpdateRoute(routeLatitude, routeLongitude);
+                    //2초마다 실행
+                    firebaseUpdateRoute(user, routeLatitude, routeLongitude);
                 }
             };
-            timer.schedule(timerTask,0,10000);
+            timer.schedule(timerTask,0,3000);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void firebaseUpdateRoute(double latitude, double longitude) { //firebase에 경로용 위치 저장
+    public void firebaseUpdateRoute(FirebaseUser user, double latitude, double longitude) { //firebase에 경로용 위치 저장
         LocalTime localTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String nowTime = localTime.format(formatter); //현재 시간 구하기
@@ -568,8 +663,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
-
-
     }
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
@@ -600,11 +693,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             });
 
             if (!locationPermissionGranted){ //위치 권한 없는 경우 보호자에게 추적 불가 알림 뜨게 하기
-                TrackingStatus trackingStatus = new TrackingStatus(1);
+                TrackingStatus trackingStatus = new TrackingStatus(false);
                 reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
             }
-            else { //위치 권한 있는 경우 상태 0으로 설정
-                TrackingStatus trackingStatus = new TrackingStatus(0);
+            else { //위치 권한 있는 경우
+                TrackingStatus trackingStatus = new TrackingStatus(true);
                 reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
             }
         }
@@ -874,7 +967,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     trackingStatus = ds.getValue(TrackingStatus.class);
                 }
 
-                if(trackingStatus.getStatus() == 1){ //추적 불가 상태
+                if(!trackingStatus.getStatus()){ //추적 불가 상태
                     trackingStatusNotification(DEFAULT, 3);
                 }
                 else { //추적 가능
