@@ -44,6 +44,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
     String findMyCode = null; //내 코드값
 
+    Timer timer;
+    TimerTask timerTask;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,9 +199,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
     /////////////////////////////////////////연결 여부 확인 후 화면 넘어가기////////////////////////////////////////
     private void skipScreen(){
-        Timer timer = new Timer();
+        timer = new Timer();
 
-        TimerTask timerTask = new TimerTask() {
+        timerTask = new TimerTask() {
             @Override
             public void run() {
                 //1초마다 실행
@@ -221,6 +224,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
                     if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){
                         //매칭 시 화면을 빠져나감.
+                        timer.cancel();
+                        timerTask.cancel(); //타이머 종료
+                        
                         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
@@ -248,6 +254,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
                     if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){
                         //매칭 시 화면을 빠져나감.
+                        timer.cancel();
+                        timerTask.cancel(); //타이머 종료
+
                         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();

@@ -2,6 +2,7 @@ package com.example.polarstarproject;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -33,6 +34,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
 import com.example.polarstarproject.Domain.Guardian;
@@ -117,14 +119,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     Connect myConnect;
     String counterpartyUID = "";
-    int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
+    public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
     double routeLatitude, routeLongitude; //장애인 경로 저장
 
-    double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
-    double distance;
-    private final double DEFAULTDISTANCE= 1;
+    public double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
+    public double distance; //거리
+    private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
-    int departureFlag,arrivalFlag = 0; //출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
+    public boolean departureFlag, arrivalFlag = false; //출발, 도착 플래그
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
 
@@ -143,8 +145,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         count = 0; //카운트 초기화
         
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
-        notificationIntent = new Intent(this, RealTimeLocationActivity.class);       // 클릭시 실행할 activity를 지정
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        setNotificationIntent();
         
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -176,6 +177,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 startActivity(intent);
             }
         });*/
+    }
+
+    public void setNotificationIntent(){
+        notificationIntent = new Intent(RealTimeLocationActivity.this, RealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
     }
 
     /////////////////////////////////////////안드로이드 생명주기////////////////////////////////////////
@@ -210,6 +216,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     @Override
     protected void onPause(){ //Activity가 잠시 멈추면
         super.onPause();
+
 
         startLocationService(); //백그라운드 서비스 실행
     }
@@ -377,7 +384,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
-                                    //firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
+                                    firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -385,7 +392,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
-                                    //firebaseUpdateLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
+                                    firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -449,6 +456,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     LatLng curPoint = new LatLng(latitude, longitude);
 
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
+                    Log.w(TAG, "GPS_PROVIDER: " + latitude + " " + longitude);
                     firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
                     showCurrentLocation(latitude, longitude);
                 }
@@ -464,6 +472,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     LatLng curPoint = new LatLng(latitude, longitude);
 
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
+                    Log.w(TAG, "NETWORK_PROVIDER: " + latitude + " " + longitude);
                     firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
                     showCurrentLocation(latitude,longitude);
                 }
@@ -490,6 +499,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             double longitude = location.getLongitude();
             LatLng curPoint = new LatLng(latitude, longitude);
 
+            Log.w(TAG, "GPSListener: " + latitude + " " + longitude);
             firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
             showMyLocationMarker(curPoint);
         }
@@ -534,6 +544,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
+        Log.w(TAG, "firebaseUpdate: " + latitude + " " + longitude);
         reference.child("realtimelocation").child(user.getUid()).setValue(realTimeLocation)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -563,7 +574,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     firebaseUpdateRoute(user, routeLatitude, routeLongitude);
                 }
             };
-            timer.schedule(timerTask,0,3000);
+            timer.schedule(timerTask,0,2000);
         }
     }
 
@@ -607,7 +618,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 classificationUser(user.getUid());
             }
         };
-        timer.schedule(timerTask,0,1000);
+        timer.schedule(timerTask,0,2000);
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
@@ -805,7 +816,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     /////////////////////////////////////////장애인 집 출발&도착 알림////////////////////////////////////////
-    private void departureArrivalNotification(){
+    public void departureArrivalNotification(){
         reference.child("disabled").child(counterpartyUID).orderByKey().equalTo("address"). //장애인 집 주소 가져오기
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -889,73 +900,58 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             e.printStackTrace();
         }
 
+        departureArrivalCheck(); //출도착 판단
+    }
+
+    public void departureArrivalCheck(){ //출발 도착 판단 후 알림
+        Query query = reference.child("departurearrivalstatus").orderByKey().equalTo(counterpartyUID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    departureArrivalStatus = ds.getValue(DepartureArrivalStatus.class);
+                }
+
+                if(departureArrivalStatus != null){
+                    departureFlag = departureArrivalStatus.departureStatus;
+                    arrivalFlag = departureArrivalStatus.arrivalStatus; //값 집어넣기
+                }
+                else { //추적 가능
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         //경도(longitude)가 X, 위도(latitude)가 Y
         distance = Math.sqrt(((counterpartyCurPoint.longitude-disabledAddressLongitude)*(counterpartyCurPoint.longitude-disabledAddressLongitude))+((counterpartyCurPoint.latitude-disabledAddressLatitude)*(counterpartyCurPoint.latitude-disabledAddressLatitude)));
 
         if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
-            if(departureFlag == 0){ //아직 출발 안했을 경우
+            if(!departureFlag){ //아직 출발 안했을 경우
                 if(distance*1000 > DEFAULTDISTANCE) {
                     departureNotification(DEFAULT, 1); //출발 알림 울리기
-                    departureFlag = 1; //출발함
-                    arrivalFlag = 0; //도착 플래그 초기화
+                    DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
+                    reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
                 }
             }
 
-            if(arrivalFlag == 0){ //아직 도착안했을 경우
-                if(departureFlag == 1){ //출발함
+            if(!arrivalFlag){ //아직 도착안했을 경우
+                if(departureFlag){ //출발함
                     if(distance*1000 < DEFAULTDISTANCE) {
                         arrivalNotification(DEFAULT, 2); //도착 알림 울리기
-                        arrivalFlag = 1; //도착함
-                        departureFlag = 0; //출발 플래그 초기화
+                        DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
+                        reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
                     }
                 }
             }
         }
     }
-
-    private void createNotificationChannel(String channelId, String channelName, int importance) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(new NotificationChannel(channelId, channelName, importance));
-        }
-    }
-
-    private void departureNotification(String channelId, int id) { //출발 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
-                .setContentTitle("북극성")
-                .setContentText(counterpartyName + "님이 집에서 출발하였습니다.")
-                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
-                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
-                //.setTimeoutAfter(1000)
-                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-
-        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(id, builder.build());
-    }
-
-    private void arrivalNotification(String channelId, int id) { //도착 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
-                .setContentTitle("북극성")
-                .setContentText(counterpartyName + "님이 집으로 도착하였습니다.")
-                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
-                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
-                //.setTimeoutAfter(1000)
-                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-
-        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(id, builder.build());
-    }
-
+    
     /////////////////////////////////////////장애인 추적불가 알림////////////////////////////////////////
     private void trackingStatusCheck() {
         Query disabledQuery = reference.child("trackingstatus").orderByKey().equalTo(counterpartyUID); //추적불가 상태 검사
@@ -981,7 +977,52 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         });
     }
-    private void trackingStatusNotification(String channelId, int id){
+    
+    /////////////////////////////////////////알림////////////////////////////////////////
+    public void createNotificationChannel(String channelId, String channelName, int importance) { //알림 초기화
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId, channelName, importance));
+        }
+    }
+
+    public void departureNotification(String channelId, int id) { //출발 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.profileimage) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 집에서 출발하였습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+    public void arrivalNotification(String channelId, int id) { //도착 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.profileimage) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 집으로 도착하였습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+    private void trackingStatusNotification(String channelId, int id){ //추적 불가 알림
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)

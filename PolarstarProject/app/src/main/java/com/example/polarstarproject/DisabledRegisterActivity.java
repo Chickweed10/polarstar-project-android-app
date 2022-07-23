@@ -31,6 +31,7 @@ import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -380,6 +381,9 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
                             EmailVerified emailVerified = new EmailVerified(false);
                             reference.child("emailverified").child(uid).setValue(emailVerified); //이메일 유효성 초기화
+
+                            DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, false);
+                            reference.child("departurearrivalstatus").child(uid).setValue(departureArrivalStatus); //출도착 플래그 초기화
 
                             //연결 코드 생성
                             createConnectionCode(uid);
