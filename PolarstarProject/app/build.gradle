@@ -4,6 +4,10 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
+//선언 및 키 값 불러오기
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
@@ -15,6 +19,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        
+        //네이버 API 키 값
+        buildConfigField "String", "CLIENT_ID", properties['client_id']
+        buildConfigField "String", "CLIENT_SECRET", properties['client_secret']
     }
 
     buildTypes {
@@ -29,7 +37,7 @@ android {
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:30.1.0')
+    implementation platform('com.google.firebase:firebase-bom:30.2.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-database:20.0.5'
     implementation 'com.google.firebase:firebase-auth'
@@ -45,6 +53,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.libraries.places:places:2.6.0'
+
+    //이메일 인증
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.+'

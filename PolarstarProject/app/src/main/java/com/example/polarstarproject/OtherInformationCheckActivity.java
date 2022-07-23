@@ -40,7 +40,7 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
 
         //UI 변수 선언
 
-        otherInformationCheck();
+        classificationUser(user.getUid());
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
@@ -54,8 +54,9 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null){
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
+                    getOtherUID();
                 }
                 else {
 
@@ -77,8 +78,9 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null){
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 2;
+                    getOtherUID();
                 }
                 else {
                     Log.w(TAG, "본인 확인 오류");
@@ -93,22 +95,18 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
     }
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
-    private void getOtherUID(FirebaseUser user){
-        classificationUser(user.getUid());
-
+    private void getOtherUID(){
         if(classificationUserFlag == 1) { //내가 장애인이고, 상대방이 보호자일 경우
             Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         counterpartyUID = ds.getKey();
                     }
 
-                    if(counterpartyUID != null){
-
-
+                    if(counterpartyUID != null && !counterpartyUID.isEmpty()){
+                        otherInformationCheck(); //상대방 정보 가져오기
                     }
                     else {
                         Toast.makeText(OtherInformationCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
@@ -131,9 +129,8 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                         counterpartyUID = ds.getKey();
                     }
 
-                    if(counterpartyUID != null){
-
-
+                    if(counterpartyUID != null && !counterpartyUID.isEmpty()){
+                        otherInformationCheck(); //상대방 정보 가져오기
                     }
                     else {
                         Toast.makeText(OtherInformationCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
@@ -154,8 +151,6 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
 
     /////////////////////////////////////////상대방 정보 가져오기////////////////////////////////////////
     private void otherInformationCheck(){
-        getOtherUID(user);
-
         if(classificationUserFlag == 1){ //내가 장애인일 경우 보호자 정보 띄움
             Query guardianQuery = reference.child("guardian").orderByKey().equalTo(counterpartyUID); //보호자 테이블 조회
             guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -14,6 +14,7 @@
     <!-- 위치 권한 권한 허용 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -55,7 +56,7 @@
             android:value="AIzaSyAYY9Vq7F0gn7BsCj65Rzx4oDahqxso8BI" />
 
         <activity
-            android:name="com.example.polarstarproject.MainActivity"
+            android:name="com.example.polarstarproject.LoginActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -63,7 +64,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.polarstarproject.LoginActivity" />
         <activity android:name="com.example.polarstarproject.UserSelectActivity" />
         <activity android:name="com.example.polarstarproject.DisabledRegisterActivity" />
         <activity android:name="com.example.polarstarproject.GuardianRegisterActivity" />
@@ -74,7 +74,12 @@
         <activity android:name="com.example.polarstarproject.RouteActivity" />
         <activity android:name="com.example.polarstarproject.Myinfo_DuserActivity" />
         <activity android:name="com.example.polarstarproject.OtherInformationCheckActivity" />
+        <activity android:name="com.example.polarstarproject.RangeSettingActivity" />
 
+        <service
+            android:name="com.example.polarstarproject.LocationService"
+            android:enabled="true"
+            android:exported="false" />
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"
             android:directBootAware="true"
@@ -142,6 +147,21 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!--
+            Service handling Google Sign-In user revocation. For apps that do not integrate with
+            Google Sign-In, this service will never be started.
+        -->
+        <service
+            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+            android:exported="true"
+            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+            android:visibleToInstantApps="true" />
 
         <provider
             android:name="com.google.firebase.provider.FirebaseInitProvider"
