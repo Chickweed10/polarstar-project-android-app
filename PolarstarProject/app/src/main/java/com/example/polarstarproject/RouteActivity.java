@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.app.DatePickerDialog; //달력
+import android.widget.DatePicker; //달력
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -38,6 +40,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.text.SimpleDateFormat; //달력
+import java.util.Calendar; //달력
+import java.util.Locale; //달력
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener{
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -68,9 +73,22 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         MapsInitializer.initialize(this);
 
+        // SupportMapFragment을 통해 레이아웃에 만든 fragment의 ID를 참조하고 구글맵을 호출한다.
         SupportMapFragment mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        /////////////////////////////////////////달력///////////////////////////////////
+        EditText et_Date = (EditText) findViewById(R.id.Date);
+        Calendar cal = Calendar.getInstance();
+        et_Date.setText(cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.get(Calendar.DATE));
+        // Calendar cal~ et_Date.setText, 날짜를 출력하는 EditText에 오늘 날짜 설정.
+        et_Date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(RouteActivity.this, mDatePicker, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -188,4 +206,49 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 getOtherUID(); //매칭 장애인 경로 가져오기
                 break;*/
     }
-}
+
+    //////////////////////////////////////// 달력 ///////////////////////////////////
+
+        Calendar mCalendar = Calendar.getInstance();
+
+        DatePickerDialog.OnDateSetListener mDatePicker = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+                mCalendar.set(Calendar.YEAR, year);
+                mCalendar.set(Calendar.MONTH, month);
+                mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+
+            }
+        };
+
+
+
+        public void mOnClick_DatePick(View view) {
+            // DatePicker가 처음 떴을 때, 오늘 날짜가 보이도록 설정.
+            Calendar cal = Calendar.getInstance();
+            new DatePickerDialog(this, mDateSet, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show();
+        }
+
+        private void updateLabel() {
+            String myFormat = "yyyy/MM/dd";    // 출력형식   1900/12/31
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.KOREA);
+
+            EditText et_date = (EditText) findViewById(R.id.Date);
+            et_date.setText(sdf.format(mCalendar.getTime()));
+        }
+
+        DatePickerDialog.OnDateSetListener mDateSet =
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int yy, int mm, int dd) {
+                        // DatePicker에서 선택한 날짜를 EditText에 설정
+                        TextView tv = findViewById(R.id.Date);
+                        tv.setText(String.format("%d-%d-%d", yy, mm + 1, dd));
+                    }
+                };
+    }
+
+
+
