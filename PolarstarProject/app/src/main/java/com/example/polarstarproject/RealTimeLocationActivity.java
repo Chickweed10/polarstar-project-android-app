@@ -12,14 +12,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,7 +32,7 @@ import androidx.core.content.ContextCompat;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
-import com.example.polarstarproject.Domain.Guardian;
+import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
 import com.example.polarstarproject.Domain.TrackingStatus;
@@ -77,7 +74,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -124,7 +120,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     double distance;
     private final double DEFAULTDISTANCE= 1;
     private final String DEFAULT = "DEFAULT";
-    int departureFlag,arrivalFlag = 0; //출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
+    int departureFlag,arrivalFlag,inFlag,outFlag = 0; //출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
 
@@ -167,7 +163,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         counterpartyLocationScheduler();
 
         //거주지 버튼 클릭시 액티비티 전환
-        /*Button goSet = (Button) findViewById(R.id.goSet);
+        Button goSet = (Button) findViewById(R.id.goSet);
         goSet.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -175,7 +171,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 Intent intent = new Intent(getApplicationContext(), RangeSettingActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
     }
 
     /////////////////////////////////////////안드로이드 생명주기////////////////////////////////////////
@@ -775,7 +771,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 counterpartyMarker = map.addMarker(counterpartyLocationMarker);
             }
 
-            if(classificationUserFlag == 2){ //보호자일 경우
+            if(classificationUserFlag == 2){ //보호자일 경우 //////////////////////////////장애인 위치 실시간으로 가져오는데
                 reference.child("disabled").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
                         addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -788,6 +784,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             counterpartyName = disabled.getName();
                             departureArrivalNotification(); //장애인 출도착 알림
                             trackingStatusCheck(); //추적불가 알림
+                            alertNotification();
                         }
                         else {
                             Log.w(TAG, "상대방 이름 불러오기 오류");
@@ -894,7 +891,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
             if(departureFlag == 0){ //아직 출발 안했을 경우
-                if(distance*1000 > DEFAULTDISTANCE) {
+                if(distance*1000 > DEFAULTDISTANCE) { //1000곱하면 단위가 미터임
                     departureNotification(DEFAULT, 1); //출발 알림 울리기
                     departureFlag = 1; //출발함
                     arrivalFlag = 0; //도착 플래그 초기화
@@ -910,6 +907,56 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     }
                 }
             }
+        }
+    }
+
+    ////거리계산해서 벗어나면 알림 항수 호출하는 메소드 만들기
+    private void alertNotification(){
+        if(reference.child("range").child(user.getUid()).orderByKey().equalTo("보호구역") != null){
+            reference.child("range").child(user.getUid()).orderByKey().equalTo("보호구역"). //장애인 집 주소 가져오기
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Range myRangeP = new Range();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        myRangeP = ds.getValue(Range.class);
+                    }
+                    if (!snapshot.exists()) {
+                        Log.w(TAG, "보호구역 가져오기 오류");
+                    }
+                    else { //장애인 집 주소 받아오면
+                        double sDis = myRangeP.distance;
+                        //경도(longitude)가 X, 위도(latitude)가 Y
+                        //double nDis = Math.sqrt(((counterpartyCurPoint.longitude-myRangeP.longitude)*(counterpartyCurPoint.longitude-myRangeP.longitude))+((counterpartyCurPoint.latitude-myRangeP.latitude)*(counterpartyCurPoint.latitude-myRangeP.latitude)));
+                        double nDis = cDistance(counterpartyCurPoint.latitude, counterpartyCurPoint.longitude, myRangeP.latitude, myRangeP.longitude);
+                        Log.w(TAG, "현재거리: " + nDis + "세팅거리: "+sDis);
+
+                        if(myRangeP.latitude != 0.0 && myRangeP.longitude != 0.0){
+                            if(outFlag == 0) { //아직 이탈 안했을 경우
+                                if (nDis > sDis) { //1000곱하면 단위가 미터임
+                                    outNotification(DEFAULT, 3);//이탈 알림 울리기
+                                    outFlag = 1; //이탈함
+                                    inFlag = 0; //돌어감 플래그 초기화
+                                }
+                            }
+                            if(inFlag == 0){ //아직 안 돌아간 경우
+                                if(outFlag == 1){ //출발함
+                                    if(nDis < sDis) {
+                                        inNotification(DEFAULT, 4); //도착 알림 울리기
+                                        inFlag = 1; //돌아감
+                                        outFlag = 0; //출발 플래그 초기화
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
     }
 
@@ -946,6 +993,41 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 집으로 도착하였습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+    ////범위 이탈 알림 만들기
+    private void outNotification(String channelId, int id) { //이탈 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 보호구역을 벗어났습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+    private void inNotification(String channelId, int id) { //돌아옴 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 보호구역에 들어왔습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
                 .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
                 //.setTimeoutAfter(1000)
@@ -997,5 +1079,23 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(id, builder.build());
+    }
+    // 두 좌표 사이의 거리 계산 함수
+    private static double cDistance(double lat1, double lon1, double lat2, double lon2){
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1))* Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2))*Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60*1.1515*1609.344;
+
+        return dist; //단위 meter
+    }
+    //10진수를 radian(라디안)으로 변환
+    private static double deg2rad(double deg){
+        return (deg * Math.PI/180.0);
+    }
+    //radian(라디안)을 10진수로 변환
+    private static double rad2deg(double rad){
+        return (rad * 180 / Math.PI);
     }
 }
