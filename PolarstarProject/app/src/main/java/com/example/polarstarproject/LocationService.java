@@ -21,11 +21,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.RealTimeLocation;
+import com.example.polarstarproject.Domain.TrackingStatus;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -342,18 +344,22 @@ public class LocationService extends Service {
         if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
             if(!departureFlag){ //아직 출발 안했을 경우
                 if(distance*1000 > DEFAULTDISTANCE) {
-                    departureNotification(DEFAULT, 1); //출발 알림 울리기
-                    DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
-                    reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                    if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965) {
+                        departureNotification(DEFAULT, 1); //출발 알림 울리기
+                        DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
+                        reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                    }
                 }
             }
 
             if(!arrivalFlag){ //아직 도착안했을 경우
                 if(departureFlag){ //출발함
                     if(distance*1000 < DEFAULTDISTANCE) {
-                        arrivalNotification(DEFAULT, 2); //도착 알림 울리기
-                        DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
-                        reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                        if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965) {
+                            arrivalNotification(DEFAULT, 2); //도착 알림 울리기
+                            DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
+                            reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                        }
                     }
                 }
             }
