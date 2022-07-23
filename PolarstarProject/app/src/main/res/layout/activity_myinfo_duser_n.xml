@@ -214,6 +214,18 @@
                 android:layout_marginTop="20dp"
                 android:text="프로필 수정" />
 
+            <Button
+                android:id="@+id/mProflBtLinkDisConnectN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="#00ff0000"
+                android:textColor="#700000"
+                android:text="이어진 사람과 연결 끊기" />
+
+            
+
         </LinearLayout>
     </ScrollView>
 
