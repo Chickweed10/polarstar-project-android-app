@@ -102,7 +102,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
     double disabledAddressLat, disabledAddressLng; //장애인 집 주소 위도 경도
 
-    EditText rName;
+    TextView rName;
     TextView rangeAddress;
     Button btnSet, btnAdd;
     SeekBar seekBar;
@@ -114,7 +114,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         setContentView(R.layout.activity_rangesetting);
 
         rName = findViewById(R.id.rName);
-        rName.setText("집");
+        rName.setText("보호구역");
         seekBar = findViewById(R.id.seekBar);
         tvDis = findViewById(R.id.tvDis);
         rangeAddress = findViewById(R.id.rangeAddress);
@@ -174,6 +174,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                reference.child("range").child(user.getUid()).child(rName.getText().toString()).child("distance").setValue(rad);
 
             }
         });
@@ -330,54 +331,64 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             }
         });
     }
-    /////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////검색한 주소지로 이동한 마커/////////////////////////////////////////////
     private void mapMarker() {
-        reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()). //저장명으로 접근
-                addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Range myRangeP = new Range();
-                for(DataSnapshot ds : snapshot.getChildren()){
-                    myRangeP = ds.getValue(Range.class);
-                }
-                if (!snapshot.exists()) {
-                    Log.w(TAG, "상대방 실시간 위치 오류");
-                }
-                else {
-                    counterpartyCurPoint = new LatLng(myRangeP.latitude, myRangeP.longitude);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(counterpartyCurPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
-                    Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
-                    if(counterpartyCurPoint != null){
-                        if (counterpartyLocationMarker == null) { //마커가 없었을 경우
-                            counterpartyLocationMarker = new MarkerOptions();
-                            counterpartyLocationMarker.position(counterpartyCurPoint);
-
-                            int height = 300;
-                            int width = 300;
-                            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
-                            Bitmap b=bitmapdraw.getBitmap();
-                            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
-
-                            counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
-                            Log.w(TAG, "첫 마커 위치 "+ counterpartyCurPoint);
-
-                        }
-                        else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
-                            counterpartyMarker.remove(); // 마커삭제
-                            counterpartyLocationMarker.position(counterpartyCurPoint);
-                            counterpartyMarker = map.addMarker(counterpartyLocationMarker);
-                        }
+        if(reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()) != null){
+            reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()). //저장명으로 접근
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Range myRangeP = new Range();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        myRangeP = ds.getValue(Range.class);
                     }
-                    return;
+                    if (!snapshot.exists()) {
+                        Log.w(TAG, "상대방 실시간 위치 오류");
+                    } else {
+                        counterpartyCurPoint = new LatLng(myRangeP.latitude, myRangeP.longitude);
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(counterpartyCurPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
+                        Log.w(TAG, "카메라 위치 " + counterpartyCurPoint);
+                        if (counterpartyCurPoint != null) {
+                            if (counterpartyLocationMarker == null) { //마커가 없었을 경우
+                                counterpartyLocationMarker = new MarkerOptions();
+                                counterpartyLocationMarker.position(counterpartyCurPoint);
+
+                                int height = 300;
+                                int width = 300;
+                                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable((R.drawable.other_gps));
+                                Bitmap b = bitmapdraw.getBitmap();
+                                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
+
+                                counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+                                Log.w(TAG, "첫 마커 위치 " + counterpartyCurPoint);
+
+                            } else if (counterpartyLocationMarker != null) { //마커가 존재했던 경우
+                                counterpartyMarker.remove(); // 마커삭제
+                                counterpartyLocationMarker.position(counterpartyCurPoint);
+                                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+
+                                //cir.radius(0);
+                                if(counterpartyCir != null){ //이미 존재했던 경우
+                                    counterpartyCir.remove();
+                                }
+                                cir = new CircleOptions().center(counterpartyCurPoint) //원점
+                                        .radius(myRangeP.getDis()) //반지름 단위 = 미터
+                                        .strokeWidth(0f) //선너비 0f=선없음
+                                        .fillColor(Color.parseColor("#880000ff")); //배경색
+                                counterpartyCir = map.addCircle(cir);
+                            }
+                        }
+                        return;
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }
     }
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -396,9 +407,9 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                         Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
                         Log.w(TAG, "로그: "+ disabledAddressLat+disabledAddressLng+rad);
                         reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange);
+                        // 밑 메소드 뺴고 카메라 이동해보기
+                        mapMarker();
                     }).start();
-                    mapMarker();
-                    //설정범위 이탈 알림 생성``
                 }
             }
         }
@@ -447,7 +458,6 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
                 bufferedReader.close();
                 conn.disconnect();
-                rPoint = new LatLng(disabledAddressLng, disabledAddressLat);
             }
         } catch (ProtocolException e) {
             e.printStackTrace();

@@ -19,4 +19,5 @@ public class Range { //범위 설정
 
     public double getLat() {return latitude;}
     public double getLug() {return longitude;}
+    public int getDis() {return distance;}
 }

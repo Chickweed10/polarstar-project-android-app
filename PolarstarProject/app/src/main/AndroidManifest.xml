@@ -22,6 +22,10 @@
         android:roundIcon="@drawable/polaris_roughly"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolarstarProject">
+        
+        <activity
+            android:name=".DatePickerActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -60,4 +64,3 @@
     </application>
 
 </manifest>
-

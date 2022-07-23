@@ -21,6 +21,6 @@ tools:context=".RealTimeLocationActivity">
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:layout_alignParentBottom="true"
-        android:text="거주지 등록하기" />
+        android:text="보호구역 등록하기" />
 
 </LinearLayout>
