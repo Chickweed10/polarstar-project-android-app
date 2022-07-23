@@ -13,7 +13,7 @@
         android:layout_weight="0.5"
         android:orientation="horizontal">
 
-        <EditText
+        <TextView
             android:id="@+id/rName"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginEnd="0dp"
             android:ems="10"
-            android:hint="장소명" />
+            android:hint="보호구역" />
 
         <TextView
             android:id="@+id/rangeAddress"

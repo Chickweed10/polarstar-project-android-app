@@ -102,7 +102,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
     double disabledAddressLat, disabledAddressLng; //장애인 집 주소 위도 경도
 
-    EditText rName;
+    TextView rName;
     TextView rangeAddress;
     Button btnSet, btnAdd;
     SeekBar seekBar;
@@ -114,7 +114,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         setContentView(R.layout.activity_rangesetting);
 
         rName = findViewById(R.id.rName);
-        rName.setText("집");
+        rName.setText("보호구역");
         seekBar = findViewById(R.id.seekBar);
         tvDis = findViewById(R.id.tvDis);
         rangeAddress = findViewById(R.id.rangeAddress);
@@ -369,6 +369,9 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                                 counterpartyMarker = map.addMarker(counterpartyLocationMarker);
 
                                 //cir.radius(0);
+                                if(counterpartyCir != null){ //이미 존재했던 경우
+                                    counterpartyCir.remove();
+                                }
                                 cir = new CircleOptions().center(counterpartyCurPoint) //원점
                                         .radius(myRangeP.getDis()) //반지름 단위 = 미터
                                         .strokeWidth(0f) //선너비 0f=선없음
