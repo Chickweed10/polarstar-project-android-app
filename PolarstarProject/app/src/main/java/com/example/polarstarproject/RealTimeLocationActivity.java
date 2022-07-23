@@ -1,6 +1,7 @@
 package com.example.polarstarproject;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -124,8 +125,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private final String DEFAULT = "DEFAULT";
     public boolean departureFlag, arrivalFlag = false; //출발, 도착 플래그
 
-    int inFlag,outFlag = 0; //출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
+    int inFlag,outFlag = 0; //범위 출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
 
+    int permissionFlag = 0; //위치 권한 플래그
+    
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
 
@@ -275,34 +278,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
     }
 
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
-    public void firebaseUpdateRouteBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 firebase에 경로용 위치 저장
-        LocalTime localTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String nowTime = localTime.format(formatter); //현재 시간 구하기
-
-        Route route = new Route(nowTime, latitude,longitude);
-
-        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
-        String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        reference.child("route").child(user.getUid()).child(nowDate).child(nowTime).setValue(route)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Write failed
-                        Log.d(TAG,"firebase 경로용 위치 저장 실패");
-                    }
-                });
-    }*/
-
-
     /////////////////////////////////////////지도 초기 설정////////////////////////////////////////
     @Override
     public void onMapReady(GoogleMap map) { //첫 시작 시, map 준비
@@ -383,7 +358,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
-                                    firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
+                                    //firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -391,7 +366,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                     LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
 
-                                    firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
+                                    //firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
                                     defaultMyMarker(curPoint); //초기 마커 설정
                                     realTimeDeviceLocation(); //실시간 위치 추적 시작
                                 }
@@ -508,20 +483,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         }
         @Override
-        public void onProviderEnabled(String provider) { //추적가능 시 호출
-            Log.d(TAG,"추적가능 호출");
-            if(classificationUserFlag == 1){
-                TrackingStatus trackingStatus = new TrackingStatus(true);
-                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
-            }
+        public void onProviderEnabled(String provider) {
+
         }
         @Override
-        public void onProviderDisabled(String provider) { //추적불가 시 호출
-            Log.d(TAG,"추적불가 호출");
-            if(classificationUserFlag == 1){ //보호자에게 추적 불가 알림 뜨게 하기
-                TrackingStatus trackingStatus = new TrackingStatus(false);
-                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
-            }
+        public void onProviderDisabled(String provider) {
+
         }
     }
 
@@ -638,7 +605,18 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     }
                     count++;
                     getOtherUID();
+
+                    if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { //위치 권한 없는 경우
+                        TrackingStatus trackingStatus = new TrackingStatus(false);
+                        reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
+                    }
+
+                    else {
+                        TrackingStatus trackingStatus = new TrackingStatus(true); //위치 권한 있는 경우
+                        reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
+                    }
                 }
+                
                 else {
 
                 }
@@ -701,15 +679,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 }
             });
-
-            if (!locationPermissionGranted){ //위치 권한 없는 경우 보호자에게 추적 불가 알림 뜨게 하기
-                TrackingStatus trackingStatus = new TrackingStatus(false);
-                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
-            }
-            else { //위치 권한 있는 경우
-                TrackingStatus trackingStatus = new TrackingStatus(true);
-                reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
-            }
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
             Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
@@ -934,18 +903,22 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
             if(!departureFlag){ //아직 출발 안했을 경우
                 if(distance*1000 > DEFAULTDISTANCE) { //1000곱하면 단위가 미터임
-                    departureNotification(DEFAULT, 1); //출발 알림 울리기
-                    DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
-                    reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                    if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
+                        departureNotification(DEFAULT, 1); //출발 알림 울리기
+                        DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
+                        reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                    }
                 }
             }
 
             if(!arrivalFlag){ //아직 도착안했을 경우
                 if(departureFlag){ //출발함
                     if(distance*1000 < DEFAULTDISTANCE) {
-                        arrivalNotification(DEFAULT, 2); //도착 알림 울리기
-                        DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
-                        reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                        if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
+                            arrivalNotification(DEFAULT, 2); //도착 알림 울리기
+                            DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
+                            reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                        }
                     }
                 }
             }
@@ -964,10 +937,16 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
 
                 if(!trackingStatus.getStatus()){ //추적 불가 상태
-                    trackingStatusNotification(DEFAULT, 3);
+                    if(permissionFlag == 0){
+                        trackingImpossibleNotification(DEFAULT, 3);
+                        permissionFlag = 1;
+                    }
                 }
                 else { //추적 가능
-
+                    if(permissionFlag == 1){
+                        trackingPossibleNotification(DEFAULT, 4);
+                        permissionFlag = 0;
+                    }
                 }
             }
 
@@ -1002,17 +981,21 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         if(myRangeP.latitude != 0.0 && myRangeP.longitude != 0.0){
                             if(outFlag == 0) { //아직 이탈 안했을 경우
                                 if (nDis > sDis) { //1000곱하면 단위가 미터임
-                                    outNotification(DEFAULT, 3);//이탈 알림 울리기
-                                    outFlag = 1; //이탈함
-                                    inFlag = 0; //돌어감 플래그 초기화
+                                    if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965) {
+                                        outNotification(DEFAULT, 3);//이탈 알림 울리기
+                                        outFlag = 1; //이탈함
+                                        inFlag = 0; //돌어감 플래그 초기화
+                                    }
                                 }
                             }
                             if(inFlag == 0){ //아직 안 돌아간 경우
                                 if(outFlag == 1){ //출발함
                                     if(nDis < sDis) {
-                                        inNotification(DEFAULT, 4); //도착 알림 울리기
-                                        inFlag = 1; //돌아감
-                                        outFlag = 0; //출발 플래그 초기화
+                                        if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965) {
+                                            inNotification(DEFAULT, 4); //도착 알림 울리기
+                                            inFlag = 1; //돌아감
+                                            outFlag = 0; //출발 플래그 초기화
+                                        }
                                     }
                                 }
                             }
@@ -1028,7 +1011,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
     
-/////////////////////////////////////////알림////////////////////////////////////////
+    /////////////////////////////////////////알림////////////////////////////////////////
     public void createNotificationChannel(String channelId, String channelName, int importance) { //알림 초기화
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -1107,14 +1090,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         notificationManager.notify(id, builder.build());
     }
 
-    private void trackingStatusNotification(String channelId, int id){ //추적 불가 알림
+    private void trackingImpossibleNotification(String channelId, int id){ //추적 불가 알림
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
                 .setContentTitle("북극성")
-                .setContentText(counterpartyName + "님을 추적할 수 없습니다.")
+                .setContentText(counterpartyName + "님이 위치(GPS) 사용을 중단했습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
                 .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
                 //.setTimeoutAfter(1000)
@@ -1124,6 +1107,26 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(id, builder.build());
     }
+
+    private void trackingPossibleNotification(String channelId, int id){ //추적 가능 알림
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setContentTitle("북극성")
+                .setContentText(counterpartyName + "님이 위치(GPS) 사용을 허용했습니다.")
+                .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
+                .setAutoCancel(true)                // true이면 클릭시 알림이 삭제된다
+                //.setTimeoutAfter(1000)
+                //.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+    /////////////////////////////////////////범위 설정 거리 계산////////////////////////////////////////
     // 두 좌표 사이의 거리 계산 함수
     private static double cDistance(double lat1, double lon1, double lat2, double lon2){
         double theta = lon1 - lon2;

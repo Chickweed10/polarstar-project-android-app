@@ -1,16 +1,21 @@
 package com.example.polarstarproject;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.app.DatePickerDialog; //달력
+import android.view.ViewGroup;
 import android.widget.DatePicker; //달력
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,12 +44,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat; //달력
 import java.util.Calendar; //달력
+import java.util.Date;
 import java.util.Locale; //달력
 
-public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener{
+public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -61,6 +68,10 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     Connect myConnect;
     String counterpartyUID;
 
+    LinearLayout container;
+    Button datePickCc;
+    int year, month, day;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +79,15 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        container = (LinearLayout) findViewById(R.id.container);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //inflater.inflate(R.layout.activity_date_picker, container, true);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_date_picker, container, false);
+
+        datePickCc = (Button) rootView.findViewById(R.id.datePickCc);
+        datePickCc.setOnClickListener(this);
 
         arrayPoints = new ArrayList<>();
 
@@ -103,30 +123,29 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
-    private void getOtherUID(){
+    private void getOtherUID() {
         Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
         guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 myConnect = new Connect();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                if (myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()) {
                     Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
                     query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자와 매칭된 장애인 uid 가져오기
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
                                 counterpartyUID = ds.getKey();
                             }
 
-                            if(counterpartyUID != null && !counterpartyUID.isEmpty()){
-                                disabledRoute();
-                            }
-                            else {
+                            if (counterpartyUID != null && !counterpartyUID.isEmpty()) {
+                                //disabledRoute();
+                            } else {
                                 Toast.makeText(RouteActivity.this, "오류", Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "상대방 인적사항 확인 오류");
                             }
@@ -137,8 +156,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
                         }
                     });
-                }
-                else {
+                } else {
                     Log.w(TAG, "내 인적사항 확인 오류");
                 }
             }
@@ -151,8 +169,22 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     /////////////////////////////////////////경로 그리기////////////////////////////////////////
-    private void disabledRoute(){
-        Query routeQuery = reference.child("route").child(counterpartyUID).orderByKey().equalTo("2022-07-19");
+    private void disabledRoute(int year, int month, int day) {
+        Date date = null;
+
+        String dateString = String.format("%d-%d-%d", year, month + 1, day);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-d");
+        try {
+            date = formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateResult = transFormat.format(date);
+
+        Log.w(TAG, "실행 " + dateResult);
+        Query routeQuery = reference.child("route").child(counterpartyUID).orderByKey().equalTo(dateResult);
         routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -181,7 +213,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         });
     }
 
-    private void drawPolyline(){
+    private void drawPolyline() {
         int size = arrayPoints.size() / 2;
         LatLng routeLocation = new LatLng(arrayPoints.get(size).latitude, arrayPoints.get(size).longitude);
 
@@ -198,57 +230,57 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         map.addPolyline(polylineOptions);
     }
 
-
     @Override
     public void onClick(View v) {
-        /*switch (v.getId()) {
-            case R.id.: //날짜 버튼 클릭
-                getOtherUID(); //매칭 장애인 경로 가져오기
-                break;*/
+        switch (v.getId()) {
+            case R.id.datePickCc: //날짜 버튼 클릭
+                Log.w(TAG, "실행");
+                disabledRoute(year, month, day); //매칭 장애인 경로 가져오기
+                break;
+        }
     }
 
     //////////////////////////////////////// 달력 ///////////////////////////////////
+    Calendar mCalendar = Calendar.getInstance();
 
-        Calendar mCalendar = Calendar.getInstance();
+    DatePickerDialog.OnDateSetListener mDatePicker = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            mCalendar.set(Calendar.YEAR, year);
+            mCalendar.set(Calendar.MONTH, month);
+            mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateLabel();
 
-        DatePickerDialog.OnDateSetListener mDatePicker = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-                mCalendar.set(Calendar.YEAR, year);
-                mCalendar.set(Calendar.MONTH, month);
-                mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
-
-            }
-        };
-
-
-
-        public void mOnClick_DatePick(View view) {
-            // DatePicker가 처음 떴을 때, 오늘 날짜가 보이도록 설정.
-            Calendar cal = Calendar.getInstance();
-            new DatePickerDialog(this, mDateSet, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show();
         }
+    };
 
-        private void updateLabel() {
-            String myFormat = "yyyy/MM/dd";    // 출력형식   1900/12/31
-            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.KOREA);
-
-            EditText et_date = (EditText) findViewById(R.id.Date);
-            et_date.setText(sdf.format(mCalendar.getTime()));
-        }
-
-        DatePickerDialog.OnDateSetListener mDateSet =
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int yy, int mm, int dd) {
-                        // DatePicker에서 선택한 날짜를 EditText에 설정
-                        TextView tv = findViewById(R.id.Date);
-                        tv.setText(String.format("%d-%d-%d", yy, mm + 1, dd));
-                    }
-                };
+    public void mOnClick_DatePick(View view) {
+        // DatePicker가 처음 떴을 때, 오늘 날짜가 보이도록 설정.
+        Calendar cal = Calendar.getInstance();
+        new DatePickerDialog(this, mDateSet, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show();
     }
+
+    private void updateLabel() {
+        String myFormat = "yyyy/MM/dd";    // 출력형식   1900/12/31
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.KOREA);
+
+        EditText et_date = (EditText) findViewById(R.id.Date);
+        et_date.setText(sdf.format(mCalendar.getTime()));
+    }
+
+    DatePickerDialog.OnDateSetListener mDateSet =
+            new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker datePicker, int yy, int mm, int dd) {
+                    // DatePicker에서 선택한 날짜를 EditText에 설정
+                    TextView tv = findViewById(R.id.Date);
+                    tv.setText(String.format("%d-%d-%d", yy, mm + 1, dd));
+                    year = yy;
+                    month = mm;
+                    day = dd;
+                }
+    };
+}
 
 
 
