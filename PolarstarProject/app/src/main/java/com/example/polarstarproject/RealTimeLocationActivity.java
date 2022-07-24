@@ -35,6 +35,7 @@ import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
+import com.example.polarstarproject.Domain.InOutStatus;
 import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
@@ -123,9 +124,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
-    public boolean departureFlag, arrivalFlag = false; //출발, 도착 플래그
-
-    int inFlag,outFlag = 0; //범위 출발, 도착 플래그 (0: 기본값, 1: 출발, 도착)
+    public boolean departureFlag, arrivalFlag, inFlag, outFlag = false; //출발, 도착, 복귀, 이탈 플래그
 
     int permissionFlag = 0; //위치 권한 플래그
     
@@ -172,11 +171,25 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         //거주지 버튼 클릭시 액티비티 전환
         Button goSet = (Button) findViewById(R.id.goSet);
         goSet.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(getApplicationContext(), RangeSettingActivity.class);
                 startActivity(intent);
+            }
+        });
+        Button goMyInfo = (Button) findViewById(R.id.goMyInfo);
+        goMyInfo.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(classificationUserFlag==1){
+                    Intent intent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
+                    startActivity(intent);
+                }
+                if(classificationUserFlag==2){
+                    Intent intent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
+                    startActivity(intent);
+                }
+
             }
         });
     }
@@ -769,7 +782,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             counterpartyName = disabled.getName();
                             departureArrivalNotification(); //장애인 출도착 알림
                             trackingStatusCheck(); //추적불가 알림
-                            alertNotification();
+                            inOutCheck(); // 복귀이탈 알림
                         }
                         else {
                             Log.w(TAG, "상대방 이름 불러오기 오류");
@@ -958,7 +971,32 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         });
     }
-    
+    public void inOutCheck(){ //출발 도착 판단 후 알림
+        Query query = reference.child("inoutstatus").orderByKey().equalTo(counterpartyUID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                InOutStatus inOutStatus = new InOutStatus();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    inOutStatus = ds.getValue(InOutStatus.class);
+                }
+
+                if(inOutStatus != null){
+                    outFlag = inOutStatus.outStatus;
+                    inFlag = inOutStatus.inStatus; //값 집어넣기
+                }
+                else { //추적 가능
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        alertNotification();
+    }
     ////거리계산해서 벗어나면 알림 항수 호출하는 메소드 만들기
     private void alertNotification(){
         if(reference.child("range").child(user.getUid()).orderByKey().equalTo("보호구역") != null){
@@ -981,23 +1019,19 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         Log.w(TAG, "현재거리: " + nDis + "세팅거리: "+sDis);
 
                         if(myRangeP.latitude != 0.0 && myRangeP.longitude != 0.0){
-                            if(outFlag == 0) { //아직 이탈 안했을 경우
+                            if(!outFlag) { //아직 이탈 안했을 경우
                                 if (nDis > sDis) { //1000곱하면 단위가 미터임
-                                    if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965) {
-                                        outNotification(DEFAULT, 3);//이탈 알림 울리기
-                                        outFlag = 1; //이탈함
-                                        inFlag = 0; //돌어감 플래그 초기화
-                                    }
+                                    outNotification(DEFAULT, 3);//이탈 알림 울리기
+                                    InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
+                                    reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
                                 }
                             }
-                            if(inFlag == 0){ //아직 안 돌아간 경우
-                                if(outFlag == 1){ //출발함
+                            if(outFlag){ //아직 안 돌아간 경우
+                                if(outFlag){ //출발함
                                     if(nDis < sDis) {
-                                        if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965) {
-                                            inNotification(DEFAULT, 4); //도착 알림 울리기
-                                            inFlag = 1; //돌아감
-                                            outFlag = 0; //출발 플래그 초기화
-                                        }
+                                        inNotification(DEFAULT, 4); //도착 알림 울리기
+                                        InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
+                                        reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
                                     }
                                 }
                             }

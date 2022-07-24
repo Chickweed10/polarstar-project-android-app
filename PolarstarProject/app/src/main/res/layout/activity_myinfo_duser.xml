@@ -280,7 +280,7 @@
                         android:id="@+id/mProflBtGenderM"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
+                        android:layout_marginStart="20dp"
                         android:text="남" />
 
                     <RadioButton
@@ -316,7 +316,6 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="50dp"
                     android:entries="@array/test">
-
                 </Spinner>
             </LinearLayout>
 
@@ -332,4 +331,3 @@
     </ScrollView>
 
 </LinearLayout>
-

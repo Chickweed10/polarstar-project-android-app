@@ -9,16 +9,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
+import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,42 +31,40 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-
-public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnClickListener{
+public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.OnClickListener{
     private DatabaseReference mDatabase;
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address;
-    Button Bt, mProflBtEmailCk, mProflBtLinkDisConnect;
-    String sex,  cSex, cDrDisG;
-    Spinner DrDisG;
+    Button Bt, mProflBtEmailCkN, mProflBtLinkDisConnect;
+    String sex,  cSex;
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;
 
     private FirebaseAuth mAuth;
     private FirebaseUser user; //firebase 변수
-    String myUid;
+    String mynUid;
 
-    private static final String TAG = "MyinfoDuser";
+    private static final String TAG = "MyinfonDuser";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_myinfo_duser);
+        setContentView(R.layout.activity_myinfo_duser_n);
 
         mDatabase = FirebaseDatabase.getInstance().getReference(); //DatabaseReference의 인스턴스
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
         Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
-        Name = (EditText) findViewById(R.id.mProflName); //이름
-        Email = (EditText) findViewById(R.id.mProflEmail); //이메일
-        PhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //전화번호
-        Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
-        Address = (EditText) findViewById(R.id.mProflAddress); //주소
-        mProflBtGenderF = findViewById( R.id.mProflBtGenderF);
-        mProflBtGenderM = findViewById( R.id.mProflBtGenderM);
-        rdgGroup = findViewById( R.id.mProflBtGender );
+        Name = (EditText) findViewById(R.id.mProflNameN); //이름
+        Email = (EditText) findViewById(R.id.mProflEmailN); //이메일
+        PhoneNum = (EditText) findViewById(R.id.mProflPhoneNumN); //전화번호
+        Birth = (EditText) findViewById(R.id.mProflBirthN); //생년월일
+        Address = (EditText) findViewById(R.id.mProflAddressN); //주소
+        mProflBtGenderF = findViewById( R.id.mProflBtGenderFN);
+        mProflBtGenderM = findViewById( R.id.mProflBtGenderMN);
+        rdgGroup = findViewById( R.id.mProflBtGenderN );
 
         rdgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -78,32 +74,28 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-        //RadioButton rdoButton = findViewById( rdgGroup.getCheckedRadioButtonId() );
-        //String sex = rdoButton.getText().toString();
-
-        DrDisG = (Spinner)findViewById(R.id.mProflDrDisG); //장애정도 (pre.장애등급)
-        Bt = (Button) findViewById(R.id.mProflBtEdit); //프로필 수정
+        Bt = (Button) findViewById(R.id.mProflBtEditN); //프로필 수정
         Bt.setOnClickListener(this);
 
-        mProflBtEmailCk = (Button) findViewById(R.id.mProflBtEmailCk); //이메일 인증
-        mProflBtEmailCk.setOnClickListener(this);
+        mProflBtEmailCkN = (Button) findViewById(R.id.mProflBtEmailCkN); //이메일 인증
+        mProflBtEmailCkN.setOnClickListener(this);
 
-        mProflBtLinkDisConnect = (Button) findViewById(R.id.mProflBtLinkDisConnect);
+        mProflBtLinkDisConnect = (Button) findViewById(R.id.mProflBtLinkDisConnectN);
 
         emailVerifiedButton();
 
-        user = FirebaseAuth.getInstance().getCurrentUser(); //현재 로그인한 유저
-        myUid = user.getUid(); // 이 유저 uid 가져오기
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //현재 로그인한 유저
+        mynUid = user.getUid(); // 이 유저 uid 가져오기
 
-        FirebaseStorage storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
+        FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference myPro = storageRef.child("profile").child(myUid);
+        StorageReference myPro = storageRef.child("profile").child(mynUid);
         if (myPro != null) {
             myPro.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
                     //이미지 로드 성공시
-                    Glide.with(Myinfo_DuserActivity.this).load(uri).into(Profl);
+                    Glide.with(Myinfo_Duser_nActivity.this).load(uri).into(Profl);
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -114,15 +106,18 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 }
             });
         }
-        readUser(myUid);
+        readUser(mynUid);
     }
 
     private void readUser(String uid) {
         //데이터 읽기
-        mDatabase.child("disabled").child(uid).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("guardian").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Disabled user = snapshot.getValue(Disabled.class);
+                Guardian user = snapshot.getValue(Guardian.class);
+                //Uri uri = Uri.parse("gs://polarstarproject-7034b.appspot.com/"+user.profileImage+".jpeg");
+                //Toast.makeText(getApplicationContext(),"데이터"+uri, Toast.LENGTH_LONG).show();
+                //Profl.setImageURI(uri);
                 Name.setText(user.name);
                 Email.setText(user.email);
                 PhoneNum.setText(user.phoneNumber);
@@ -131,22 +126,12 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 //스피너 라디오 버튼 세팅 가져오기
                 cSex = user.sex;
                 Log.w(TAG, "성별: "+ cSex);
-                cDrDisG = user.disabilityLevel;
-                Log.w(TAG, "정도: "+ cDrDisG);
                 if(cSex.equals("여")) {
                     mProflBtGenderF.setChecked(true);
                 }
                 else {
                     mProflBtGenderM.setChecked(true);
                 }Log.w(TAG, "선택: "+ mProflBtGenderF.isChecked());
-
-                if(cDrDisG.equals("경증")) {
-                    DrDisG.setSelection(1);
-                }
-                else {
-                    DrDisG.setSelection(0);
-                }Log.w(TAG, "선택: "+ DrDisG);
-
             }
 
             @Override
@@ -165,7 +150,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             EmailVerified emailVerified = new EmailVerified(true);
             mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
 
-            mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
+            mProflBtEmailCkN.setEnabled(false); //이메일 인증 버튼 비활성화
 
             Log.d(TAG, "메일 인증 성공");
         }
@@ -173,7 +158,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             EmailVerified emailVerified = new EmailVerified(false);
             mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
 
-            mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
+            mProflBtEmailCkN.setEnabled(true); //이메일 인증 버튼 활성화
 
             Log.d(TAG, "메일 인증 실패");
         }
@@ -187,7 +172,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             EmailVerified emailVerified = new EmailVerified(true);
             mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
 
-            mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
+            mProflBtEmailCkN.setEnabled(false); //이메일 인증 버튼 비활성화
 
             Log.d(TAG, "메일 인증 성공");
         }
@@ -195,7 +180,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             EmailVerified emailVerified = new EmailVerified(false);
             mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
 
-            mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
+            mProflBtEmailCkN.setEnabled(true); //이메일 인증 버튼 활성화
 
             Log.d(TAG, "메일 인증 실패");
         }
@@ -203,10 +188,10 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
     private void emailVerifiedButton(){
         if(user.isEmailVerified()){
-            mProflBtEmailCk.setEnabled(false);
+            mProflBtEmailCkN.setEnabled(false);
         }
         else{
-            mProflBtEmailCk.setEnabled(true);
+            mProflBtEmailCkN.setEnabled(true);
         }
     }
 
@@ -215,18 +200,18 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()) {
-                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일을 전송하였습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Myinfo_Duser_nActivity.this, "인증 메일을 전송하였습니다.", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "인증 메일 전송 성공");
 
-                    mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
+                    mProflBtEmailCkN.setEnabled(false); //이메일 인증 버튼 비활성화
                 }
                 else {
                     EmailVerified emailVerified = new EmailVerified(false);
                     mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
 
-                    mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
+                    mProflBtEmailCkN.setEnabled(true); //이메일 인증 버튼 활성화
 
-                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일을 전송하지 못했습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Myinfo_Duser_nActivity.this, "인증 메일을 전송하지 못했습니다.", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "인증 메일 전송 실패");
                 }
             }
@@ -236,17 +221,16 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.mProflBtEmailCk: //이메일 인증 버튼 클릭 시
+            case R.id.mProflBtEmailCkN: //이메일 인증 버튼 클릭
                 emailAuthentication(); //이메일 인증 함수 호출
                 break;
-            case R.id.mProflBtEdit: //수정 버튼 클릭 시 저장
-                mDatabase.child("disabled").child(myUid).child("name").setValue(Name.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("email").setValue(Email.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("address").setValue(Address.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("birth").setValue(Birth.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("sex").setValue(sex);
-                mDatabase.child("disabled").child(myUid).child("disabilityLevel").setValue(DrDisG.getSelectedItem().toString());
+            case R.id.mProflBtEditN: //수정 버튼 클릭 시 저장
+                mDatabase.child("guardian").child(mynUid).child("name").setValue(Name.getText().toString());
+                mDatabase.child("guardian").child(mynUid).child("email").setValue(Email.getText().toString());
+                mDatabase.child("guardian").child(mynUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
+                mDatabase.child("guardian").child(mynUid).child("address").setValue(Address.getText().toString());
+                mDatabase.child("guardian").child(mynUid).child("birth").setValue(Birth.getText().toString());
+                mDatabase.child("guardian").child(mynUid).child("sex").setValue(sex);
                 break;
         }
     }

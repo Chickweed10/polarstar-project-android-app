@@ -53,6 +53,7 @@
         <activity android:name=".RealTimeLocationActivity" />
         <activity android:name=".RouteActivity" />
         <activity android:name=".Myinfo_DuserActivity" />
+        <activity android:name=".Myinfo_Duser_nActivity" />
         <activity android:name=".OtherInformationCheckActivity" />
         <activity android:name=".RangeSettingActivity" />
 

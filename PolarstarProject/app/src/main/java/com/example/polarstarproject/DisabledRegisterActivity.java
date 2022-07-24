@@ -34,6 +34,7 @@ import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
+import com.example.polarstarproject.Domain.InOutStatus;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -391,6 +392,9 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
                             DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, false);
                             reference.child("departurearrivalstatus").child(uid).setValue(departureArrivalStatus); //출도착 플래그 초기화
+
+                            InOutStatus inOutStatus = new InOutStatus(false, false);
+                            reference.child("inoutstatus").child(uid).setValue(inOutStatus); //복귀이탈 플래그 초기화
 
                             //연결 코드 생성
                             createConnectionCode(uid);
