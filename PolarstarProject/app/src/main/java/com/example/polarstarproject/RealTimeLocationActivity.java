@@ -177,21 +177,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 startActivity(intent);
             }
         });
-        Button goMyInfo = (Button) findViewById(R.id.goMyInfo);
-        goMyInfo.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                if(classificationUserFlag==1){
-                    Intent intent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
-                    startActivity(intent);
-                }
-                if(classificationUserFlag==2){
-                    Intent intent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
-                    startActivity(intent);
-                }
-
-            }
-        });
     }
 
     public void setNotificationIntent(){
