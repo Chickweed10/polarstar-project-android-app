@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="내정보" />
 
@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="상대정보" />
     </TableRow>
@@ -43,7 +43,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="위치기록" />
 
@@ -53,7 +53,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="안심존 내역" />
     </TableRow>
@@ -69,7 +69,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="무드트래커" />
 
@@ -79,7 +79,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="지도 확인하기" />
     </TableRow>
@@ -95,7 +95,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:background="@drawable/edge_basic_color"
+            android:background="@drawable/border_color"
             android:textSize="20dp"
             android:text="설정" />
     </TableRow>
