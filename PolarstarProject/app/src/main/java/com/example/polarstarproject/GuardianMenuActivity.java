@@ -122,11 +122,11 @@ public class GuardianMenuActivity extends AppCompatActivity implements View.OnCl
                 finish();
                 break;
 
-            /*case R.id.menuBtSettingsN:
+            case R.id.menuBtSettingsN:
                 Intent intentSettings = new Intent(GuardianMenuActivity.this, MenuSettingActivity.class);
                 startActivity(intentSettings);
                 finish();
-                break;*/
+                break;
         }
     }
 }

@@ -87,6 +87,22 @@ public class LoginActivity extends AppCompatActivity {
         mEmailText.setText(setId);
         mPasswordText.setText(setPassword);
 
+        if(setId!=null && setPassword!=null) {
+            firebaseAuth.signInWithEmailAndPassword(setId, setPassword)
+                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                skipScreen(connectCheckFlag); //화면 넘어가기
+                                Toast.makeText(LoginActivity.this,
+                                        "로그인 성공",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+        }
+
         //로그인 버튼이 눌리면
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
