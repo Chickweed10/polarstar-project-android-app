@@ -546,29 +546,31 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void firebaseUpdateRoute(FirebaseUser user, double latitude, double longitude) { //firebase에 경로용 위치 저장
-        LocalTime localTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String nowTime = localTime.format(formatter); //현재 시간 구하기
+        if(latitude != 0 && longitude != 0){
+            LocalTime localTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            String nowTime = localTime.format(formatter); //현재 시간 구하기
 
-        Route route = new Route(nowTime, latitude,longitude);
+            Route route = new Route(nowTime, latitude,longitude);
 
-        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
-        String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
+            String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        reference.child("route").child(user.getUid()).child(nowDate).child(nowTime).setValue(route)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
+            reference.child("route").child(user.getUid()).child(nowDate).child(nowTime).setValue(route)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
 
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Write failed
-                        Log.d(TAG,"firebase 경로용 위치 저장 실패");
-                    }
-                });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            Log.d(TAG,"firebase 경로용 위치 저장 실패");
+                        }
+                    });
+        }
     }
 
 

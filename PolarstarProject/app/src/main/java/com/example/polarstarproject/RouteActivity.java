@@ -33,6 +33,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CustomCap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,7 +52,7 @@ import java.util.Calendar; //달력
 import java.util.Date;
 import java.util.Locale; //달력
 
-public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
+public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -68,9 +69,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     Connect myConnect;
     String counterpartyUID;
 
-    LinearLayout container;
-    Button datePickCc;
-    int year, month, day;
+    PolylineOptions polylineOptions = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,15 +78,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-
-        container = (LinearLayout) findViewById(R.id.container);
-
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //inflater.inflate(R.layout.activity_date_picker, container, true);
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_date_picker, container, false);
-
-        datePickCc = (Button) rootView.findViewById(R.id.datePickCc);
-        datePickCc.setOnClickListener(this);
 
         arrayPoints = new ArrayList<>();
 
@@ -183,7 +173,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateResult = transFormat.format(date);
 
-        Log.w(TAG, "실행 " + dateResult);
         Query routeQuery = reference.child("route").child(counterpartyUID).orderByKey().equalTo(dateResult);
         routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -214,30 +203,21 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void drawPolyline() {
-        int size = arrayPoints.size() / 2;
-        LatLng routeLocation = new LatLng(arrayPoints.get(size).latitude, arrayPoints.get(size).longitude);
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for(int i=0; i<arrayPoints.size(); i++){
+            builder.include(arrayPoints.get(i));
+        }
+        LatLngBounds bounds = builder.build();
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150));
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(routeLocation, 12));
-        //경로 그려진 구역에 카메라 포커싱 잡아보기
-
-        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.RED);
         polylineOptions.width(8);
         polylineOptions.addAll(arrayPoints);
         polylineOptions.startCap(new RoundCap());
-        polylineOptions.endCap(new CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.ic_arrow), 150));
+        polylineOptions.endCap(new CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.ic_arrow), 200));
 
         map.addPolyline(polylineOptions);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.datePickCc: //날짜 버튼 클릭
-                Log.w(TAG, "실행");
-                disabledRoute(year, month, day); //매칭 장애인 경로 가져오기
-                break;
-        }
     }
 
     //////////////////////////////////////// 달력 ///////////////////////////////////
@@ -250,7 +230,11 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             mCalendar.set(Calendar.MONTH, month);
             mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             updateLabel();
-
+            
+            arrayPoints.clear();
+            map.clear(); //맵 경로 초기화
+            
+            disabledRoute(year, month, dayOfMonth);
         }
     };
 
@@ -275,9 +259,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     // DatePicker에서 선택한 날짜를 EditText에 설정
                     TextView tv = findViewById(R.id.Date);
                     tv.setText(String.format("%d-%d-%d", yy, mm + 1, dd));
-                    year = yy;
-                    month = mm;
-                    day = dd;
                 }
     };
 }

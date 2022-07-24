@@ -48,6 +48,10 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/Theme.PolarstarProject" >
+        <activity
+            android:name="com.example.polarstarproject.DatePickerActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

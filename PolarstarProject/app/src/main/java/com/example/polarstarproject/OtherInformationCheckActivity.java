@@ -3,6 +3,12 @@ package com.example.polarstarproject;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +26,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class OtherInformationCheckActivity  extends AppCompatActivity{
+    ImageView Profl;
+    EditText mProflName, mProflPhoneNum, mProflEmail, mProflAddress, mProflBirth;
+    RadioGroup mProflBtGender;
+
+    Spinner mProflDrDisG;
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -33,12 +45,22 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connect);
+        setContentView(R.layout.activity_myinfo_duser);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        //UI 변수 선언
+        Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
+
+        mProflName = (EditText) findViewById(R.id.mProflName); //이름
+        mProflPhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //핸드폰번호
+        mProflEmail = (EditText) findViewById(R.id.mProflEmail); //이메일
+        mProflAddress = (EditText) findViewById(R.id.mProflAddress); //주소
+        mProflBirth = (EditText) findViewById(R.id.mProflBirth); //생년월일
+
+        mProflBtGender = findViewById(R.id.joinBtGenderN); //성별
+
+        mProflDrDisG = (Spinner)findViewById(R.id.mProflDrDisG); //장애등급
 
         classificationUser(user.getUid());
     }
@@ -162,7 +184,12 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                     }
 
                     if(guardian != null){
-                        //화면에 상대방 정보 띄우기
+                        mProflName.setText(guardian.name);
+                        mProflPhoneNum.setText(guardian.phoneNumber);
+                        mProflEmail.setText(guardian.email);
+                        mProflAddress.setText(guardian.address + " " + guardian.detailAddress);
+                        mProflBirth.setText(guardian.birth);
+
                     }
                     else {
                         Toast.makeText(OtherInformationCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
@@ -186,7 +213,11 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                     }
 
                     if(disabled != null){
-                        //화면에 상대방 정보 띄우기
+                        mProflName.setText(disabled.name);
+                        mProflPhoneNum.setText(disabled.phoneNumber);
+                        mProflEmail.setText(disabled.email);
+                        mProflAddress.setText(disabled.address + " " + disabled.detailAddress);
+                        mProflBirth.setText(disabled.birth);
                     }
                     else {
                         Toast.makeText(OtherInformationCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();

@@ -208,6 +208,13 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         Pattern pattern = Pattern.compile(regx);
         Matcher matcher = pattern.matcher(email);
 
+        if(matcher.matches()){
+            emailDuplicateCheck(email);
+        }
+        else {
+            joinEmail.setError("잘못된 이메일 형식입니다.");
+        }
+
         return matcher.matches();
     }
 
@@ -471,11 +478,6 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             joinEmail.setError("중복된 이메일입니다.");
             valid = false;
         }
-        
-        if(emailFormCheck(email) == false){ //이메일 형식 오류인 경우
-            joinEmail.setError("잘못된 이메일입니다.");
-            valid = false;
-        }
 
         String password = joinPW.getText().toString();
         if (TextUtils.isEmpty(password)) { //비밀번호 editText가 공란이면
@@ -571,7 +573,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.joinBtEmailCk: //이메일 중복 확인
-                emailDuplicateCheck(joinEmail.getText().toString());
+                emailFormCheck(joinEmail.getText().toString());
                 break;
 
             case R.id.joinPNReq: //인증번호 전송

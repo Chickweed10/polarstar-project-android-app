@@ -194,6 +194,13 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         Pattern pattern = Pattern.compile(regx);
         Matcher matcher = pattern.matcher(email);
 
+        if(matcher.matches()){
+            emailDuplicateCheck(email);
+        }
+        else {
+            joinEmailN.setError("잘못된 이메일 형식입니다.");
+        }
+
         return matcher.matches();
     }
 
@@ -439,11 +446,6 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             valid = false;
         }
 
-        if(emailFormCheck(email) == false){ //이메일 형식 오류인 경우
-            joinEmailN.setError("잘못된 이메일입니다.");
-            valid = false;
-        }
-
         String password = joinPWN.getText().toString();
         if (TextUtils.isEmpty(password)) { //비밀번호 editText가 공란이면
             joinPWN.setError("비밀번호를 입력해주세요.");
@@ -538,7 +540,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.joinBtEmailCkN: //이메일 중복 확인
-                emailDuplicateCheck(joinEmailN.getText().toString());
+                emailFormCheck(joinEmailN.getText().toString());
                 break;
 
             case R.id.joinPNReqN: //인증번호 전송
