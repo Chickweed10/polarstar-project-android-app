@@ -36,7 +36,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address;
-    Button Bt, mProflBtEmailCkN, mProflBtLinkDisConnect;
+    Button Bt, mProflBtEmailCkN;
     String sex,  cSex;
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;

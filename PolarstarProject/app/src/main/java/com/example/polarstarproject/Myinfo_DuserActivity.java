@@ -39,7 +39,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address;
-    Button Bt, mProflBtEmailCk, mProflBtLinkDisConnect;
+    Button Bt, mProflBtEmailCk;
     String sex,  cSex, cDrDisG;
     Spinner DrDisG;
     RadioGroup rdgGroup;

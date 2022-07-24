@@ -36,6 +36,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity"; //로그용 태그
 
     public static Context context_main; // 다른 엑티비티에서의 접근을 위해 사용
+    public SharedPreferences auto;
+    public SharedPreferences.Editor autoLoginEdit;
+
     private PermissionSupport permission; // 권한설정 클래스 선언
     public String setId, setPassword;
     static final int PERMISSIONS_REQUEST = 0x0000001; //요청에 대한 결과값 확인을 위해 RequestCode를 final로 정의
@@ -75,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
         onCheckPermission(); //위치권한 메소드
 
         // SharedPreferences 사용해서 앱에 데이터 저장&불러오기
-        SharedPreferences auto = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor autoLoginEdit = auto.edit();
+        auto = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+        autoLoginEdit = auto.edit();
 
         // 로그인 데이터 불러오기
         setId = auto.getString("Id", null);
