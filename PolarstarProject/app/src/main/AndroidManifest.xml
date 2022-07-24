@@ -19,7 +19,7 @@
         android:allowBackup="true"
         android:icon="@drawable/polaris_roughly"
         android:label="북극성"
-        android:roundIcon="@drawable/polaris_roughly"
+        android:roundIcon="@drawable/polaris_app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolarstarProject">
 
