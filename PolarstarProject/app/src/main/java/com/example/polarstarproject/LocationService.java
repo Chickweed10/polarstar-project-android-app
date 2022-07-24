@@ -54,7 +54,7 @@ import java.net.URLEncoder;
 
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
-    
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -63,7 +63,7 @@ public class LocationService extends Service {
     int classificationUserFlag = 0; //사용자 구별 플래그
     String counterpartyUID; //상대방 UID
     LatLng counterpartyCurPoint; //상대방 실시간 위치
-    
+
     Connect myConnect;
 
     public double distance; //거리
@@ -91,7 +91,7 @@ public class LocationService extends Service {
                 double latitude = locationResult.getLastLocation().getLatitude();
                 double longitude = locationResult.getLastLocation().getLongitude();
                 Log.v(TAG, latitude + ", " + longitude);
-                
+
                 mAuth = FirebaseAuth.getInstance();
                 user = mAuth.getCurrentUser();
                 realTimeLocationActivity.realTimeDeviceLocationBackground(user, latitude, longitude); //firebase에 실시간 위치 업데이트
@@ -112,7 +112,9 @@ public class LocationService extends Service {
                             }
                             if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
                                 counterpartyName = disabled.getName();
-                                departureArrivalNotification(); //출도착 판단
+                                if(counterpartyCurPoint != null){
+                                    departureArrivalNotification(); //출도착 판단
+                                }
                             }
                             else {
                                 Log.w(TAG, "상대방 이름 불러오기 오류");
@@ -408,7 +410,7 @@ public class LocationService extends Service {
         NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(id, builder.build());
     }
-    
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
