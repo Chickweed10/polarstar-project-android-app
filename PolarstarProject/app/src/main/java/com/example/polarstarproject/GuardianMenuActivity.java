@@ -13,7 +13,7 @@ public class GuardianMenuActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_duser);
+        setContentView(R.layout.activity_menu_duser_n);
 
         menuBtMyProflN = (Button) findViewById(R.id.menuBtMyProflN); //내정보
         menuBtOthProflN = (Button) findViewById(R.id.menuBtOthProflN); //상대정보
@@ -33,19 +33,19 @@ public class GuardianMenuActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.menuBtMyProfl:
-                Intent intentMyProfl = new Intent(GuardianMenuActivity.this, Myinfo_DuserActivity.class);
+            case R.id.menuBtMyProflN:
+                Intent intentMyProfl = new Intent(GuardianMenuActivity.this, Myinfo_Duser_nActivity.class);
                 startActivity(intentMyProfl);
                 finish();
                 break;
 
-            case R.id.menuBtOthProfl:
+            case R.id.menuBtOthProflN:
                 Intent intentOthProfl = new Intent(GuardianMenuActivity.this, OtherInformationDisableCheckActivity.class);
                 startActivity(intentOthProfl);
                 finish();
                 break;
 
-            case R.id.menuBtMapCk:
+            case R.id.menuBtMapCkN:
                 Intent intentMapCk = new Intent(GuardianMenuActivity.this, RealTimeLocationActivity.class);
                 startActivity(intentMapCk);
                 finish();
@@ -63,7 +63,7 @@ public class GuardianMenuActivity extends AppCompatActivity implements View.OnCl
                 finish();
                 break;
 
-            /*case R.id.menuBtSettings:
+            /*case R.id.menuBtSettingsN:
                 Intent intentSettings = new Intent(GuardianMenuActivity.this, MenuSettingActivity.class);
                 startActivity(intentSettings);
                 finish();
