@@ -1,0 +1,26 @@
+[보호자 회원 정보]
+이메일: swpolarstarproject@gmail.com
+비밀번호: test1234
+이름: 보호자
+전화번호: 01077777777
+생년월일: 19991010
+도로명 주소: 46031, 부산 기장군 장안읍 판곡길 2999동 1014호999동 1014호
+상세 주소: 999동 1014호
+장애 정도: 중증
+
+[장애인 회원 정보]
+이메일: distest8@gmail.com
+비밀번호: test1234
+이름: 장애인
+전화번호: 01088888888
+생년월일: 19990101
+도로명 주소: 46031, 부산 기장군 장안읍 판곡길 2
+상세 주소: 999동 1호
+
+[API 키]
+참고사항: 
+C:\Users\9993h\OneDrive\desktop\PolarstarProject\PolarstarProject 경로에 local.properties 파일에 하단 API키 삽입해주어야 함.
+
+MAPS_API_KEY=AIzaSyAYY9Vq7F0gn7BsCj65Rzx4oDahqxso8BI
+client_id="ekqro8b3yw"
+client_secret="Zeg5AMp9WlE7Eya7in3hzQtePD5YfDloCtyhKuAU"
