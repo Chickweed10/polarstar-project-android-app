@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/ProflN"
+                android:id="@+id/othProfl"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="50dp"
@@ -60,12 +60,12 @@
                     android:textSize="14dp" />
 
                 <EditText
-                    android:id="@+id/mProflNameN"
+                    android:id="@+id/othProflName"
                     android:layout_width="200dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="20dp"
                     android:ems="10"
-                    android:hint="이름 입력"
+                    android:hint="이름"
                     android:inputType="textPersonName"
                     android:textSize="14dp" />
             </LinearLayout>
@@ -85,77 +85,16 @@
                     android:textSize="14dp" />
 
                 <EditText
-                    android:id="@+id/mProflPhoneNumN"
+                    android:id="@+id/othProflPhoneNum"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
-                    android:hint="전화번호 입력"
+                    android:hint="전화번호"
                     android:inputType="phone"
                     android:text=""
                     android:textSize="14dp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="계정 관리"
-                android:textSize="12dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/mProflEmailN"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="4dp"
-                    android:ems="10"
-                    android:hint="(ex. OOO@mail.com)"
-                    android:inputType="textEmailAddress"
-                    android:textSize="14dp" />
-
-                <Button
-                    android:id="@+id/mProflBtEmailCkN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="40dp"
-                    android:layout_weight="1"
-                    android:text="이메일 인증"
-                    android:textSize="12dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="비밀번호 재설정"
-                    android:textSize="14dp" />
-
-                <Button
-                    android:id="@+id/mProflBtPWChageN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="40dp"
-                    android:layout_weight="1"
-                    android:text="비밀번호 재설정"
-                    android:textSize="12dp" />
             </LinearLayout>
 
             <TextView
@@ -183,12 +122,12 @@
                     android:textSize="14dp" />
 
                 <EditText
-                    android:id="@+id/mProflAddressN"
+                    android:id="@+id/othProflAddress"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
-                    android:hint="주소 입력 "
+                    android:hint="주소"
                     android:inputType="textPersonName"
                     android:textSize="14dp" />
             </LinearLayout>
@@ -208,13 +147,13 @@
                     android:textSize="14dp" />
 
                 <EditText
-                    android:id="@+id/mProflBirthN"
+                    android:id="@+id/othProflBirth"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
-                    android:hint="(ex. 19001231) "
+                    android:hint="생년월일"
                     android:inputType="date"
                     android:textSize="14dp" />
             </LinearLayout>
@@ -235,7 +174,7 @@
                     android:textSize="14dp" />
 
                 <RadioGroup
-                    android:id="@+id/mProflBtGenderN"
+                    android:id="@+id/othProflBtGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -246,14 +185,14 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <RadioButton
-                        android:id="@+id/mProflBtGenderMN"
+                        android:id="@+id/othProflBtGenderM"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:text="남" />
 
                     <RadioButton
-                        android:id="@+id/mProflBtGenderFN"
+                        android:id="@+id/othProflBtGenderF"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="여" />
@@ -263,22 +202,13 @@
 
 
             <Button
-                android:id="@+id/mProflBtEditN"
+                android:id="@+id/othProflBtEdit"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:text="프로필 수정" />
+                android:text="확인" />
 
-            <Button
-                android:id="@+id/mProflBtLinkDisConnectN"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:background="#00ff0000"
-                android:textColor="#700000"
-                android:text="이어진 사람과 연결 끊기" />
 
         </LinearLayout>
     </ScrollView>
