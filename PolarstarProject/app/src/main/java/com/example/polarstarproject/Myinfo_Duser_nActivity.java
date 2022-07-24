@@ -36,7 +36,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address;
-    Button Bt, mProflBtEmailCkN, mProflBtLinkDisConnect;
+    Button Bt, mProflBtEmailCkN;
     String sex,  cSex;
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;
@@ -79,8 +79,6 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
         mProflBtEmailCkN = (Button) findViewById(R.id.mProflBtEmailCkN); //이메일 인증
         mProflBtEmailCkN.setOnClickListener(this);
-
-        mProflBtLinkDisConnect = (Button) findViewById(R.id.mProflBtLinkDisConnectN);
 
         emailVerifiedButton();
 
