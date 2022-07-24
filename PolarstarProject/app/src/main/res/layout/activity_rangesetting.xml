@@ -10,37 +10,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/rName"
-            android:layout_width="50dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center"
             android:layout_marginEnd="0dp"
             android:ems="10"
             android:hint="보호구역" />
 
         <TextView
             android:id="@+id/rangeAddress"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="6dp"
+            android:layout_gravity="center"
             android:layout_marginEnd="0dp"
             android:ems="10"
             android:hint="주소" />
 
+        <View
+
+            android:layout_width="0dp"
+
+            android:layout_height="0dp"
+
+            android:layout_weight="1"
+
+            />
+
         <Button
             android:id="@+id/btnAdd"
-            android:layout_width="50dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:text="주소검색"
-            android:textSize="10dp" />
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:text="주소 검색"
+            android:textSize="12dp" />
     </LinearLayout>
 
     <fragment
