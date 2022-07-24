@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -31,11 +32,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //장애인 정보 (본인이 보호자)
-    ImageView Profl;
-    EditText mProflName, mProflPhoneNum, mProflEmail, mProflAddress, mProflBirth;
-    RadioGroup mProflBtGender;
+    ImageView othProflN;
+    EditText othProflNameN, othProflPhoneNumN, othProflAddressN, othProflBirthN;
+    RadioGroup othProflBtGenderN;
+    RadioButton othProflBtGenderMN, othProflBtGenderFN;
 
-    Spinner mProflDrDisG;
+    Spinner othProflDrDisGN;
+
+    String sex, cSex, cDrDisG;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -54,22 +58,23 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_myinfo_duser_n);
+        setContentView(R.layout.activity_otherinfo_duser_n);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
+        othProflN = (ImageView) findViewById(R.id.othProflN); //프로필 사진
 
-        mProflName = (EditText) findViewById(R.id.mProflName); //이름
-        mProflPhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //핸드폰번호
-        mProflEmail = (EditText) findViewById(R.id.mProflEmail); //이메일
-        mProflAddress = (EditText) findViewById(R.id.mProflAddress); //주소
-        mProflBirth = (EditText) findViewById(R.id.mProflBirth); //생년월일
+        othProflNameN = (EditText) findViewById(R.id.othProflNameN); //이름
+        othProflPhoneNumN = (EditText) findViewById(R.id.othProflPhoneNumN); //핸드폰번호
+        othProflAddressN = (EditText) findViewById(R.id.othProflAddressN); //주소
+        othProflBirthN = (EditText) findViewById(R.id.othProflBirthN); //생년월일
 
-        mProflBtGender = findViewById(R.id.joinBtGenderN); //성별
+        othProflBtGenderN = findViewById(R.id.othProflBtGenderN); //성별
+        othProflBtGenderMN = findViewById( R.id.othProflBtGenderMN);
+        othProflBtGenderFN = findViewById( R.id.othProflBtGenderFN);
 
-        mProflDrDisG = (Spinner)findViewById(R.id.mProflDrDisG); //장애등급
+        othProflDrDisGN = (Spinner)findViewById(R.id.othProflDrDisGN); //장애등급
 
         storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
         storageRef = storage.getReference();
@@ -201,7 +206,7 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
                             @Override
                             public void onSuccess(Uri uri) {
                                 //이미지 로드 성공시
-                                Glide.with(OtherInformationDisableCheckActivity.this).load(uri).into(Profl);
+                                Glide.with(OtherInformationDisableCheckActivity.this).load(uri).into(othProflN);
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -213,11 +218,26 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
                         });
                     }
 
-                    mProflName.setText(disabled.name);
-                    mProflPhoneNum.setText(disabled.phoneNumber);
-                    mProflEmail.setText(disabled.email);
-                    mProflAddress.setText(disabled.address + " " + disabled.detailAddress);
-                    mProflBirth.setText(disabled.birth);
+                    othProflNameN.setText(disabled.getName());
+                    othProflPhoneNumN.setText(disabled.getPhoneNumber());
+                    othProflAddressN.setText(disabled.getAddress() + " " + disabled.getDetailAddress());
+                    othProflBirthN.setText(disabled.getBirth());
+                    cSex = disabled.getSex();
+
+                    if(cSex.equals("여")) {
+                        othProflBtGenderFN.setChecked(true);
+                    }
+                    else {
+                        othProflBtGenderMN.setChecked(true);
+                    }
+
+                    cDrDisG = disabled.getDisabilityLevel();
+                    if(cDrDisG.equals("경증")) {
+                        othProflDrDisGN.setSelection(1);
+                    }
+                    else {
+                        othProflDrDisGN.setSelection(0);
+                    }
                 }
                 else {
                     Toast.makeText(OtherInformationDisableCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();

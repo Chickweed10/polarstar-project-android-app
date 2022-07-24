@@ -108,7 +108,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     //이미지 로드 실패시
-                    Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "이미지 로드 실패");
                 }
             });
         }
