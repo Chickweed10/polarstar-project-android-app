@@ -116,8 +116,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
-                    android:hint="이메일 입력"
-                    android:text="이메일"
+                    android:hint="(ex. OOO@mail.com)"
                     android:inputType="textEmailAddress"
                     android:textSize="14dp" />
 
@@ -187,9 +186,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
-                    android:hint="주소 입력 "
+                    android:hint="주소 입력"
                     android:inputType="textPersonName"
-                    android:text="주소"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -216,7 +214,6 @@
                     android:ems="10"
                     android:hint="(ex. 19001231) "
                     android:inputType="date"
-                    android:text="생년월일"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -240,6 +237,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginStart="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -256,7 +254,6 @@
                         android:id="@+id/mProflBtGenderF"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
                         android:text="여" />
 
                 </RadioGroup>
@@ -269,6 +266,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/mProflDisG"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
