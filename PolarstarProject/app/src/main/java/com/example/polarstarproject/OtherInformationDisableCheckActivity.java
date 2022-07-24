@@ -33,7 +33,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //장애인 정보 (본인이 보호자)
     ImageView othProflN;
-    EditText othProflNameN, othProflPhoneNumN, othProflAddressN, othProflBirthN;
+    EditText othProflNameN, othProflPhoneNumN, othProflAddressN, othProflDetailAddN, othProflBirthN;
     RadioGroup othProflBtGenderN;
     RadioButton othProflBtGenderMN, othProflBtGenderFN;
 
@@ -68,6 +68,7 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
         othProflNameN = (EditText) findViewById(R.id.othProflNameN); //이름
         othProflPhoneNumN = (EditText) findViewById(R.id.othProflPhoneNumN); //핸드폰번호
         othProflAddressN = (EditText) findViewById(R.id.othProflAddressN); //주소
+        othProflDetailAddN = (EditText) findViewById(R.id.othProflDetailAddN); //상세 주소
         othProflBirthN = (EditText) findViewById(R.id.othProflBirthN); //생년월일
 
         othProflBtGenderN = findViewById(R.id.othProflBtGenderN); //성별
@@ -220,7 +221,8 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
 
                     othProflNameN.setText(disabled.getName());
                     othProflPhoneNumN.setText(disabled.getPhoneNumber());
-                    othProflAddressN.setText(disabled.getAddress() + " " + disabled.getDetailAddress());
+                    othProflAddressN.setText(disabled.getAddress());
+                    othProflDetailAddN.setText(disabled.getDetailAddress());
                     othProflBirthN.setText(disabled.getBirth());
                     cSex = disabled.getSex();
 
