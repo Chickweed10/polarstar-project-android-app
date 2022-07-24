@@ -227,7 +227,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timer.cancel();
                         timerTask.cancel(); //타이머 종료
                         
-                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, DisabledMenuActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -257,7 +257,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timer.cancel();
                         timerTask.cancel(); //타이머 종료
 
-                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, GuardianMenuActivity.class);
                         startActivity(intent);
                         finish();
                     }

@@ -54,6 +54,7 @@
         <activity android:name=".OtherInformationDisableCheckActivity" />
         <activity android:name=".OtherInformationGuardianCheckActivity" />
         <activity android:name=".RangeSettingActivity" />
+        <activity android:name=".MenuSettingActivity" />
         <activity
             android:name=".DatePickerActivity"
             android:exported="false" />

@@ -72,7 +72,7 @@ public class DisabledMenuActivity extends AppCompatActivity implements View.OnCl
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
             intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
             startService(intent);
-            Toast.makeText(this, "Location service started", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Location service started", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -81,7 +81,7 @@ public class DisabledMenuActivity extends AppCompatActivity implements View.OnCl
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
             intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
             startService(intent);
-            Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
         }
     }
 
