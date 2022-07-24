@@ -9,10 +9,10 @@ tools:context=".RealTimeLocationActivity">
 
     <fragment
         android:id="@+id/map"
-        android:layout_weight="1"
+        android:layout_weight="20"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context="com.example.polarstarproject.RealTimeLocationActivity" />
 
     <Button
@@ -22,5 +22,13 @@ tools:context=".RealTimeLocationActivity">
         android:layout_weight="0.5"
         android:layout_alignParentBottom="true"
         android:text="보호구역 등록하기" />
+
+    <Button
+        android:id="@+id/goMyInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_alignParentBottom="true"
+        android:text="내 정보" />
 
 </LinearLayout>
