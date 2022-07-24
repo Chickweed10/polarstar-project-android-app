@@ -47,11 +47,11 @@ public class DisabledMenuActivity extends AppCompatActivity implements View.OnCl
                 finish();
                 break;
 
-            /*case R.id.menuBtSettings:
+            case R.id.menuBtSettings:
                 Intent intentSettings = new Intent(DisabledMenuActivity.this, MenuSettingActivity.class);
                 startActivity(intentSettings);
                 finish();
-                break;*/
+                break;
         }
     }
 }
