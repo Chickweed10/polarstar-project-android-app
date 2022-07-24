@@ -35,18 +35,24 @@
                     android:id="@+id/findPhoneNum"
                     android:layout_width="210dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="50dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="0dp"
                     android:ems="10"
                     android:hint="전화번호 입력"
                     android:inputType="phone" />
 
+                <View
+
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
                 <Button
                     android:id="@+id/findPNReq"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="50dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_weight="1"
                     android:text="인증요청"
                     android:textSize="14dp" />
@@ -63,17 +69,23 @@
                     android:id="@+id/findPNCk"
                     android:layout_width="210dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="50dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="0dp"
                     android:hint="인증번호 입력"
                     android:inputType="number" />
 
+                <View
+
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
                 <Button
                     android:id="@+id/findPNReqCk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="50dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_weight="1"
                     android:text="인증확인"
                     android:textSize="14dp" />

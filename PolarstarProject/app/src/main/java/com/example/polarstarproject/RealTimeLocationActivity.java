@@ -1062,7 +1062,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.profileimage) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 집에서 출발하였습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -1080,7 +1080,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.profileimage) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 집으로 도착하였습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -1098,7 +1098,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 보호구역을 벗어났습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -1115,7 +1115,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 보호구역에 들어왔습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -1133,7 +1133,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 위치(GPS) 사용을 중단했습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -1151,7 +1151,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.polaris_roughly) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 위치(GPS) 사용을 허용했습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다

@@ -380,7 +380,7 @@ public class LocationService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.profileimage) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 집에서 출발하였습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -398,7 +398,7 @@ public class LocationService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.profileimage) //알림 이미지
+                .setSmallIcon(R.drawable.ic_stat_polaris_smallicon) //알림 이미지
                 .setContentTitle("북극성")
                 .setContentText(counterpartyName + "님이 집으로 도착하였습니다.")
                 .setContentIntent(pendingIntent)    // 클릭시 설정된 PendingIntent가 실행된다
@@ -424,7 +424,7 @@ public class LocationService extends Service {
         Intent resultIntent = new Intent();
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-        builder.setSmallIcon(R.drawable.polaris_roughly);
+        builder.setSmallIcon(R.drawable.ic_stat_polaris_smallicon);
         builder.setContentTitle("위치 서비스");
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
         builder.setContentText("실행중");
