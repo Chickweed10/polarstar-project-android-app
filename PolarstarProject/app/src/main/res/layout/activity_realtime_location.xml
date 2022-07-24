@@ -23,12 +23,4 @@ tools:context=".RealTimeLocationActivity">
         android:layout_alignParentBottom="true"
         android:text="보호구역 등록하기" />
 
-    <Button
-        android:id="@+id/goMyInfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:layout_alignParentBottom="true"
-        android:text="내 정보" />
-
 </LinearLayout>
