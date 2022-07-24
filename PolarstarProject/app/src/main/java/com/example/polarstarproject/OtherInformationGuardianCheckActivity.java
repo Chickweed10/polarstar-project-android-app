@@ -34,7 +34,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ //보호자 정보 (본인이 장애인)
     ImageView othProfl;
-    EditText othProflName, othProflPhoneNum, othProflAddress, othProflBirth;
+    EditText othProflName, othProflPhoneNum, othProflAddress, othProflDetailAdd, othProflBirth;
     RadioGroup othProflBtGender;
     RadioButton othProflBtGenderM, othProflBtGenderF;
     String sex,  cSex;
@@ -66,6 +66,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
         othProflName = (EditText) findViewById(R.id.othProflName); //이름
         othProflPhoneNum = (EditText) findViewById(R.id.othProflPhoneNum); //핸드폰번호
         othProflAddress = (EditText) findViewById(R.id.othProflAddress); //주소
+        othProflDetailAdd = (EditText) findViewById(R.id.othProflDetailAdd); //상세 주소
         othProflBirth = (EditText) findViewById(R.id.othProflBirth); //생년월일
 
         othProflBtGender = findViewById(R.id.othProflBtGender); //성별
@@ -216,7 +217,8 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
 
                     othProflName.setText(guardian.getName());
                     othProflPhoneNum.setText(guardian.getPhoneNumber());
-                    othProflAddress.setText(guardian.getAddress() + " " + guardian.getDetailAddress());
+                    othProflAddress.setText(guardian.getAddress());
+                    othProflDetailAdd.setText(guardian.getDetailAddress());
                     othProflBirth.setText(guardian.getBirth());
                     cSex = guardian.getSex();
 

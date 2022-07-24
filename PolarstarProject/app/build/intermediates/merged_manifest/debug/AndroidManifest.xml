@@ -42,9 +42,8 @@
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
-        android:icon="@drawable/polaris_roughly"
         android:label="북극성"
-        android:roundIcon="@drawable/polaris_roughly"
+        android:roundIcon="@drawable/polaris_app_logo"
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/Theme.PolarstarProject" >
@@ -79,6 +78,7 @@
         <activity android:name="com.example.polarstarproject.OtherInformationDisableCheckActivity" />
         <activity android:name="com.example.polarstarproject.OtherInformationGuardianCheckActivity" />
         <activity android:name="com.example.polarstarproject.RangeSettingActivity" />
+        <activity android:name="com.example.polarstarproject.MenuSettingActivity" />
         <activity
             android:name="com.example.polarstarproject.DatePickerActivity"
             android:exported="false" />

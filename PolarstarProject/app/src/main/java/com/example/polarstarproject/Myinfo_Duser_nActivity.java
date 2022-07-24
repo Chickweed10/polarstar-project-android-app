@@ -35,7 +35,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, PhoneNum, Birth, Address;
+    EditText Name, Email, PhoneNum, Birth, Address, dAddress;
     Button Bt, mProflBtEmailCkN;
     String sex,  cSex;
     RadioGroup rdgGroup;
@@ -56,12 +56,13 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
+        Profl = (ImageView) findViewById(R.id.ProflN); //프로필 사진
         Name = (EditText) findViewById(R.id.mProflNameN); //이름
         Email = (EditText) findViewById(R.id.mProflEmailN); //이메일
         PhoneNum = (EditText) findViewById(R.id.mProflPhoneNumN); //전화번호
         Birth = (EditText) findViewById(R.id.mProflBirthN); //생년월일
         Address = (EditText) findViewById(R.id.mProflAddressN); //주소
+        dAddress = (EditText) findViewById(R.id.mProflDetailAddressN); //주소
         mProflBtGenderF = findViewById( R.id.mProflBtGenderFN);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderMN);
         rdgGroup = findViewById( R.id.mProflBtGenderN );
@@ -120,7 +121,9 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 Email.setText(user.email);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
-                Address.setText(user.address + user.detailAddress);
+                Address.setText(user.address);
+                dAddress.setText(user.detailAddress);
+
                 //스피너 라디오 버튼 세팅 가져오기
                 cSex = user.sex;
                 Log.w(TAG, "성별: "+ cSex);
@@ -227,6 +230,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 mDatabase.child("guardian").child(mynUid).child("email").setValue(Email.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("address").setValue(Address.getText().toString());
+                mDatabase.child("guardian").child(mynUid).child("detailAddress").setValue(dAddress.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("birth").setValue(Birth.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("sex").setValue(sex);
                 break;

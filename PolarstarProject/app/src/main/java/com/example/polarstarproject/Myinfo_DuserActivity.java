@@ -38,7 +38,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, PhoneNum, Birth, Address;
+    EditText Name, Email, PhoneNum, Birth, Address, mProflDetailAddress;
     Button Bt, mProflBtEmailCk;
     String sex,  cSex, cDrDisG;
     Spinner DrDisG;
@@ -66,6 +66,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         PhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //전화번호
         Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
         Address = (EditText) findViewById(R.id.mProflAddress); //주소
+        mProflDetailAddress = (EditText) findViewById(R.id.mProflDetailAddress); //주소
         mProflBtGenderF = findViewById( R.id.mProflBtGenderF);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderM);
         rdgGroup = findViewById( R.id.mProflBtGender );
@@ -125,7 +126,8 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 Email.setText(user.email);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
-                Address.setText(user.address + user.detailAddress);
+                Address.setText(user.address);
+                mProflDetailAddress.setText(user.detailAddress);
                 //스피너 라디오 버튼 세팅 가져오기
                 cSex = user.sex;
                 Log.w(TAG, "성별: "+ cSex);
