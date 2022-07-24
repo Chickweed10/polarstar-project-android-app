@@ -320,12 +320,12 @@ public class LoginActivity extends AppCompatActivity {
         }
         else { //이미 연결되어 있는 경우
             if(classificationUserFlag == 1){ //장애인
-                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
+                Intent intent = new Intent(LoginActivity.this, DisabledMenuActivity.class);
                 startActivity(intent);
                 finish();
             }
             else if(classificationUserFlag == 2){ //보호자
-                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
+                Intent intent = new Intent(LoginActivity.this, GuardianMenuActivity.class);
                 startActivity(intent);
                 finish();
             }
