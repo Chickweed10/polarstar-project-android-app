@@ -88,8 +88,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         mProflBtEmailCk = (Button) findViewById(R.id.mProflBtEmailCk); //이메일 인증
         mProflBtEmailCk.setOnClickListener(this);
 
-        mProflBtLinkDisConnect = (Button) findViewById(R.id.mProflBtLinkDisConnect);
-
         emailVerifiedButton();
 
         user = FirebaseAuth.getInstance().getCurrentUser(); //현재 로그인한 유저

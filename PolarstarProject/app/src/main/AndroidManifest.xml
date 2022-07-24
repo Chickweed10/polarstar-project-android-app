@@ -22,10 +22,6 @@
         android:roundIcon="@drawable/polaris_roughly"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolarstarProject">
-        
-        <activity
-            android:name=".DatePickerActivity"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -50,12 +46,18 @@
         <activity android:name=".WebViewActivity" />
         <activity android:name=".FindActivity" />
         <activity android:name=".ConnectActivity" />
+        <activity android:name=".DisabledMenuActivity" />
+        <activity android:name=".GuardianMenuActivity" />
         <activity android:name=".RealTimeLocationActivity" />
         <activity android:name=".RouteActivity" />
         <activity android:name=".Myinfo_DuserActivity" />
         <activity android:name=".Myinfo_Duser_nActivity" />
-        <activity android:name=".OtherInformationCheckActivity" />
+        <activity android:name=".OtherInformationDisableCheckActivity" />
+        <activity android:name=".OtherInformationGuardianCheckActivity" />
         <activity android:name=".RangeSettingActivity" />
+        <activity
+            android:name=".DatePickerActivity"
+            android:exported="false" />
 
         <service android:name=".LocationService"
             android:enabled="true"
