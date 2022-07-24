@@ -33,9 +33,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ //보호자 정보 (본인이 장애인)
-    ImageView Profl;
-    EditText mProflName, mProflPhoneNum, mProflEmail, mProflAddress, mProflBirth;
-    RadioGroup mProflBtGender;
+    ImageView othProfl;
+    EditText othProflName, othProflPhoneNum, othProflAddress, othProflBirth;
+    RadioGroup othProflBtGender;
+    RadioButton othProflBtGenderM, othProflBtGenderF;
+    String sex,  cSex;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -54,20 +56,21 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_myinfo_duser);
+        setContentView(R.layout.activity_otherinfo_duser);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
+        othProfl = (ImageView) findViewById(R.id.othProfl); //프로필 사진
 
-        mProflName = (EditText) findViewById(R.id.mProflName); //이름
-        mProflPhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //핸드폰번호
-        mProflEmail = (EditText) findViewById(R.id.mProflEmail); //이메일
-        mProflAddress = (EditText) findViewById(R.id.mProflAddress); //주소
-        mProflBirth = (EditText) findViewById(R.id.mProflBirth); //생년월일
+        othProflName = (EditText) findViewById(R.id.othProflName); //이름
+        othProflPhoneNum = (EditText) findViewById(R.id.othProflPhoneNum); //핸드폰번호
+        othProflAddress = (EditText) findViewById(R.id.othProflAddress); //주소
+        othProflBirth = (EditText) findViewById(R.id.othProflBirth); //생년월일
 
-        mProflBtGender = findViewById(R.id.joinBtGenderN); //성별
+        othProflBtGender = findViewById(R.id.othProflBtGender); //성별
+        othProflBtGenderM = findViewById( R.id.othProflBtGenderM);
+        othProflBtGenderF = findViewById( R.id.othProflBtGenderF);
 
         storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
         storageRef = storage.getReference();
@@ -199,7 +202,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
                             @Override
                             public void onSuccess(Uri uri) {
                                 //이미지 로드 성공시
-                                Glide.with(OtherInformationGuardianCheckActivity.this).load(uri).into(Profl);
+                                Glide.with(OtherInformationGuardianCheckActivity.this).load(uri).into(othProfl);
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -211,11 +214,18 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
                         });
                     }
 
-                    mProflName.setText(guardian.name);
-                    mProflPhoneNum.setText(guardian.phoneNumber);
-                    mProflEmail.setText(guardian.email);
-                    mProflAddress.setText(guardian.address + " " + guardian.detailAddress);
-                    mProflBirth.setText(guardian.birth);
+                    othProflName.setText(guardian.getName());
+                    othProflPhoneNum.setText(guardian.getPhoneNumber());
+                    othProflAddress.setText(guardian.getAddress() + " " + guardian.getDetailAddress());
+                    othProflBirth.setText(guardian.getBirth());
+                    cSex = guardian.getSex();
+
+                    if(cSex.equals("여")) {
+                        othProflBtGenderF.setChecked(true);
+                    }
+                    else {
+                        othProflBtGenderM.setChecked(true);
+                    }
 
                 }
                 else {

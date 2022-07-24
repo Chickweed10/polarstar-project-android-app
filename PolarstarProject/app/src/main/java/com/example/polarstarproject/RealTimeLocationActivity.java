@@ -221,7 +221,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
 
-    @Override
+    /*@Override
     protected void onResume(){ //Activity가 사용자와 상호작용하면
         super.onResume();
 
@@ -241,7 +241,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         super.onStop();
 
         startLocationService(); //백그라운드 서비스 실행
-    }
+    }*/
 
 
     @Override
@@ -254,7 +254,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     /////////////////////////////////////////백그라운드 서비스////////////////////////////////////////
-    private boolean isLocationServiceRunning() {
+    /*private boolean isLocationServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager != null) {
             for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
@@ -285,7 +285,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             startService(intent);
             Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 
     public void realTimeDeviceLocationBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 실시간 위치 갱신
         firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
@@ -324,7 +324,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
-                startLocationService();
+                //startLocationService();
             }
         }
         else {
@@ -761,11 +761,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
 
                 counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                Log.w(TAG, "실행");
                 counterpartyMarker = map.addMarker(counterpartyLocationMarker);
             }
             else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
                 counterpartyMarker.remove(); // 마커삭제
                 counterpartyLocationMarker.position(counterpartyCurPoint);
+                Log.w(TAG, "실행");
                 counterpartyMarker = map.addMarker(counterpartyLocationMarker);
             }
 
