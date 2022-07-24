@@ -1,21 +1,24 @@
 package com.example.polarstarproject;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.Guardian;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,8 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-public class OtherInformationCheckActivity  extends AppCompatActivity{
+public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //장애인 정보 (본인이 보호자)
     ImageView Profl;
     EditText mProflName, mProflPhoneNum, mProflEmail, mProflAddress, mProflBirth;
     RadioGroup mProflBtGender;
@@ -41,11 +46,15 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
     int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
     String counterpartyUID = "";
     Connect myConnect;
-    
+
+    FirebaseStorage storage;
+    StorageReference storageRef;
+    StorageReference otherstorageRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_myinfo_duser);
+        setContentView(R.layout.activity_myinfo_duser_n);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -61,6 +70,9 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
         mProflBtGender = findViewById(R.id.joinBtGenderN); //성별
 
         mProflDrDisG = (Spinner)findViewById(R.id.mProflDrDisG); //장애등급
+
+        storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
+        storageRef = storage.getReference();
 
         classificationUser(user.getUid());
     }
@@ -131,7 +143,7 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                         otherInformationCheck(); //상대방 정보 가져오기
                     }
                     else {
-                        Toast.makeText(OtherInformationCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(OtherInformationDisableCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -155,7 +167,7 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
                         otherInformationCheck(); //상대방 정보 가져오기
                     }
                     else {
-                        Toast.makeText(OtherInformationCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(OtherInformationDisableCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -173,62 +185,49 @@ public class OtherInformationCheckActivity  extends AppCompatActivity{
 
     /////////////////////////////////////////상대방 정보 가져오기////////////////////////////////////////
     private void otherInformationCheck(){
-        if(classificationUserFlag == 1){ //내가 장애인일 경우 보호자 정보 띄움
-            Query guardianQuery = reference.child("guardian").orderByKey().equalTo(counterpartyUID); //보호자 테이블 조회
-            guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Guardian guardian = new Guardian();
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        guardian = ds.getValue(Guardian.class);
-                    }
-
-                    if(guardian != null){
-                        mProflName.setText(guardian.name);
-                        mProflPhoneNum.setText(guardian.phoneNumber);
-                        mProflEmail.setText(guardian.email);
-                        mProflAddress.setText(guardian.address + " " + guardian.detailAddress);
-                        mProflBirth.setText(guardian.birth);
-
-                    }
-                    else {
-                        Toast.makeText(OtherInformationCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
+        Query guardianQuery = reference.child("disabled").orderByKey().equalTo(counterpartyUID); //장애인 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Disabled disabled = new Disabled();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    disabled = ds.getValue(Disabled.class);
                 }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                if(disabled != null){
+                    otherstorageRef = storageRef.child("profile").child(counterpartyUID);
+                    if (otherstorageRef != null) {
+                        otherstorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                //이미지 로드 성공시
+                                Glide.with(OtherInformationDisableCheckActivity.this).load(uri).into(Profl);
 
-                }
-            });
-        }
-        else if(classificationUserFlag == 2){ //내가 보호자일 경우 장애인 정보 띄움
-            Query guardianQuery = reference.child("disabled").orderByKey().equalTo(counterpartyUID); //장애인 테이블 조회
-            guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Disabled disabled = new Disabled();
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        disabled = ds.getValue(Disabled.class);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                //이미지 로드 실패시
+                                Log.w(TAG, "프로필 사진 로드 실패");
+                            }
+                        });
                     }
 
-                    if(disabled != null){
-                        mProflName.setText(disabled.name);
-                        mProflPhoneNum.setText(disabled.phoneNumber);
-                        mProflEmail.setText(disabled.email);
-                        mProflAddress.setText(disabled.address + " " + disabled.detailAddress);
-                        mProflBirth.setText(disabled.birth);
-                    }
-                    else {
-                        Toast.makeText(OtherInformationCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
+                    mProflName.setText(disabled.name);
+                    mProflPhoneNum.setText(disabled.phoneNumber);
+                    mProflEmail.setText(disabled.email);
+                    mProflAddress.setText(disabled.address + " " + disabled.detailAddress);
+                    mProflBirth.setText(disabled.birth);
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
+                else {
+                    Toast.makeText(OtherInformationDisableCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
