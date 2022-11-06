@@ -30,21 +30,23 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
+//상대방과 1:1 연결
 public class ConnectActivity extends AppCompatActivity implements View.OnClickListener{
     TextView tvMyCode;
     EditText editOtherCode;
-    Button btnConnect, btnCopy;
+    Button btnConnect, btnCopy; //UI 변수들
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
-    private FirebaseUser user;
+    private FirebaseUser user; //firebase DB 변수
 
-    private static final String TAG = "Connect";
+    private static final String TAG = "Connect"; //로그용 태그
+
     int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
     String findMyCode = null; //내 코드값
 
-    Timer timer;
+    Timer timer; //상대방과 매칭 검사를 위한 타이머
     TimerTask timerTask;
     
     @Override
@@ -63,22 +65,22 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         btnConnect.setOnClickListener(this);
         btnCopy.setOnClickListener(this);
 
-        classificationUser(user.getUid());
+        classificationUser(user.getUid()); //사용자 구별
     }
 
     /////////////////////////////////////////사용자 구별, 내 코드값 가져오기////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 코드값 저장
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid);
+        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //내가 장애인일 경우
         disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Connect connectUser = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    connectUser = ds.getValue(Connect.class);
+                    connectUser = ds.getValue(Connect.class); //내 연결 코드 가져오기
                 }
 
                 if(connectUser.getMyCode() != null){
-                    classificationUserFlag = 1;
+                    classificationUserFlag = 1; //사용자 구별 flag 값 1로(장애인) 변경
                     findMyCode = connectUser.getMyCode();
                     tvMyCode.setText(findMyCode); //내 코드 화면에 뿌려주기
                 }
@@ -93,17 +95,17 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(uid);
+        Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(uid); //내가 보호자일 경우
         guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Connect connectUser = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    connectUser = ds.getValue(Connect.class);
+                    connectUser = ds.getValue(Connect.class); //내 연결 코드 가져오기
                 }
 
                 if(connectUser.getMyCode() != null){
-                    classificationUserFlag = 2;
+                    classificationUserFlag = 2; //사용자 구별 flag 값 2로(보호자) 변경
                     findMyCode = connectUser.getMyCode();
                     tvMyCode.setText(findMyCode); //내 코드 화면에 뿌려주기
                 }
@@ -130,24 +132,23 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String counterpartyUID = null;
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        counterpartyUID = ds.getKey();
+                        counterpartyUID = ds.getKey(); //상대 보호자 코드 가져오기
                     }
 
-                    if(counterpartyUID != null){
+                    if(counterpartyUID != null){ //상대 보호자 코드가 올바를 경우
                         Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
                         reference.child("connect").child("disabled").child(user.getUid()).setValue(myConnect);
 
                         Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                         reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
 
-                        //매칭 성공시 가입 화면을 빠져나감.
-                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                        //매칭 성공시 장애인 메뉴 화면으로 이동
+                        Intent intent = new Intent(ConnectActivity.this, DisabledMenuActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
-
                     }
-                    else {
+                    else { //상대 보호자 코드가 올바르지 않을 경우
                         Toast.makeText(ConnectActivity.this, "잘못된 코드를 입력하셨습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -165,23 +166,23 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String counterpartyUID = null;
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        counterpartyUID = ds.getKey();
+                        counterpartyUID = ds.getKey(); //상대 장애인 코드 가져오기
                     }
 
-                    if(counterpartyUID != null){
+                    if(counterpartyUID != null){ //상대 장애인 코드가 올바를 경우
                         Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
                         reference.child("connect").child("guardian").child(user.getUid()).setValue(myConnect);
 
                         Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                         reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
 
-                        //매칭 성공시 가입 화면을 빠져나감.
-                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                        //매칭 성공시 보호자 메뉴 화면으로 이동
+                        Intent intent = new Intent(ConnectActivity.this, GuardianMenuActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
                     }
-                    else {
+                    else { //상대 장애인 코드가 올바르지 않을 경우
                         Toast.makeText(ConnectActivity.this, "잘못된 코드를 입력하셨습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -205,13 +206,13 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void run() {
                 //1초마다 실행
-                connectCheck();
+                connectCheck(); //상대방과 매칭 여부 확인
             }
         };
         timer.schedule(timerTask,0,1000);
     }
 
-    private void connectCheck(){
+    private void connectCheck(){ //상대방과 매칭 여부 확인
         if(classificationUserFlag == 1) { //내가 장애인인 경우
             Query query = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //내 테이블에서 counterpartyCode 존재 검사
@@ -222,11 +223,11 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         connect = ds.getValue(Connect.class);
                     }
 
-                    if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){
-                        //매칭 시 화면을 빠져나감.
+                    if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){ //상대방과 매칭 되어있을 경우
                         timer.cancel();
                         timerTask.cancel(); //타이머 종료
                         
+                        //장애인 메뉴 화면으로 이동
                         Intent intent = new Intent(ConnectActivity.this, DisabledMenuActivity.class);
                         startActivity(intent);
                         finish();
@@ -252,11 +253,11 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         connect = ds.getValue(Connect.class);
                     }
 
-                    if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){
-                        //매칭 시 화면을 빠져나감.
+                    if(connect.getCounterpartyCode() != null && !connect.getCounterpartyCode().isEmpty()){ //상대방과 매칭 되어있을 경우
                         timer.cancel();
                         timerTask.cancel(); //타이머 종료
 
+                        //보호자 메뉴 화면으로 이동
                         Intent intent = new Intent(ConnectActivity.this, GuardianMenuActivity.class);
                         startActivity(intent);
                         finish();

@@ -52,6 +52,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+//백그라운드 위치 서비스
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
 

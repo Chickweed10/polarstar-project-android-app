@@ -49,23 +49,25 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//보호자 회원가입
 public class GuardianRegisterActivity extends AppCompatActivity implements View.OnClickListener{
     EditText joinEmailN, joinPWN, joinPWCkN, joinNameN, joinPhoneNumN, joinPNCkN, joinBirthN, joinRoadAddressN, joinDetailAddressN;
     RadioGroup joinBtGenderN;
     Button joinBtEmailCkN, joinPNReqN, joinPNReqCkN, joinFdAddN, joinBtN;
-    ImageButton joinBtProflN;
+    ImageButton joinBtProflN; //UI 변수
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
     private FirebaseStorage storage = FirebaseStorage.getInstance();;
-    private StorageReference storageRef, riversRef;
+    private StorageReference storageRef, riversRef; //firebase DB, Storage 변수
 
     private Uri imageUri;
-    private String pathUri = "profile/default.png";
+    private String pathUri = "profile/default.png"; //프로필 이미지 처리 변수
 
-    private static final String TAG = "GuardianRegister";
-    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
+    private static final String TAG = "GuardianRegister";//로그용 태그
+
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000; //우편번호 검색
 
     String VID = "", sex = "남";
     int certificationFlag = 0, emailDuplicateCheckFlag = 0, phoneNumberDuplicateCheckFlag = 0, verificationCodeFlag = 0;
@@ -103,14 +105,14 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         joinFdAddN.setOnClickListener(this);
         joinBtN.setOnClickListener(this);
 
-        joinBtGenderN.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        joinBtGenderN.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { //성별 버튼 클릭 시
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId){
-                    case R.id.joinBtGenderMN:
+                    case R.id.joinBtGenderMN: //남자 클릭시
                         sex = "남";
                         break;
-                    case R.id.joinBtGenderFN:
+                    case R.id.joinBtGenderFN: //여자 클릭시
                         sex = "여";
                         break;
                 }
@@ -129,14 +131,14 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
     private void firebaseImageUpload(String pathUri) { //파이어베이스 이미지 등록
         storageRef = storage.getReference();
         riversRef = storageRef.child(pathUri);
-        UploadTask uploadTask = riversRef.putFile(imageUri);
+        UploadTask uploadTask = riversRef.putFile(imageUri); //이미지 업로드
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
+        uploadTask.addOnFailureListener(new OnFailureListener() { //업로드 실패시
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.w(TAG, "사진 업로드 실패", e);
             }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() { //업로드 성공시
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.w(TAG, "사진 업로드 성공");
@@ -153,8 +155,8 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
 
-                } else {
-                    emailDuplicateCheckFlag = 1;
+                } else { //이메일 중복시
+                    emailDuplicateCheckFlag = 1; //이메일 중복 flag 값 1로 변경
                     Toast.makeText(GuardianRegisterActivity.this, "중복된 이메일입니다.",
                             Toast.LENGTH_SHORT).show();
                     return;
@@ -171,12 +173,12 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (emailDuplicateCheckFlag != 1 && !snapshot.exists()) {
-                    emailDuplicateCheckFlag = 2;
+                if (emailDuplicateCheckFlag != 1 && !snapshot.exists()) { //장애인 user 이메일 중복 검사 통과 & 보호자 user 이메일 중복 검사 통과시
+                    emailDuplicateCheckFlag = 2; //이메일 중복 flag 값 2로 변경
                     Toast.makeText(GuardianRegisterActivity.this, "이메일 인증 성공",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    emailDuplicateCheckFlag = 1;
+                    emailDuplicateCheckFlag = 1; //이메일 중복 flag 값 1로 변경
                     Toast.makeText(GuardianRegisterActivity.this, "중복된 이메일입니다.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -213,8 +215,8 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
 
-                } else {
-                    phoneNumberDuplicateCheckFlag = 1;
+                } else { //전화번호 중복시
+                    phoneNumberDuplicateCheckFlag = 1; //전화번호 중복 flag 값 1로 변경
                     Toast.makeText(GuardianRegisterActivity.this, "중복된 전화번호입니다.",
                             Toast.LENGTH_SHORT).show();
                     return;
@@ -231,10 +233,10 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (phoneNumberDuplicateCheckFlag != 1 && !snapshot.exists()) {
-                    sendVerificationCode();
-                } else {
-                    phoneNumberDuplicateCheckFlag = 1;
+                if (phoneNumberDuplicateCheckFlag != 1 && !snapshot.exists()) { //장애인 user 전화번호 중복 검사 통과 & 보호자 user 전화번호 중복 검사 통과
+                    sendVerificationCode(); //인증번호 보내기
+                } else { //전화번호 중복시
+                    phoneNumberDuplicateCheckFlag = 1; //전화번호 중복 flag 값 1로 변경
                     Toast.makeText(GuardianRegisterActivity.this, "중복된 전화번호입니다.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -277,7 +279,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             pn = pn.substring(1); //앞자라 0 제외
         }
 
-        mAuth.setLanguageCode("kr");
+        mAuth.setLanguageCode("kr"); //인증문자 메시지 언어 한국어로
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(mAuth)
                         .setPhoneNumber("+82"+ pn)       //핸드폰 번호
@@ -293,12 +295,12 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                        if (task.isSuccessful()) { //인증번호 일치
                             Log.d(TAG, "인증 성공");
                             Toast.makeText(GuardianRegisterActivity.this, "인증 성공",
                                     Toast.LENGTH_SHORT).show();
-                            certificationFlag = 1;
-                        } else {
+                            certificationFlag = 1; //인증번호 flag 값 1로 변경
+                        } else { //인증번호 불일치
                             Toast.makeText(GuardianRegisterActivity.this, "인증 실패",
                                     Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "인증 실패", task.getException());
@@ -316,10 +318,10 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 imageUri = intent.getData();
                 Glide.with(getApplicationContext())
                         .load(intent.getData())
-                        .into(joinBtProflN); //버튼에 이미지 업로드
+                        .into(joinBtProflN); //버튼에 이미지 삽입
             }
         }
-        else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호
+        else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
             if (resultCode == RESULT_OK) {
                 String data = intent.getExtras().getString("data");
                 if(data != null) {
@@ -340,7 +342,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             return; //공란, 예외 있으면 return
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        mAuth.createUserWithEmailAndPassword(email, password) //이메일, 비밀번호 회원가입
                 .addOnCompleteListener(GuardianRegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -353,16 +355,17 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                                 firebaseImageUpload(pathUri); //이미지 등록
                             }
                             Guardian guardian = new Guardian(pathUri, email, password, name,
-                                    phoneNumber, birth, sex, address, detailAddress);
-                            reference.child("guardian").child(uid).setValue(guardian);
+                                    phoneNumber, birth, sex, address, detailAddress); //보호자 객체 생성
+                            reference.child("guardian").child(uid).setValue(guardian); //DB에 보호자 정보 삽입
 
+                            //DB에 저장되어있는 플래그 초기화
                             EmailVerified emailVerified = new EmailVerified(false);
                             reference.child("emailverified").child(uid).setValue(emailVerified); //이메일 유효성 초기화
 
                             //연결 코드 생성
                             createConnectionCode(uid);
 
-                            //가입이 이루어졌을시 가입 화면을 빠져나감.
+                            //가입이 이루어졌을시 로그인 화면으로 이동
                             Intent intent = new Intent(GuardianRegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
@@ -371,7 +374,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                         else {
                             task.getException().printStackTrace();
                             Toast.makeText(GuardianRegisterActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
-                            return;  //해당 메소드 진행을 멈추고 빠져나감.
+                            return;  //해당 메소드 진행을 멈추고 빠져나감
                         }
 
                     }
@@ -404,15 +407,15 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         }
         myCode = newWord.toString();
 
-        reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myCode). //장애인 user 검사
+        reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myCode). //보호자 user 연결 코드 중복 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     Connect connect = new Connect(myCode, ""); //connect에 내 코드 생성
                     reference.child("connect").child("guardian").child(uid).setValue(connect);
-                } else {
-                    createConnectionCode(uid);
+                } else { //연결 코드 중복시
+                    createConnectionCode(uid); //연결 코드 재생성
                     return;
                 }
             }
@@ -539,7 +542,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 gotoAlbum();
                 break;
 
-            case R.id.joinBtEmailCkN: //이메일 중복 확인
+            case R.id.joinBtEmailCkN: //이메일 형식 & 중복 확인
                 emailFormCheck(joinEmailN.getText().toString());
                 break;
 

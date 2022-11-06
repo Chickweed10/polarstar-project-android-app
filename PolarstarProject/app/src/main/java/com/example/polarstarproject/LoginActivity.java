@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         connectCheckFlag = 0;
 
         firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
 
         //등록하기
         mLoginBtn = findViewById(R.id.lgnBt);
@@ -93,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                skipScreen(connectCheckFlag); //화면 넘어가기
+                                classificationUser(user.getUid()); //연결 여부 확인해서 화면 넘어가기
                                 Toast.makeText(LoginActivity.this,
                                         "로그인 성공",
                                         Toast.LENGTH_SHORT).show();
@@ -128,7 +129,6 @@ public class LoginActivity extends AppCompatActivity {
                                         //}
                                     }
 
-                                    user = firebaseAuth.getCurrentUser();
                                     classificationUser(user.getUid()); //연결 여부 확인해서 화면 넘어가기
 
                                 } else {
