@@ -62,12 +62,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//장애인 회원가입
 public class DisabledRegisterActivity extends AppCompatActivity implements View.OnClickListener {
     EditText joinEmail, joinPW, joinPWCk, joinName, joinPhoneNum, joinPNCk, joinBirth, joinRoadAddress, joinDetailAddress;
     Spinner joinDrDisG;
     RadioGroup joinBtGender;
     Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinFdAdd, joinBt;
-    ImageButton joinBtProfl; //view 변수
+    ImageButton joinBtProfl; //UI 변수
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -78,8 +79,9 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     private Uri imageUri;
     private String pathUri = "profile/default.png"; //프로필 이미지 처리 변수
 
-    private static final String TAG = "DisabledRegister";
-    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
+    private static final String TAG = "DisabledRegister"; //로그용 태그
+    
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000; //우편번호 검색
 
     String VID = "", sex = "남";
     int certificationFlag = 0, emailDuplicateCheckFlag = 0, phoneNumberDuplicateCheckFlag = 0, verificationCodeFlag = 0;
@@ -118,14 +120,14 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         joinFdAdd.setOnClickListener(this);
         joinBt.setOnClickListener(this);
 
-        joinBtGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        joinBtGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { //성별 버튼 클릭시
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId){
-                    case R.id.joinBtGenderM:
+                    case R.id.joinBtGenderM: //남자 클릭시
                         sex = "남";
                         break;
-                    case R.id.joinBtGenderF:
+                    case R.id.joinBtGenderF: //여자 클릭시
                         sex = "여";
                         break;
                 }
@@ -144,14 +146,14 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     private void firebaseImageUpload(String pathUri) { //파이어베이스 이미지 등록
         storageRef = storage.getReference();
         riversRef = storageRef.child(pathUri);
-        UploadTask uploadTask = riversRef.putFile(imageUri);
+        UploadTask uploadTask = riversRef.putFile(imageUri); //이미지 업로드
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
+        uploadTask.addOnFailureListener(new OnFailureListener() { //업로드 실패시
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.w(TAG, "사진 업로드 실패", e);
             }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() { //업로드 성공시
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.w(TAG, "사진 업로드 성공");
@@ -168,8 +170,8 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
 
-                } else {
-                    emailDuplicateCheckFlag = 1;
+                } else { //이메일 중복시
+                    emailDuplicateCheckFlag = 1; //이메일 중복 flag 값 1로 변경
                     Toast.makeText(DisabledRegisterActivity.this, "중복된 이메일입니다.",
                             Toast.LENGTH_SHORT).show();
                     return;
@@ -186,12 +188,12 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (emailDuplicateCheckFlag != 1 && !snapshot.exists()) {
-                    emailDuplicateCheckFlag = 2;
+                if (emailDuplicateCheckFlag != 1 && !snapshot.exists()) { //장애인 user 이메일 중복 검사 통과 & 보호자 user 이메일 중복 검사 통과시
+                    emailDuplicateCheckFlag = 2; //이메일 중복 flag 값 2로 변경
                     Toast.makeText(DisabledRegisterActivity.this, "이메일 인증 성공",
                             Toast.LENGTH_SHORT).show();
-                } else {
-                    emailDuplicateCheckFlag = 1;
+                } else { //이메일 중복시
+                    emailDuplicateCheckFlag = 1; //이메일 중복 flag 값 1로 변경
                     Toast.makeText(DisabledRegisterActivity.this, "중복된 이메일입니다.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -244,8 +246,8 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
 
-                } else {
-                    phoneNumberDuplicateCheckFlag = 1;
+                } else { //전화번호 중복시
+                    phoneNumberDuplicateCheckFlag = 1; //전화번호 중복 flag 값 1로 변경
                     Toast.makeText(DisabledRegisterActivity.this, "중복된 전화번호입니다.",
                             Toast.LENGTH_SHORT).show();
                     return;
@@ -262,10 +264,10 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (phoneNumberDuplicateCheckFlag != 1 && !snapshot.exists()) {
-                    sendVerificationCode();
-                } else {
-                    phoneNumberDuplicateCheckFlag = 1;
+                if (phoneNumberDuplicateCheckFlag != 1 && !snapshot.exists()) { //장애인 user 전화번호 중복 검사 통과 & 보호자 user 전화번호 중복 검사 통과
+                    sendVerificationCode(); //인증번호 보내기
+                } else { //전화번호 중복시
+                    phoneNumberDuplicateCheckFlag = 1; //전화번호 중복 flag 값 1로 변경
                     Toast.makeText(DisabledRegisterActivity.this, "중복된 전화번호입니다.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -308,10 +310,10 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             pn = pn.substring(1); //앞자라 0 제외
         }
 
-        mAuth.setLanguageCode("kr");
+        mAuth.setLanguageCode("kr"); //인증문자 메시지 언어 한국어로
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber("+82"+ pn)       //핸드폰 번호
+                        .setPhoneNumber("+82"+ pn)       //한국 핸드폰 번호
                         .setTimeout(60L, TimeUnit.SECONDS) //시간 제한
                         .setActivity(this)
                         .setCallbacks(mCallbacks)
@@ -324,12 +326,12 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                        if (task.isSuccessful()) { //인증번호 일치
                             Log.d(TAG, "인증 성공");
                             Toast.makeText(DisabledRegisterActivity.this, "인증 성공",
                                     Toast.LENGTH_SHORT).show();
-                            certificationFlag = 1;
-                        } else {
+                            certificationFlag = 1; //인증번호 flag 값 1로 변경
+                        } else { //인증번호 불일치
                             Toast.makeText(DisabledRegisterActivity.this, "인증 실패",
                                     Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "인증 실패", task.getException());
@@ -347,10 +349,10 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 imageUri = intent.getData();
                 Glide.with(getApplicationContext())
                         .load(intent.getData())
-                        .into(joinBtProfl); //버튼에 이미지 업로드
+                        .into(joinBtProfl); //버튼에 이미지 삽입
             }
         }
-        else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호
+        else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
             if (resultCode == RESULT_OK) {
                 String data = intent.getExtras().getString("data");
                 if(data != null) {
@@ -370,7 +372,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             return; //공란, 예외 있으면 return
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        mAuth.createUserWithEmailAndPassword(email, password) //이메일, 비밀번호 회원가입
                 .addOnCompleteListener(DisabledRegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -384,9 +386,10 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                             }
 
                             Disabled disabled = new Disabled(pathUri, email, password, name,
-                                    phoneNumber, birth, sex, address, detailAddress, disabilityLevel);
-                            reference.child("disabled").child(uid).setValue(disabled);
+                                    phoneNumber, birth, sex, address, detailAddress, disabilityLevel); //장애인 객체 생성
+                            reference.child("disabled").child(uid).setValue(disabled); //DB에 장애인 정보 삽입
 
+                            //DB에 저장되어있는 플래그들 초기화
                             EmailVerified emailVerified = new EmailVerified(false);
                             reference.child("emailverified").child(uid).setValue(emailVerified); //이메일 유효성 초기화
 
@@ -399,16 +402,16 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                             //연결 코드 생성
                             createConnectionCode(uid);
 
-                            //가입이 이루어졌을시 가입 화면을 빠져나감.
+                            //가입이 이루어졌을시 로그인 화면으로 이동
                             Intent intent = new Intent(DisabledRegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                             Toast.makeText(DisabledRegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
                         }
-                        else {
+                        else { //회원가입 실패시
                             task.getException().printStackTrace();
                             Toast.makeText(DisabledRegisterActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
-                            return;  //해당 메소드 진행을 멈추고 빠져나감.
+                            return;  //해당 메소드 진행을 멈추고 빠져나감
                         }
 
                     }
@@ -441,15 +444,15 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         }
         myCode = newWord.toString();
 
-        reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myCode). //장애인 user 검사
+        reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myCode). //장애인 user 연결 코드 중복 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     Connect connect = new Connect(myCode, ""); //connect에 내 코드 생성
-                    reference.child("connect").child("disabled").child(uid).setValue(connect);
-                } else {
-                    createConnectionCode(uid);
+                    reference.child("connect").child("disabled").child(uid).setValue(connect); //DB에 코드 저장
+                } else { //연결 코드 중복시
+                    createConnectionCode(uid); //연결 코드 재생성
                     return;
                 }
             }
@@ -576,7 +579,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 gotoAlbum();
                 break;
 
-            case R.id.joinBtEmailCk: //이메일 중복 확인
+            case R.id.joinBtEmailCk: //이메일 형식 & 중복 확인
                 emailFormCheck(joinEmail.getText().toString());
                 break;
 
@@ -601,7 +604,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.joinFdAdd: //우편번호 검색
-                Intent i = new Intent(DisabledRegisterActivity.this, WebViewActivity.class);
+                Intent i = new Intent(DisabledRegisterActivity.this, WebViewActivity.class); //우편번호 검색 화면으로 전환
                 startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                 break;
 
