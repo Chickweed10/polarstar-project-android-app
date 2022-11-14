@@ -1,16 +1,16 @@
 package com.example.polarstarproject;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+//장애인 메뉴
 public class DisabledMenuActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "DisabledMenuActivity";
     Button menuBtMyProfl, menuBtOthProfl, menuBtMapCk, menuBtSettings;
 
     @Override
@@ -33,56 +33,22 @@ public class DisabledMenuActivity extends AppCompatActivity implements View.OnCl
     protected void onResume(){ //Activity가 사용자와 상호작용하면
         super.onResume();
 
-        stopLocationService(); //백그라운드 서비스 종료
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
     }
 
     @Override
     protected void onPause(){ //Activity가 잠시 멈추면
         super.onPause();
 
-
-        startLocationService(); //백그라운드 서비스 실행
+        Log.d(TAG, "멈춤");
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
     }
 
     @Override
     protected void onStop(){ //Activity가 사용자에게 보이지 않으면
         super.onStop();
 
-        startLocationService(); //백그라운드 서비스 실행
-    }
-
-    /////////////////////////////////////////백그라운드 서비스////////////////////////////////////////
-    private boolean isLocationServiceRunning() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager != null) {
-            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (LocationService.class.getName().equals(service.service.getClassName())) {
-                    if (service.foreground) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        return false;
-    }
-
-    private void startLocationService() { //서비스 실행
-        if (!isLocationServiceRunning()) {
-            Intent intent = new Intent(getApplicationContext(), LocationService.class);
-            intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
-            startService(intent);
-            //Toast.makeText(this, "Location service started", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void stopLocationService() { //서비스 종료
-        if (isLocationServiceRunning()) {
-            Intent intent = new Intent(getApplicationContext(), LocationService.class);
-            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
-            startService(intent);
-            //Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
-        }
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
     }
 
     @Override

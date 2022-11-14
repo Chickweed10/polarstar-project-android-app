@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
-import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -81,6 +80,27 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
         storageRef = storage.getReference();
 
         classificationUser(user.getUid());
+    }
+
+    @Override
+    protected void onResume(){ //Activity가 사용자와 상호작용하면
+        super.onResume();
+
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+    }
+
+    @Override
+    protected void onPause(){ //Activity가 잠시 멈추면
+        super.onPause();
+
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+    }
+
+    @Override
+    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
+        super.onStop();
+
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////

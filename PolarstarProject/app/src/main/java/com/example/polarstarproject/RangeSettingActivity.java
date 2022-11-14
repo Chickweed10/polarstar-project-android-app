@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,8 +38,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -59,8 +56,6 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class RangeSettingActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -179,6 +174,29 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             }
         });
     }
+
+    @Override
+    protected void onResume(){ //Activity가 사용자와 상호작용하면
+        super.onResume();
+
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+    }
+
+    @Override
+    protected void onPause(){ //Activity가 잠시 멈추면
+        super.onPause();
+
+
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+    }
+
+    @Override
+    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
+        super.onStop();
+
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) { //활동 일시중지 시, 상태저장
