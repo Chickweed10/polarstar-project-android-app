@@ -498,7 +498,31 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 @Override
                 public void run() {
                     //2초마다 실행
-                    firebaseUpdateRoute(user, routeLatitude, routeLongitude);
+                    LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
+                    String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                    Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //보호자 테이블 조회
+                    routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @SuppressLint("DefaultLocale")
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Route route = new Route();
+                            for(DataSnapshot ds : snapshot.getChildren()){
+                                route = ds.getValue(Route.class);
+                            }
+                            
+                            if(String.format("%.7f", routeLatitude).equals(String.format("%.7f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
+                                if(String.format("%.7f", routeLongitude).equals(String.format("%.7f", route.getLongitude())) == false){
+                                    firebaseUpdateRoute(user, routeLatitude, routeLongitude); //DB에 경로 업로드
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             };
             timer.schedule(timerTask,0,2000);
@@ -537,7 +561,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
-    private void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
+    public void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
         Timer timer = new Timer();
 
         TimerTask timerTask = new TimerTask() {
