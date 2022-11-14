@@ -1,21 +1,14 @@
 package com.example.polarstarproject;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.app.DatePickerDialog; //달력
-import android.view.ViewGroup;
 import android.widget.DatePicker; //달력
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,6 +93,30 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+
+    @Override
+    protected void onResume(){ //Activity가 사용자와 상호작용하면
+        super.onResume();
+
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+    }
+
+    @Override
+    protected void onPause(){ //Activity가 잠시 멈추면
+        super.onPause();
+
+
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+    }
+
+    @Override
+    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
+        super.onStop();
+
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+    }
+
+
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.O)

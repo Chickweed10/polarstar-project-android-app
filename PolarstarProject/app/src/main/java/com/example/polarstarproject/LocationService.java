@@ -65,14 +65,14 @@ public class LocationService extends Service {
     String counterpartyUID; //상대방 UID
     LatLng counterpartyCurPoint; //상대방 실시간 위치
 
-    Connect myConnect;
+    Connect myConnect; //내 연결 객체
 
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
     double disabledAddressLongitude, disabledAddressLatitude; //상대방 집 주소
     boolean departureFlag, arrivalFlag = false; //출도착 플래그
-    String counterpartyName;
+    String counterpartyName; //상대방 이름
 
     RealTimeLocationActivity realTimeLocationActivity;
 
@@ -97,13 +97,13 @@ public class LocationService extends Service {
                 user = mAuth.getCurrentUser();
                 realTimeLocationActivity.realTimeDeviceLocationBackground(user, latitude, longitude); //firebase에 실시간 위치 업데이트
 
-                classificationUserBackground(); //사용자 구별
+                classificationUserBackground(); //사용자 구별 -> 보호자면 장애인 UID 가져오기 -> 장애인 위치 가져오기
 
-                if(classificationUserFlag == 1){
+                if(classificationUserFlag == 1){ //장애인일 경우
                     realTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
                 }
-                else if(classificationUserFlag == 2){      // 클릭시 실행할 activity를 지정
-                    reference.child("disabled").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
+                else if(classificationUserFlag == 2){ //보호자일 경우
+                    reference.child("disabled").orderByKey().equalTo(counterpartyUID). //disabled 테이블에서 상대방 조회
                             addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -111,10 +111,10 @@ public class LocationService extends Service {
                             for(DataSnapshot ds : snapshot.getChildren()){
                                 disabled = ds.getValue(Disabled.class);
                             }
-                            if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
-                                counterpartyName = disabled.getName();
-                                if(counterpartyCurPoint != null){
-                                    departureArrivalNotification(); //출도착 판단
+                            if (disabled.getName()!= null && !disabled.getName().isEmpty()) { //상대방 이름 존재할 경우
+                                counterpartyName = disabled.getName(); //상대방 이름 가져오기
+                                if(counterpartyCurPoint != null){ //장애인 위치가 null이 아닐 경우
+                                    departureArrivalNotification(); //출도착 판단 함수 호출
                                 }
                             }
                             else {
@@ -138,13 +138,13 @@ public class LocationService extends Service {
         Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
         disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) { 
                 myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){ //connect 테이블에 mycode가 비어있지 않으면 장애인 일치
                     classificationUserFlag = 1;
                 }
             }
@@ -164,9 +164,9 @@ public class LocationService extends Service {
                     myConnect = ds.getValue(Connect.class);
                 }
 
-                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){ //connect 테이블에 mycode가 비어있지 않으면 보호자 일치
                     classificationUserFlag = 2;
-                    getOtherUID();
+                    getOtherUID(); //상대방 uid 가져오기
                 }
             }
 
@@ -180,7 +180,7 @@ public class LocationService extends Service {
     /////////////////////////////////////////장애인 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
         Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
-        query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
+        query.addListenerForSingleValueEvent(new ValueEventListener() { //상대 장애인 코드로 장애인 uid 가져오기
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
@@ -215,8 +215,8 @@ public class LocationService extends Service {
                 if (!snapshot.exists()) {
                     Log.w(TAG, "상대방 실시간 위치 오류");
                 }
-                else {
-                    counterpartyCurPoint = new LatLng(realTimeLocation.latitude, realTimeLocation.longitude);
+                else { //상대 위치 존재할 경우
+                    counterpartyCurPoint = new LatLng(realTimeLocation.latitude, realTimeLocation.longitude); //상대방 위치 가져오기
                     return;
                 }
             }
@@ -247,7 +247,7 @@ public class LocationService extends Service {
                         @Override
                         public void run() {
                             geoCoding(finalAddress);
-                        }
+                        } //지오코딩
                     }).start();
                 }
             }
@@ -259,7 +259,7 @@ public class LocationService extends Service {
         });
     }
 
-    private void geoCoding(String address) {
+    private void geoCoding(String address) { //주소를 위도, 경도로 지오코딩
         try{
             BufferedReader bufferedReader;
             StringBuilder stringBuilder = new StringBuilder();
@@ -317,7 +317,7 @@ public class LocationService extends Service {
     }
 
     public void departureArrivalCheck(){ //출발 도착 판단 후 알림
-        Query query = reference.child("departurearrivalstatus").orderByKey().equalTo(counterpartyUID);
+        Query query = reference.child("departurearrivalstatus").orderByKey().equalTo(counterpartyUID); //상대 장애인 출도착 flag 조회
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

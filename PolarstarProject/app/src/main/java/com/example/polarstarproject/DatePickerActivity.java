@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+//달력 날짜 선택
 public class DatePickerActivity extends AppCompatActivity {
 
     private int mYear =0, mMonth=0, mDay=0;

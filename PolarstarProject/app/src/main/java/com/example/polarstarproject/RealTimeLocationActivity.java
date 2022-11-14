@@ -1,10 +1,7 @@
 package com.example.polarstarproject;
 
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -127,7 +124,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     public boolean departureFlag, arrivalFlag, inFlag, outFlag = false; //출발, 도착, 복귀, 이탈 플래그
 
     int permissionFlag = 0; //위치 권한 플래그
-    
+
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
 
@@ -144,10 +141,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         MapsInitializer.initialize(this);
         count = 0; //카운트 초기화
-        
+
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
         setNotificationIntent();
-        
+
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
@@ -206,11 +203,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
 
-    /*@Override
+    @Override
     protected void onResume(){ //Activity가 사용자와 상호작용하면
         super.onResume();
 
-        stopLocationService(); //백그라운드 서비스 종료
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
     }
 
     @Override
@@ -218,15 +215,15 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         super.onPause();
 
 
-        startLocationService(); //백그라운드 서비스 실행
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
     }
 
     @Override
     protected void onStop(){ //Activity가 사용자에게 보이지 않으면
         super.onStop();
 
-        startLocationService(); //백그라운드 서비스 실행
-    }*/
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+    }
 
 
     @Override
@@ -237,40 +234,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
         super.onSaveInstanceState(outState);
     }
-
-    /////////////////////////////////////////백그라운드 서비스////////////////////////////////////////
-    /*private boolean isLocationServiceRunning() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager != null) {
-            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (LocationService.class.getName().equals(service.service.getClassName())) {
-                    if (service.foreground) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        return false;
-    }
-
-    private void startLocationService() { //서비스 실행
-        if (!isLocationServiceRunning()) {
-            Intent intent = new Intent(getApplicationContext(), LocationService.class);
-            intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
-            startService(intent);
-            Toast.makeText(this, "Location service started", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void stopLocationService() { //서비스 종료
-        if (isLocationServiceRunning()) {
-            Intent intent = new Intent(getApplicationContext(), LocationService.class);
-            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
-            startService(intent);
-            Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
-        }
-    }*/
 
     public void realTimeDeviceLocationBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 실시간 위치 갱신
         firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
@@ -505,7 +468,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private void firebaseUpdateLocation(FirebaseUser user, double latitude, double longitude) { //firebase에 실시간 위치 저장
         routeLatitude = latitude;
         routeLongitude = longitude;
-        
+
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
         Log.w(TAG, "firebaseUpdate: " + latitude + " " + longitude);
@@ -616,7 +579,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
                     }
                 }
-                
+
                 else {
 
                 }
@@ -860,8 +823,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 bufferedReader.close();
                 conn.disconnect();
-        }
-    } catch (ProtocolException e) {
+            }
+        } catch (ProtocolException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -926,7 +889,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         }
     }
-    
+
     /////////////////////////////////////////장애인 추적불가 알림////////////////////////////////////////
     private void trackingStatusCheck() {
         Query disabledQuery = reference.child("trackingstatus").orderByKey().equalTo(counterpartyUID); //추적불가 상태 검사
@@ -1033,7 +996,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             });
         }
     }
-    
+
     /////////////////////////////////////////알림////////////////////////////////////////
     public void createNotificationChannel(String channelId, String channelName, int importance) { //알림 초기화
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
