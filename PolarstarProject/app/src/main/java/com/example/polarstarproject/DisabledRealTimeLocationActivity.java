@@ -9,24 +9,28 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
@@ -53,6 +57,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -78,7 +83,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
+//장애인 실시간 위치
+public class DisabledRealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
+    Toolbar toolbar;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+
+    private final long finishtimeed = 2000; //뒤로가기 기준 시간
+    private long presstime = 0; //뒤로가기 버튼 누른 시간
+
     public static Context context_R; // 다른 엑티비티에서의 접근을 위해 사용
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -131,8 +144,49 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context_R = this;
-        setContentView(R.layout.activity_realtime_location);
+        setContentView(R.layout.activity_realtime_location_disabled);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
+        getSupportActionBar().setTitle("");
+
+        Resources res = getResources();
+        Drawable drawable = res.getDrawable(R.drawable.ic_menu, getTheme()); //Vector Asset 렌더링
+        getSupportActionBar().setHomeAsUpIndicator(drawable); //왼쪽 상단 버튼 아이콘 지정
+
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_disabled);
+        navigationView = (NavigationView)findViewById(R.id.navigation_view_disabled);
+
+        //네비게이션 바
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.item_myinfo: //내 정보
+                        Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
+                        startActivity(myInfoIntent);
+                        finish(); //내 정보 화면으로 이동
+                        break;
+
+                    case R.id.item_otherinfo: //상대 정보
+                        Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationGuardianCheckActivity.class);
+                        startActivity(otherInfoIntent);
+                        finish(); //상대 정보 화면으로 이동
+                        break;
+
+                    case R.id.item_setting: //설정
+                        Intent settingIntent = new Intent(getApplicationContext(), MenuSettingActivity.class);
+                        startActivity(settingIntent);
+                        finish(); //설정 화면으로 이동
+                        break;
+                }
+
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
 
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
@@ -164,20 +218,42 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         mapFragment.getMapAsync(this);
 
         counterpartyLocationScheduler();
-
-        //거주지 버튼 클릭시 액티비티 전환
-        Button goSet = (Button) findViewById(R.id.goSet);
-        goSet.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent intent = new Intent(getApplicationContext(), RangeSettingActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
+    /////////////////////////////////////////네비게이션 바 설정////////////////////////////////////////
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{ // 왼쪽 상단 버튼 눌렀을 때
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() { //뒤로가기 했을 때
+        long tempTime = System.currentTimeMillis();
+        long intervalTime = tempTime - presstime;
+
+        if (0 <= intervalTime && finishtimeed >= intervalTime)
+        {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
+            finish();
+        }
+        else
+        {
+            presstime = tempTime;
+            Toast.makeText(getApplicationContext(), "한번 더 누르시면 앱이 종료됩니다", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /////////////////////////////////////////알림 화면 설정////////////////////////////////////////
     public void setNotificationIntent(){
-        notificationIntent = new Intent(RealTimeLocationActivity.this, RealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
+        notificationIntent = new Intent(DisabledRealTimeLocationActivity.this, DisabledRealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
     }
 
@@ -197,7 +273,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             EmailVerified emailVerified = new EmailVerified(false);
             reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
 
-            Toast.makeText(RealTimeLocationActivity.this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show(); //이메일 인증 요구 토스트 알림
+            //Toast.makeText(DisabledRealTimeLocationActivity.this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show(); //이메일 인증 요구 토스트 알림
 
             Log.d(TAG, "메일 인증 실패");
         }
@@ -656,7 +732,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         counterpartyMarker();
                     }
                     else {
-                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DisabledRealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -680,7 +756,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         counterpartyMarker();
                     }
                     else {
-                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DisabledRealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }

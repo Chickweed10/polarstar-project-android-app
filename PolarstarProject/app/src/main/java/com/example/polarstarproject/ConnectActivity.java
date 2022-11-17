@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +14,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +36,8 @@ import java.util.TimerTask;
 
 //상대방과 1:1 연결
 public class ConnectActivity extends AppCompatActivity implements View.OnClickListener{
+    Toolbar toolbar;
+
     TextView tvMyCode;
     EditText editOtherCode;
     Button btnConnect, btnCopy; //UI 변수들
@@ -54,6 +60,11 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
+        getSupportActionBar().setTitle("상대방과 연결");
+
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
@@ -66,6 +77,27 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         btnCopy.setOnClickListener(this);
 
         classificationUser(user.getUid()); //사용자 구별
+    }
+
+    /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                finish(); //로그인 화면으로 이동
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onBackPressed() { //뒤로가기 했을 때
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish(); //로그인 화면으로 이동
     }
 
     /////////////////////////////////////////사용자 구별, 내 코드값 가져오기////////////////////////////////////////
@@ -143,7 +175,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
 
                         //매칭 성공시 장애인 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, DisabledMenuActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, DisabledRealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
@@ -177,7 +209,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
 
                         //매칭 성공시 보호자 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, GuardianMenuActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, GuardianRealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
@@ -228,7 +260,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timerTask.cancel(); //타이머 종료
                         
                         //장애인 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, DisabledMenuActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, DisabledRealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -258,7 +290,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timerTask.cancel(); //타이머 종료
 
                         //보호자 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, GuardianMenuActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, GuardianRealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                     }

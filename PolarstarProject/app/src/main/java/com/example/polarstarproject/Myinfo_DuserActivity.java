@@ -1,8 +1,10 @@
 package com.example.polarstarproject;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,8 +16,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,12 +32,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 
 public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnClickListener{
+    Toolbar toolbar;
+
     private DatabaseReference mDatabase;
 
     ImageView Profl;
@@ -50,10 +57,17 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
     private static final String TAG = "MyinfoDuser";
 
+    int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myinfo_duser);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
+        getSupportActionBar().setTitle("내 정보");
 
         mDatabase = FirebaseDatabase.getInstance().getReference(); //DatabaseReference의 인스턴스
         mAuth = FirebaseAuth.getInstance();
@@ -113,6 +127,88 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             });
         }
         readUser(myUid);
+    }
+
+    /////////////////////////////////////////사용자 구별////////////////////////////////////////
+    private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query disabledQuery = mDatabase.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
+        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    classificationUserFlag = 1;
+                    skipScreen(); //화면 넘어가기
+                }
+                else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Query guardianQuery = mDatabase.child("connect").child("guardian").orderByKey().equalTo(uid); //보호자 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    classificationUserFlag = 2;
+                    skipScreen(); //화면 넘어가기
+                }
+                else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
+                classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onBackPressed() { //뒤로가기 했을 때
+        classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
+    }
+
+    /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
+    public void skipScreen(){
+        if(classificationUserFlag == 1){ //장애인
+            Intent intent = new Intent(getApplicationContext(), DisabledRealTimeLocationActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else if(classificationUserFlag == 2){ //보호자
+            Intent intent = new Intent(getApplicationContext(), GuardianRealTimeLocationActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void readUser(String uid) {

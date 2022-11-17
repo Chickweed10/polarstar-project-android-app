@@ -20,7 +20,7 @@
         android:label="북극성"
         android:roundIcon="@drawable/polaris_app_logo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PolarstarProject">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -45,9 +45,8 @@
         <activity android:name=".WebViewActivity" />
         <activity android:name=".FindActivity" />
         <activity android:name=".ConnectActivity" />
-        <activity android:name=".DisabledMenuActivity" />
-        <activity android:name=".GuardianMenuActivity" />
-        <activity android:name=".RealTimeLocationActivity" />
+        <activity android:name=".DisabledRealTimeLocationActivity" />
+        <activity android:name=".GuardianRealTimeLocationActivity" />
         <activity android:name=".RouteActivity" />
         <activity android:name=".Myinfo_DuserActivity" />
         <activity android:name=".Myinfo_Duser_nActivity" />

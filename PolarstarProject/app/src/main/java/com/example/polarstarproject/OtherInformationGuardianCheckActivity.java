@@ -1,9 +1,11 @@
 package com.example.polarstarproject;
 
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
@@ -30,6 +33,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ //보호자 정보 (본인이 장애인)
+    Toolbar toolbar;
+
     ImageView othProfl;
     EditText othProflName, othProflPhoneNum, othProflAddress, othProflDetailAdd, othProflBirth;
     RadioGroup othProflBtGender;
@@ -55,6 +60,11 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otherinfo_duser);
 
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
+        getSupportActionBar().setTitle("상대 정보");
+
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
@@ -74,6 +84,37 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
         storageRef = storage.getReference();
 
         classificationUser(user.getUid());
+    }
+
+    /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
+                skipScreen(); //사용자 구별 후 실시간 위치 화면으로 돌아감
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onBackPressed() { //뒤로가기 했을 때
+        skipScreen(); //사용자 구별 후 실시간 위치 화면으로 돌아감
+    }
+
+    /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
+    public void skipScreen(){
+        if(classificationUserFlag == 1){ //장애인
+            Intent intent = new Intent(getApplicationContext(), DisabledRealTimeLocationActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else if(classificationUserFlag == 2){ //보호자
+            Intent intent = new Intent(getApplicationContext(), GuardianRealTimeLocationActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override

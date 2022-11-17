@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
@@ -27,6 +28,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
@@ -64,6 +68,8 @@ import java.util.regex.Pattern;
 
 //장애인 회원가입
 public class DisabledRegisterActivity extends AppCompatActivity implements View.OnClickListener {
+    Toolbar toolbar;
+
     EditText joinEmail, joinPW, joinPWCk, joinName, joinPhoneNum, joinPNCk, joinBirth, joinRoadAddress, joinDetailAddress;
     Spinner joinDrDisG;
     RadioGroup joinBtGender;
@@ -92,6 +98,11 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_duser);//회원가입 xml 파일 이름
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
+        getSupportActionBar().setTitle("회원가입");
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -133,6 +144,27 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 }
             }
         });
+    }
+
+    /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
+                Intent intent = new Intent(getApplicationContext(), UserSelectActivity.class);
+                startActivity(intent);
+                finish(); //사용자 선택 화면으로 이동
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onBackPressed() { //뒤로가기 했을 때
+        Intent intent = new Intent(getApplicationContext(), UserSelectActivity.class);
+        startActivity(intent);
+        finish(); //사용자 선택 화면으로 이동
     }
 
     /////////////////////////////////////////프로필 사진 등록////////////////////////////////////////
