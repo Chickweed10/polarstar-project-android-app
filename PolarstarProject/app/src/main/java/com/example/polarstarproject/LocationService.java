@@ -10,7 +10,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
@@ -21,13 +20,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.RealTimeLocation;
-import com.example.polarstarproject.Domain.TrackingStatus;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -74,12 +71,12 @@ public class LocationService extends Service {
     boolean departureFlag, arrivalFlag = false; //출도착 플래그
     String counterpartyName; //상대방 이름
 
-    RealTimeLocationActivity realTimeLocationActivity;
+    GuardianRealTimeLocationActivity guardianRealTimeLocationActivity;
 
     Intent notificationIntent;
 
     public LocationService(){
-        realTimeLocationActivity = new RealTimeLocationActivity();
+        guardianRealTimeLocationActivity = new GuardianRealTimeLocationActivity();
     }
 
     private LocationCallback mLocationCallback = new LocationCallback() {
@@ -95,12 +92,12 @@ public class LocationService extends Service {
 
                 mAuth = FirebaseAuth.getInstance();
                 user = mAuth.getCurrentUser();
-                realTimeLocationActivity.realTimeDeviceLocationBackground(user, latitude, longitude); //firebase에 실시간 위치 업데이트
+                guardianRealTimeLocationActivity.realTimeDeviceLocationBackground(user, latitude, longitude); //firebase에 실시간 위치 업데이트
 
                 classificationUserBackground(); //사용자 구별 -> 보호자면 장애인 UID 가져오기 -> 장애인 위치 가져오기
 
                 if(classificationUserFlag == 1){ //장애인일 경우
-                    realTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
+                    guardianRealTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
                 }
                 else if(classificationUserFlag == 2){ //보호자일 경우
                     reference.child("disabled").orderByKey().equalTo(counterpartyUID). //disabled 테이블에서 상대방 조회
@@ -469,7 +466,7 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
-        notificationIntent = new Intent(this, RealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
+        notificationIntent = new Intent(this, GuardianRealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         if (intent != null) {

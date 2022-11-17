@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -58,6 +60,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class RangeSettingActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
+    Toolbar toolbar;
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -107,6 +111,11 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rangesetting);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
+        getSupportActionBar().setTitle("보호구역");
 
         rName = findViewById(R.id.rName);
         rName.setText("보호구역");
@@ -173,6 +182,27 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
             }
         });
+    }
+
+    /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
+                Intent intent = new Intent(getApplicationContext(), GuardianRealTimeLocationActivity.class);
+                startActivity(intent);
+                finish(); //로그인 화면으로 이동
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onBackPressed() { //뒤로가기 했을 때
+        Intent intent = new Intent(getApplicationContext(), GuardianRealTimeLocationActivity.class);
+        startActivity(intent);
+        finish(); //로그인 화면으로 이동
     }
 
     @Override

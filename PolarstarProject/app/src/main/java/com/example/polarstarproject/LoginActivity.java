@@ -54,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseUser user;
     int classificationUserFlag = 0, connectCheckFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 연결 여부 확인 (0: 연결안됨, 1: 연결됨)
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                classificationUser(user.getUid()); //연결 여부 확인해서 화면 넘어가기
+                                classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
                                 Toast.makeText(LoginActivity.this,
                                         "로그인 성공",
                                         Toast.LENGTH_SHORT).show();
@@ -128,8 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                                         autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
                                         //}
                                     }
-
-                                    classificationUser(user.getUid()); //연결 여부 확인해서 화면 넘어가기
+                                    classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
 
                                 } else {
                                     Toast.makeText(LoginActivity.this,
@@ -339,12 +337,12 @@ public class LoginActivity extends AppCompatActivity {
         }
         else { //이미 연결되어 있는 경우
             if(classificationUserFlag == 1){ //장애인
-                Intent intent = new Intent(LoginActivity.this, DisabledMenuActivity.class);
+                Intent intent = new Intent(LoginActivity.this, DisabledRealTimeLocationActivity.class);
                 startActivity(intent);
                 finish();
             }
             else if(classificationUserFlag == 2){ //보호자
-                Intent intent = new Intent(LoginActivity.this, GuardianMenuActivity.class);
+                Intent intent = new Intent(LoginActivity.this, GuardianRealTimeLocationActivity.class);
                 startActivity(intent);
                 finish();
             }
