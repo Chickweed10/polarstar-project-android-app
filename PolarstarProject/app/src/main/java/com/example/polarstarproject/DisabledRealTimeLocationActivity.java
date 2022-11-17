@@ -92,8 +92,6 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
     private final long finishtimeed = 2000; //뒤로가기 기준 시간
     private long presstime = 0; //뒤로가기 버튼 누른 시간
 
-    public static Context context_R; // 다른 엑티비티에서의 접근을 위해 사용
-
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
