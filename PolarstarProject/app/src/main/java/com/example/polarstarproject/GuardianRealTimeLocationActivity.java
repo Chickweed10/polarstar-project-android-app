@@ -16,10 +16,14 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,10 +36,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
+import com.example.polarstarproject.Domain.Guardian;
 import com.example.polarstarproject.Domain.InOutStatus;
 import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
@@ -66,6 +72,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -146,6 +154,9 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_realtime_location_guardian);
 
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -158,6 +169,45 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
 
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_guardian);
         navigationView = (NavigationView)findViewById(R.id.navigation_view_gaurdian);
+        navigationView.setItemIconTintList(null); //설정 안하면 회색
+
+        View headerView = navigationView.getHeaderView(0);
+        ImageView headerViewImageContent = (ImageView) headerView.findViewById(R.id.iv_image);
+        TextView headerViewNameContent = (TextView) headerView.findViewById(R.id.tv_name); //네비게이션 바 프로필
+
+        //네비게이션 바 프로필 사진 띄우기
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference myPro = storageRef.child("profile").child(user.getUid());
+        if (myPro != null) {
+            myPro.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    //이미지 로드 성공시
+                    Glide.with(headerView).load(uri).into(headerViewImageContent);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    //이미지 로드 실패시
+                    Log.w(TAG, "이미지 로드 실패");
+                }
+            });
+        }
+
+        //네비게이션 바 이름 띄우기
+        reference.child("guardian").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Guardian guardian = snapshot.getValue(Guardian.class);
+                headerViewNameContent.setText(guardian.getName());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { //참조에 액세스 할 수 없을 때 호출
+                Toast.makeText(getApplicationContext(),"데이터를 가져오는데 실패했습니다" , Toast.LENGTH_LONG).show();
+            }
+        });
 
         //네비게이션 바
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -212,9 +262,6 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
 
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
         setNotificationIntent();
-
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
 
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsListener = new GPSListener();

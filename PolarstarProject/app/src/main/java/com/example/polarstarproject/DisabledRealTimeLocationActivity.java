@@ -16,10 +16,14 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,10 +36,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.EmailVerified;
+import com.example.polarstarproject.Domain.Guardian;
 import com.example.polarstarproject.Domain.InOutStatus;
 import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
@@ -66,6 +72,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -87,7 +97,7 @@ import java.util.TimerTask;
 public class DisabledRealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
     Toolbar toolbar;
     DrawerLayout drawerLayout;
-    NavigationView navigationView;
+    NavigationView navigationView; //네비게이션 바
 
     private final long finishtimeed = 2000; //뒤로가기 기준 시간
     private long presstime = 0; //뒤로가기 버튼 누른 시간
@@ -95,7 +105,8 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
-    private FirebaseUser user; //firebase 변수
+    private FirebaseUser user;
+    //firebase 변수
 
     private static final String TAG = "RealTimeLocation";
     public GoogleMap map;
@@ -144,6 +155,9 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_realtime_location_disabled);
 
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -156,6 +170,46 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
 
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_disabled);
         navigationView = (NavigationView)findViewById(R.id.navigation_view_disabled);
+        navigationView.setItemIconTintList(null); //설정 안하면 회색
+
+        View headerView = navigationView.getHeaderView(0);
+        ImageView headerViewImageContent = (ImageView) headerView.findViewById(R.id.iv_image);
+        TextView headerViewNameContent = (TextView) headerView.findViewById(R.id.tv_name); //네비게이션 바 프로필
+
+        //네비게이션 바 프로필 사진 띄우기
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference myPro = storageRef.child("profile").child(user.getUid());
+        if (myPro != null) {
+            myPro.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    //이미지 로드 성공시
+                    Glide.with(headerView).load(uri).into(headerViewImageContent);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    //이미지 로드 실패시
+                    Log.w(TAG, "이미지 로드 실패");
+                }
+            });
+        }
+        
+        //네비게이션 바 이름 띄우기
+        reference.child("disabled").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Disabled disabled = snapshot.getValue(Disabled.class);
+                headerViewNameContent.setText(disabled.getName());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { //참조에 액세스 할 수 없을 때 호출
+                Toast.makeText(getApplicationContext(),"데이터를 가져오는데 실패했습니다" , Toast.LENGTH_LONG).show();
+            }
+        });
+
 
         //네비게이션 바
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -199,9 +253,6 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
         setNotificationIntent();
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsListener = new GPSListener();
 
@@ -226,6 +277,8 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
         switch (item.getItemId()){
             case android.R.id.home:{ // 왼쪽 상단 버튼 눌렀을 때
                 drawerLayout.openDrawer(GravityCompat.START);
+
+
                 return true;
             }
         }
