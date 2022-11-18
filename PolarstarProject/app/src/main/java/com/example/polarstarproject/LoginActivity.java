@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
     private DatabaseReference reference = database.getReference();
     private FirebaseUser user;
     int classificationUserFlag = 0, connectCheckFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 연결 여부 확인 (0: 연결안됨, 1: 연결됨)
+    String email, pwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,36 +108,40 @@ public class LoginActivity extends AppCompatActivity {
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = mEmailText.getText().toString().trim();
-                String pwd = mPasswordText.getText().toString().trim();
-                firebaseAuth.signInWithEmailAndPassword(email, pwd)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this,
-                                            "로그인 성공",
-                                            Toast.LENGTH_SHORT).show();
-                                    if(autoCheck.isChecked()) {
-                                        //if(setId == null && setPassword == null) {
-                                        // 로그인 데이터 저장
-                                        autoLoginEdit.putString("Id", mEmailText.getText().toString().trim());
-                                        autoLoginEdit.putString("Password", mPasswordText.getText().toString().trim());
-                                        autoLoginEdit.commit(); // commit 해야지만 저장됨
+                try { // 빈칸 로그인 예외처리
+                    email = mEmailText.getText().toString().trim();
+                    pwd = mPasswordText.getText().toString().trim();
 
-                                        autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
-                                        //}
+                    firebaseAuth.signInWithEmailAndPassword(email, pwd)
+                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(LoginActivity.this,
+                                                "로그인 성공",
+                                                Toast.LENGTH_SHORT).show();
+                                        if (autoCheck.isChecked()) {
+                                            //if(setId == null && setPassword == null) {
+                                            // 로그인 데이터 저장
+                                            autoLoginEdit.putString("Id", mEmailText.getText().toString().trim());
+                                            autoLoginEdit.putString("Password", mPasswordText.getText().toString().trim());
+                                            autoLoginEdit.commit(); // commit 해야지만 저장됨
+
+                                            autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
+                                            //}
+                                        }
+                                        classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
+
+                                    } else {
+                                        Toast.makeText(LoginActivity.this,
+                                                "로그인 오류",
+                                                Toast.LENGTH_SHORT).show();
                                     }
-                                    classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
-
-                                } else {
-                                    Toast.makeText(LoginActivity.this,
-                                            "로그인 오류",
-                                            Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                            });
+                }catch (IllegalArgumentException e){
 
+                }
             }
         });
 
