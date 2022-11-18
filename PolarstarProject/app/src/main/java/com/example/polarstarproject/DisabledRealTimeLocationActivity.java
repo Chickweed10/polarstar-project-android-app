@@ -186,6 +186,8 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
             }
         });
 
+        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
+
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
@@ -276,29 +278,6 @@ public class DisabledRealTimeLocationActivity extends AppCompatActivity implemen
             Log.d(TAG, "메일 인증 실패");
         }
     }
-
-    @Override
-    protected void onResume(){ //Activity가 사용자와 상호작용하면
-        super.onResume();
-
-        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
-    }
-
-    @Override
-    protected void onPause(){ //Activity가 잠시 멈추면
-        super.onPause();
-
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
-    @Override
-    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
-        super.onStop();
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) { //활동 일시중지 시, 상태저장

@@ -58,9 +58,11 @@ public class MenuSettingActivity extends AppCompatActivity {
         btLogout = findViewById(R.id.btLogout);
         btWithdrawal = findViewById(R.id.btWithdrawal);
 
-        btLogout.setOnClickListener(new View.OnClickListener() {
+        btLogout.setOnClickListener(new View.OnClickListener() { //로그아웃
             @Override
             public void onClick(View v) {
+                foregroundService(); //포그라운드 서비스 종료
+
                 autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
                 autoEdit.clear();
                 autoEdit.commit();
@@ -68,9 +70,11 @@ public class MenuSettingActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        btWithdrawal.setOnClickListener(new View.OnClickListener() {
+        btWithdrawal.setOnClickListener(new View.OnClickListener() { //회원탈퇴
             @Override
             public void onClick(View v) {
+                foregroundService(); //포그라운드 서비스 종료
+
                 user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -82,6 +86,10 @@ public class MenuSettingActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void foregroundService() {
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+    } //포그라운드 서비스 종료
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회

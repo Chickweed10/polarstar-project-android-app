@@ -117,28 +117,6 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity{ /
         }
     }
 
-    @Override
-    protected void onResume(){ //Activity가 사용자와 상호작용하면
-        super.onResume();
-
-        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
-    }
-
-    @Override
-    protected void onPause(){ //Activity가 잠시 멈추면
-        super.onPause();
-
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
-    @Override
-    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
-        super.onStop();
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
         Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
