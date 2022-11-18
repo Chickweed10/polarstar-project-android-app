@@ -25,6 +25,7 @@ import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.RealTimeLocation;
+import com.example.polarstarproject.Domain.Route;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -48,6 +49,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 //백그라운드 위치 서비스
 public class LocationService extends Service {
@@ -97,7 +101,31 @@ public class LocationService extends Service {
                 classificationUserBackground(); //사용자 구별 -> 보호자면 장애인 UID 가져오기 -> 장애인 위치 가져오기
 
                 if(classificationUserFlag == 1){ //장애인일 경우
-                    guardianRealTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
+                    LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
+                    String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                    Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //보호자 테이블 조회
+                    routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @SuppressLint("DefaultLocale")
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Route route = new Route();
+                            for(DataSnapshot ds : snapshot.getChildren()){
+                                route = ds.getValue(Route.class);
+                            }
+
+                            if(String.format("%.7f", latitude).equals(String.format("%.7f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
+                                if(String.format("%.7f", longitude).equals(String.format("%.7f", route.getLongitude())) == false){
+                                    guardianRealTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
                 else if(classificationUserFlag == 2){ //보호자일 경우
                     reference.child("disabled").orderByKey().equalTo(counterpartyUID). //disabled 테이블에서 상대방 조회

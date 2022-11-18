@@ -40,19 +40,11 @@ public class RefactoringForegroundService {
     @SuppressLint("LongLogTag")
     public static void stopLocationService(Context context) { //서비스 종료
         if (isLocationServiceRunning(context)) {
-            new Handler().postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    //딜레이 후 시작할 코드 작성
-                    Intent intent = new Intent(context, LocationService.class);
-                    intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
-                    context.startService(intent);
-                    //Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
-                    Log.w(TAG, "종료");
-                }
-            }, 600);// 0.6초 정도 딜레이를 준 후 시작
+            Intent intent = new Intent(context, LocationService.class);
+            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
+            context.startService(intent);
+            //Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "종료");
         }
     }
 }

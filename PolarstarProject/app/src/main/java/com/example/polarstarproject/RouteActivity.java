@@ -125,29 +125,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         finish(); //로그인 화면으로 이동
     }
 
-    @Override
-    protected void onResume(){ //Activity가 사용자와 상호작용하면
-        super.onResume();
-
-        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
-    }
-
-    @Override
-    protected void onPause(){ //Activity가 잠시 멈추면
-        super.onPause();
-
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
-    @Override
-    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
-        super.onStop();
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
-
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.O)

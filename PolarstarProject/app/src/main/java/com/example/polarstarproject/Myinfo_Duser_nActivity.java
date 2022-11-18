@@ -265,8 +265,6 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
     protected void onResume(){ //Activity가 사용자와 상호작용하면
         super.onResume();
 
-        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
-
         if(user.isEmailVerified()) {
             EmailVerified emailVerified = new EmailVerified(true);
             mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
@@ -284,21 +282,6 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
             Log.d(TAG, "메일 인증 실패");
         }
     }
-
-    @Override
-    protected void onPause(){ //Activity가 잠시 멈추면
-        super.onPause();
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
-    @Override
-    protected void onStop(){ //Activity가 사용자에게 보이지 않으면
-        super.onStop();
-
-        RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
-    }
-
 
 
     private void emailVerifiedButton(){
