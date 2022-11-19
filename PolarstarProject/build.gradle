@@ -20,6 +20,9 @@ allprojects {
         maven {
             url 'https://maven.google.com'
         }
+        maven {
+            url 'https://naver.jfrog.io/artifactory/maven/'
+        }
         mavenCentral()
         jcenter() // Warning: this repository is going to shut down soon
     }

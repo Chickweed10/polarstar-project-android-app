@@ -109,7 +109,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
-                Intent intent = new Intent(getApplicationContext(), GuardianRealTimeLocationActivity.class);
+                Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish(); //로그인 화면으로 이동
 
@@ -120,7 +120,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     @Override
     public void onBackPressed() { //뒤로가기 했을 때
-        Intent intent = new Intent(getApplicationContext(), GuardianRealTimeLocationActivity.class);
+        Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
         finish(); //로그인 화면으로 이동
     }

@@ -5,17 +5,22 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 android:orientation="vertical"
-tools:context=".DisabledRealTimeLocationActivity"
-    android:id="@+id/drawer_layout_disabled">
+tools:context=".RealTimeLocationActivity"
+    android:id="@+id/drawer_layout">
 
     <!--지도 띄우기 위한 fragment-->
     <fragment
-        android:id="@+id/map"
-        android:layout_weight="20"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context="com.example.polarstarproject.DisabledRealTimeLocationActivity" />
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        android:name="com.naver.maps.map.MapFragment" />
+
+    <!--네이버 지도 MapView 형식
+    <com.naver.maps.map.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+        -->
 
     <!--툴바-->
     <RelativeLayout
@@ -34,13 +39,13 @@ tools:context=".DisabledRealTimeLocationActivity"
 
     <!--네비게이션 드로어-->
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view_disabled"
+        android:id="@+id/navigation_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/activity_navigation_header"
-        app:menu="@menu/activity_navigation_content_disabled" />
+        app:menu="@menu/activity_navigation_content" />
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

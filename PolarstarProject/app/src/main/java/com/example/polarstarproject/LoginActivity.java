@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -94,10 +93,10 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
                                 Toast.makeText(LoginActivity.this,
                                         "로그인 성공",
                                         Toast.LENGTH_SHORT).show();
+                                classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
                             }
                         }
                     });
@@ -342,12 +341,12 @@ public class LoginActivity extends AppCompatActivity {
         }
         else { //이미 연결되어 있는 경우
             if(classificationUserFlag == 1){ //장애인
-                Intent intent = new Intent(LoginActivity.this, DisabledRealTimeLocationActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish();
             }
             else if(classificationUserFlag == 2){ //보호자
-                Intent intent = new Intent(LoginActivity.this, GuardianRealTimeLocationActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish();
             }

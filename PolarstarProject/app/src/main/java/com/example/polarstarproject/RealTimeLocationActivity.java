@@ -1,40 +1,37 @@
 package com.example.polarstarproject;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
@@ -47,22 +44,8 @@ import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
 import com.example.polarstarproject.Domain.TrackingStatus;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -74,6 +57,16 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraAnimation;
+import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.LocationTrackingMode;
+import com.naver.maps.map.MapFragment;
+import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.util.FusedLocationSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -91,52 +84,47 @@ import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//보호자 실시간 위치
-public class GuardianRealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
+//실시간 위치
+public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
     Toolbar toolbar;
     DrawerLayout drawerLayout;
-    NavigationView navigationView;
+    NavigationView navigationView; //네비게이션 바
+    private AuthorityDialog authorityDialog; //권한 다이얼로그 팝업
 
+    private static final String TAG = "RealTimeLocation";
+    
     private final long finishtimeed = 2000; //뒤로가기 기준 시간
     private long presstime = 0; //뒤로가기 버튼 누른 시간
-
-    public static Context context_R; // 다른 엑티비티에서의 접근을 위해 사용
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
-    private FirebaseUser user; //firebase 변수
+    private FirebaseUser user;
+    //firebase 변수
 
-    private static final String TAG = "RealTimeLocation";
-    public GoogleMap map;
-    private CameraPosition cameraPosition;
+    private static final int PERMISSION_REQUEST_CODE = 100;
+    private static final String[] PERMISSIONS = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    //네이버 지도
+    private FusedLocationSource mLocationSource;
+    private NaverMap mNaverMap;
 
-    private final LatLng defaultLocation = new LatLng(37.56, 126.97);
-    public static final int DEFAULT_ZOOM = 15;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public boolean locationPermissionGranted; //위치 권한
-
-    private Location lastKnownLocation;
-
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-
-    Marker myMarker;
-    MarkerOptions myLocationMarker; //내 위치 마커
-    Marker counterpartyMarker;
-    MarkerOptions counterpartyLocationMarker; //상대방 위치 마커
-
+    Marker myMarker; //내 마커
+    Marker counterpartyMarker; //상대방 마커
+    
     LatLng counterpartyCurPoint; //상대방 위치
 
-    public LocationManager manager;
-    public GPSListener gpsListener;
+    CameraUpdate cameraUpdate; //지도 카메라
+    int cameraCnt = 0; //카메라 이동 제어 위한 카운트
 
     Connect myConnect;
     String counterpartyUID = "";
     public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
     double routeLatitude, routeLongitude; //장애인 경로 저장
+    
 
     public double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
     public double distance; //거리
@@ -152,11 +140,36 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_realtime_location_guardian);
+        setContentView(R.layout.activity_realtime_location);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        //다이얼로그 밖의 화면은 흐리게 만들어줌
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        layoutParams.dimAmount = 0.8f;
+        getWindow().setAttributes(layoutParams);
+
+        //네이버 지도 객체 생성
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment)fm.findFragmentById(R.id.map);
+        if (mapFragment == null) {
+            //mapFragment = MapFragment.newInstance();
+            fm.beginTransaction().add(R.id.map, mapFragment).commit();
+        }
+
+        // getMapAsync를 호출하여 비동기로 onMapReady 콜백 메서드 호출
+        // onMapReady에서 NaverMap 객체를 받음
+        mapFragment.getMapAsync(this);
+
+        // 위치를 반환하는 구현체인 FusedLocationSource 생성
+        mLocationSource = new FusedLocationSource(this, PERMISSION_REQUEST_CODE);
+
+        counterpartyLocationScheduler();
+
+
+        ///////////////////////////////툴바 & 네비게이션 바////////////////////////////////
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -167,8 +180,8 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
         Drawable drawable = res.getDrawable(R.drawable.ic_menu, getTheme()); //Vector Asset 렌더링
         getSupportActionBar().setHomeAsUpIndicator(drawable); //왼쪽 상단 버튼 아이콘 지정
 
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_guardian);
-        navigationView = (NavigationView)findViewById(R.id.navigation_view_gaurdian);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView)findViewById(R.id.navigation_view);
         navigationView.setItemIconTintList(null); //설정 안하면 회색
 
         View headerView = navigationView.getHeaderView(0);
@@ -194,13 +207,29 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
                 }
             });
         }
-
+        
         //네비게이션 바 이름 띄우기
-        reference.child("guardian").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+        reference.child("disabled").child(user.getUid()).addValueEventListener(new ValueEventListener() { //장애인 테이블 조회
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Guardian guardian = snapshot.getValue(Guardian.class);
-                headerViewNameContent.setText(guardian.getName());
+                Disabled disabled = snapshot.getValue(Disabled.class);
+                if(disabled == null){
+                    reference.child("guardian").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Guardian guardian = snapshot.getValue(Guardian.class);
+                            headerViewNameContent.setText(guardian.getName());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.w(TAG, "사용자 오류");
+                        }
+                    });
+                }
+                else{
+                    headerViewNameContent.setText(disabled.getName());
+                }
             }
 
             @Override
@@ -209,33 +238,49 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
             }
         });
 
+
         //네비게이션 바
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.item_myinfo: //내 정보
-                        Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
-                        startActivity(myInfoIntent);
-                        finish(); //내 정보 화면으로 이동
+                        if(classificationUserFlag == 1){ //장애인일 경우
+                            Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
+                            startActivity(myInfoIntent);
+                            finish(); //내 정보 화면으로 이동
+                        }
+                        else if(classificationUserFlag == 2){ //보호자일 경우
+                            Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
+                            startActivity(myInfoIntent);
+                            finish(); //내 정보 화면으로 이동
+                        }
                         break;
 
                     case R.id.item_otherinfo: //상대 정보
-                        Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationDisableCheckActivity.class);
-                        startActivity(otherInfoIntent);
-                        finish(); //상대 정보 화면으로 이동
+                        if(classificationUserFlag == 1){ //장애인일 경우
+                            Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationGuardianCheckActivity.class);
+                            startActivity(otherInfoIntent);
+                            finish(); //상대 정보 화면으로 이동
+                        }
+                        else if(classificationUserFlag == 2){ //보호자일 경우
+                            Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationDisableCheckActivity.class);
+                            startActivity(otherInfoIntent);
+                            finish(); //상대 정보 화면으로 이동
+                        }
                         break;
 
                     case R.id.item_route: //위치 기록
-                        Intent routeIntent = new Intent(getApplicationContext(), RouteActivity.class);
-                        startActivity(routeIntent);
-                        finish(); //위치 기록 화면으로 이동
+                        if(classificationUserFlag == 1){
+                            startAuthorityDialog();
+                        }
+
                         break;
 
                     case R.id.item_range: //보호구역
-                        Intent rangeIntent = new Intent(getApplicationContext(), RangeSettingActivity.class);
-                        startActivity(rangeIntent);
-                        finish(); //보호구역 화면으로 이동
+                        if(classificationUserFlag == 1){
+                            startAuthorityDialog();
+                        }
                         break;
 
                     case R.id.item_setting: //설정
@@ -252,33 +297,17 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
 
         RefactoringForegroundService.startLocationService(this); //포그라운드 서비스 실행
 
-        if (savedInstanceState != null) {
-            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-        }
-
-        MapsInitializer.initialize(this);
         count = 0; //카운트 초기화
 
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
         setNotificationIntent();
+    }
 
-        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        gpsListener = new GPSListener();
-
-        try {
-            MapsInitializer.initialize(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        counterpartyLocationScheduler();
+    private void startAuthorityDialog(){
+        authorityDialog = new AuthorityDialog(this);
+        authorityDialog.setCancelable(false);
+        authorityDialog.show();
+        //authorityDialog.
     }
 
     /////////////////////////////////////////네비게이션 바 설정////////////////////////////////////////
@@ -287,6 +316,8 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
         switch (item.getItemId()){
             case android.R.id.home:{ // 왼쪽 상단 버튼 눌렀을 때
                 drawerLayout.openDrawer(GravityCompat.START);
+
+
                 return true;
             }
         }
@@ -314,12 +345,65 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
 
     /////////////////////////////////////////알림 화면 설정////////////////////////////////////////
     public void setNotificationIntent(){
-        notificationIntent = new Intent(GuardianRealTimeLocationActivity.this, GuardianRealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
+        notificationIntent = new Intent(RealTimeLocationActivity.this, RealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
     }
 
-    /////////////////////////////////////////안드로이드 생명주기////////////////////////////////////////
+    //////////////////////////////////////////지도 설정////////////////////////////////////////////
+    @UiThread
     @Override
+    public void onMapReady(@NonNull NaverMap naverMap) {
+        // NaverMap 객체 받아서 NaverMap 객체에 위치 소스 지정
+        mNaverMap = naverMap;
+        mNaverMap.setLocationSource(mLocationSource);
+
+        UiSettings uiSettings = mNaverMap.getUiSettings();
+        uiSettings.setLocationButtonEnabled(true); //현재 위치 버튼 활성화
+
+        mNaverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
+            @Override
+            public void onLocationChange(@NonNull Location location) {
+                // 지도상에 마커 표시
+                if(myMarker != null){
+                    myMarker.setMap(null);
+                }
+                myMarker = new Marker();
+                myMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                myMarker.setMap(naverMap);
+
+                if(cameraCnt == 0){ //초반 카메라 설정 (카메라 계속 따라오지 않게)
+                    cameraCnt++;
+                    cameraUpdate = CameraUpdate.scrollTo(new LatLng(location.getLatitude(), location.getLongitude()))
+                            .animate(CameraAnimation.Linear);
+                    //카메라 애니메이션
+                    mNaverMap.moveCamera(cameraUpdate);
+                }
+                firebaseUpdateLocation(user, location.getLatitude(), location.getLongitude());
+
+            }
+        });
+
+        // 권한확인. 결과는 onRequestPermissionsResult 콜백 매서드 호출
+        ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(mLocationSource.onRequestPermissionsResult(requestCode, permissions, grantResults)){
+            if(!mLocationSource.isActivated()){
+                mNaverMap.setLocationTrackingMode(LocationTrackingMode.None);
+                return;
+            }
+            else{
+                mNaverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+   @Override
     protected void onStart(){ //Activity가 사용자에게 보여지면
         super.onStart();
 
@@ -334,249 +418,15 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
             EmailVerified emailVerified = new EmailVerified(false);
             reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
 
-            //Toast.makeText(GuardianRealTimeLocationActivity.this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show(); //이메일 인증 요구 토스트 알림
+            //Toast.makeText(DisabledRealTimeLocationActivity.this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show(); //이메일 인증 요구 토스트 알림
 
             Log.d(TAG, "메일 인증 실패");
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) { //활동 일시중지 시, 상태저장
-        if (map != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, map.getCameraPosition());
-            outState.putParcelable(KEY_LOCATION, lastKnownLocation);
-        }
-        super.onSaveInstanceState(outState);
-    }
 
     public void realTimeDeviceLocationBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 실시간 위치 갱신
         firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
-    }
-
-    /////////////////////////////////////////지도 초기 설정////////////////////////////////////////
-    @Override
-    public void onMapReady(GoogleMap map) { //첫 시작 시, map 준비
-        this.map = map;
-
-        getLocationPermission(); //위치 권한 설정
-        updateLocationUI(); //UI 업데이트
-        defaultDeviceLocation(); //초기 위치 설정
-    }
-
-    private void getLocationPermission() { //위치 권한 확인 및 설정
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            locationPermissionGranted = true;
-        }
-        else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) { //권한 요청 결과 처리
-        locationPermissionGranted = false;
-        if (requestCode
-                == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationPermissionGranted = true;
-                //startLocationService();
-            }
-        }
-        else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-        updateLocationUI();
-    }
-
-
-    @SuppressLint("MissingPermission")
-    private void updateLocationUI() { //권한에 따른 UI 내 위치 이동 버튼 업데이트
-        if (map == null) {
-            return;
-        }
-        try {
-            if (locationPermissionGranted) {
-                map.setMyLocationEnabled(true); //내위치 버튼
-                map.getUiSettings().setMyLocationButtonEnabled(true);
-            }
-            else {
-                map.setMyLocationEnabled(false);
-                map.getUiSettings().setMyLocationButtonEnabled(false);
-                lastKnownLocation = null;
-                getLocationPermission();
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-
-    private void defaultDeviceLocation() { //권한에 따른 초기 위치 받아오기
-        try {
-            if (locationPermissionGranted) { //위치 권한 있을 경우
-                @SuppressLint("MissingPermission") Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @SuppressLint("MissingPermission")
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            lastKnownLocation = task.getResult();
-                            if (lastKnownLocation != null) { //최근 위치 조회 성공
-                                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                                    LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
-
-                                    //firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
-                                    defaultMyMarker(curPoint); //초기 마커 설정
-                                    realTimeDeviceLocation(); //실시간 위치 추적 시작
-                                }
-                                else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                                    LatLng curPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM)); //최근 위치로 카메라 이동
-
-                                    //firebaseUpdateLocation(user, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); //firebase에 실시간 위치 저장
-                                    defaultMyMarker(curPoint); //초기 마커 설정
-                                    realTimeDeviceLocation(); //실시간 위치 추적 시작
-                                }
-                            }
-                        }
-                        else { //최근 위치 조회 실패 시, 디폴트 위치로 카메라 이동
-                            Log.d(TAG, "실시간 위치 조회 실패. 디폴트 위치 사용.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                            map.moveCamera(CameraUpdateFactory
-                                    .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
-                            map.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage(), e);
-        }
-    }
-
-    public void defaultMyMarker(LatLng curPoint){ //디폴트 마커 설정
-        if (myLocationMarker == null) {
-            myLocationMarker = new MarkerOptions();
-            myLocationMarker.position(curPoint);
-
-            int height = 300;
-            int width = 300;
-            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.my_gps));
-            Bitmap b=bitmapdraw.getBitmap();
-            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
-
-            myLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-            myMarker = map.addMarker(myLocationMarker);
-        }
-        else if (myLocationMarker != null){
-            myMarker.remove(); // 마커삭제
-            myLocationMarker.position(curPoint);
-            myMarker = map.addMarker(myLocationMarker);
-        }
-
-        else if (counterpartyMarker != null){
-            counterpartyMarker.remove(); // 마커삭제
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @SuppressLint("MissingPermission")
-    public void realTimeDeviceLocation() { //실시간 위치 갱신
-        try {
-            Location location = null;
-
-            long minTime = 0;        // 0초마다 갱신 - 바로바로 갱신
-            float minDistance = 0;
-
-            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                if (location != null) {
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-                    LatLng curPoint = new LatLng(latitude, longitude);
-
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
-                    Log.w(TAG, "GPS_PROVIDER: " + latitude + " " + longitude);
-                    firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
-                    showCurrentLocation(latitude, longitude);
-                }
-
-                //위치 요청하기
-                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gpsListener);
-            }
-            else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                location = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (location != null) {
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-                    LatLng curPoint = new LatLng(latitude, longitude);
-
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, DEFAULT_ZOOM));
-                    Log.w(TAG, "NETWORK_PROVIDER: " + latitude + " " + longitude);
-                    firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
-                    showCurrentLocation(latitude,longitude);
-                }
-
-                //위치 요청하기
-                manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, gpsListener);
-            }
-
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showCurrentLocation(double latitude, double longitude) {
-        LatLng curPoint = new LatLng(latitude, longitude);
-        showMyLocationMarker(curPoint);
-    }
-
-    class GPSListener implements LocationListener {
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void onLocationChanged(Location location) { // 위치 변경 시 호출
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            LatLng curPoint = new LatLng(latitude, longitude);
-
-            Log.w(TAG, "GPSListener: " + latitude + " " + longitude);
-            firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
-            showMyLocationMarker(curPoint);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    }
-
-    private void showMyLocationMarker(LatLng curPoint) { //마커 설정
-        if (myLocationMarker == null) { //마커가 없었을 경우
-            myLocationMarker.position(curPoint);
-            myMarker = map.addMarker(myLocationMarker);
-        }
-        else { //마커가 존재했던 경우
-            myMarker.remove(); // 마커삭제
-            myLocationMarker.position(curPoint);
-            myMarker = map.addMarker(myLocationMarker);
-        }
     }
 
     private void firebaseUpdateLocation(FirebaseUser user, double latitude, double longitude) { //firebase에 실시간 위치 저장
@@ -604,6 +454,7 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
 
     private void routeScheduler(){ //경로 저장용 스케쥴러
         Log.d(TAG,"경로 저장용 스케쥴러 실행");
+
         if(classificationUserFlag == 1){
             Timer timer = new Timer();
 
@@ -673,7 +524,6 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
     }
 
 
-
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
     public void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
         Timer timer = new Timer();
@@ -707,7 +557,7 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
                     count++;
                     getOtherUID();
 
-                    if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { //위치 권한 없는 경우
+                    /*if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { //위치 권한 없는 경우
                         TrackingStatus trackingStatus = new TrackingStatus(false);
                         reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
                     }
@@ -715,7 +565,7 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
                     else {
                         TrackingStatus trackingStatus = new TrackingStatus(true); //위치 권한 있는 경우
                         reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
-                    }
+                    }*/
                 }
 
                 else {
@@ -770,7 +620,7 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
                         counterpartyMarker();
                     }
                     else {
-                        Toast.makeText(GuardianRealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -794,7 +644,7 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
                         counterpartyMarker();
                     }
                     else {
-                        Toast.makeText(GuardianRealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -835,26 +685,18 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
             }
         });
 
-        if(counterpartyCurPoint != null){
-            if (counterpartyLocationMarker == null) { //마커가 없었을 경우
-                counterpartyLocationMarker = new MarkerOptions();
-                counterpartyLocationMarker.position(counterpartyCurPoint);
-
-                int height = 300;
-                int width = 300;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable((R.drawable.other_gps));
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false); //마커 크기설정
-
-                counterpartyLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                Log.w(TAG, "실행");
-                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+        if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
+            if(counterpartyMarker == null){//마커가 없었을 경우
+                Log.w(TAG, "실행111");
+                counterpartyMarker = new Marker();
+                counterpartyMarker.setPosition(counterpartyCurPoint);
+                counterpartyMarker.setMap(mNaverMap);
             }
-            else if(counterpartyLocationMarker != null){ //마커가 존재했던 경우
-                counterpartyMarker.remove(); // 마커삭제
-                counterpartyLocationMarker.position(counterpartyCurPoint);
-                Log.w(TAG, "실행");
-                counterpartyMarker = map.addMarker(counterpartyLocationMarker);
+            else if(counterpartyMarker != null) { //마커가 존재했던 경우
+                Log.w(TAG, "실행222");
+                counterpartyMarker.setMap(null); //마커삭제
+                counterpartyMarker.setPosition(counterpartyCurPoint);
+                counterpartyMarker.setMap(mNaverMap);
             }
 
             if(classificationUserFlag == 2){ //보호자일 경우 //////////////////////////////장애인 위치 실시간으로 가져오는데
@@ -1144,7 +986,7 @@ public class GuardianRealTimeLocationActivity extends AppCompatActivity implemen
     }
 
     public void departureNotification(String channelId, int id) { //출발 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

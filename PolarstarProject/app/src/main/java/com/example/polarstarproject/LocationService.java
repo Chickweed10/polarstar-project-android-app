@@ -75,12 +75,12 @@ public class LocationService extends Service {
     boolean departureFlag, arrivalFlag = false; //출도착 플래그
     String counterpartyName; //상대방 이름
 
-    GuardianRealTimeLocationActivity guardianRealTimeLocationActivity;
+    RealTimeLocationActivity realTimeLocationActivity;
 
     Intent notificationIntent;
 
     public LocationService(){
-        guardianRealTimeLocationActivity = new GuardianRealTimeLocationActivity();
+        realTimeLocationActivity = new RealTimeLocationActivity();
     }
 
     private LocationCallback mLocationCallback = new LocationCallback() {
@@ -96,7 +96,7 @@ public class LocationService extends Service {
 
                 mAuth = FirebaseAuth.getInstance();
                 user = mAuth.getCurrentUser();
-                guardianRealTimeLocationActivity.realTimeDeviceLocationBackground(user, latitude, longitude); //firebase에 실시간 위치 업데이트
+                realTimeLocationActivity.realTimeDeviceLocationBackground(user, latitude, longitude); //firebase에 실시간 위치 업데이트
 
                 classificationUserBackground(); //사용자 구별 -> 보호자면 장애인 UID 가져오기 -> 장애인 위치 가져오기
 
@@ -116,7 +116,7 @@ public class LocationService extends Service {
 
                             if(String.format("%.7f", latitude).equals(String.format("%.7f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
                                 if(String.format("%.7f", longitude).equals(String.format("%.7f", route.getLongitude())) == false){
-                                    guardianRealTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
+                                    realTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
                                 }
                             }
                         }
@@ -402,7 +402,7 @@ public class LocationService extends Service {
     }
 
     public void departureNotification(String channelId, int id) { //출발 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -448,7 +448,7 @@ public class LocationService extends Service {
         String channelId = "location_notification_channel";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent();
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
         builder.setSmallIcon(R.drawable.ic_stat_polaris_smallicon);
         builder.setContentTitle("위치 서비스");
@@ -494,7 +494,7 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel(DEFAULT, "default channel", NotificationManager.IMPORTANCE_HIGH); //알림 초기화
-        notificationIntent = new Intent(this, GuardianRealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
+        notificationIntent = new Intent(this, RealTimeLocationActivity.class); // 클릭시 실행할 activity를 지정
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         if (intent != null) {
