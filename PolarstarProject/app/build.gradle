@@ -53,8 +53,12 @@ dependencies {
 
     //구글 맵
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    //implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.libraries.places:places:2.6.0'
+
+    // 네이버 지도 SDK
+    implementation 'com.naver.maps:map-sdk:3.15.0'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 
     //이메일 인증
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
@@ -66,4 +70,7 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    //핸드폰 연결 버전 오류
+    implementation "androidx.work:work-runtime:2.7.1" // java
 }

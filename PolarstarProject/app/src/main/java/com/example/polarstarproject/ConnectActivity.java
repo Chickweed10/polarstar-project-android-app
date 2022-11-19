@@ -12,16 +12,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.polarstarproject.Domain.Connect;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -175,7 +169,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
 
                         //매칭 성공시 장애인 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, DisabledRealTimeLocationActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
@@ -209,7 +203,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
 
                         //매칭 성공시 보호자 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, GuardianRealTimeLocationActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
@@ -260,7 +254,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timerTask.cancel(); //타이머 종료
                         
                         //장애인 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, DisabledRealTimeLocationActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -290,7 +284,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timerTask.cancel(); //타이머 종료
 
                         //보호자 메뉴 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, GuardianRealTimeLocationActivity.class);
+                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
                     }
