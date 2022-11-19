@@ -30,7 +30,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.naver.maps.geometry.LatLng;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -114,8 +114,8 @@ public class LocationService extends Service {
                                 route = ds.getValue(Route.class);
                             }
 
-                            if(String.format("%.7f", latitude).equals(String.format("%.7f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
-                                if(String.format("%.7f", longitude).equals(String.format("%.7f", route.getLongitude())) == false){
+                            if(String.format("%.3f", latitude).equals(String.format("%.3f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
+                                if(String.format("%.3f", longitude).equals(String.format("%.3f", route.getLongitude())) == false){
                                     realTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
                                 }
                             }

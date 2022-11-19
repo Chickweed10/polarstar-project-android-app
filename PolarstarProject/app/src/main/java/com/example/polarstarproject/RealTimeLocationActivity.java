@@ -7,10 +7,13 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -66,7 +69,9 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.naver.maps.map.util.MarkerIcons;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -102,13 +107,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private FirebaseUser user;
     //firebase 변수
 
+    //네이버 지도
     private static final int PERMISSION_REQUEST_CODE = 100;
     private static final String[] PERMISSIONS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
-    //네이버 지도
     private FusedLocationSource mLocationSource;
     private NaverMap mNaverMap;
 
@@ -123,14 +128,16 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     Connect myConnect;
     String counterpartyUID = "";
     public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
-    double routeLatitude, routeLongitude; //장애인 경로 저장
+    private double routeLatitude, routeLongitude; //장애인 경로 저장
     
 
-    public double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
+    public static double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
     public boolean departureFlag, arrivalFlag, inFlag, outFlag = false; //출발, 도착, 복귀, 이탈 플래그
+
+    public LocationManager manager; //GPS 위치 권한
 
     int permissionFlag = 0; //위치 권한 플래그
 
@@ -144,6 +151,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         //다이얼로그 밖의 화면은 흐리게 만들어줌
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
@@ -271,16 +280,27 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         break;
 
                     case R.id.item_route: //위치 기록
-                        if(classificationUserFlag == 1){
+                        if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog();
+                        }
+                        else if(classificationUserFlag == 2){ //보호자일 경우
+                            Intent otherInfoIntent = new Intent(getApplicationContext(), RouteActivity.class);
+                            startActivity(otherInfoIntent);
+                            finish(); //상대 정보 화면으로 이동
                         }
 
                         break;
 
                     case R.id.item_range: //보호구역
-                        if(classificationUserFlag == 1){
+                        if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog();
                         }
+                        else if(classificationUserFlag == 2){ //보호자일 경우
+                            Intent otherInfoIntent = new Intent(getApplicationContext(), RangeSettingActivity.class);
+                            startActivity(otherInfoIntent);
+                            finish(); //상대 정보 화면으로 이동
+                        }
+
                         break;
 
                     case R.id.item_setting: //설정
@@ -386,6 +406,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         // 권한확인. 결과는 onRequestPermissionsResult 콜백 매서드 호출
         ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -462,7 +483,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void run() {
-                    //2초마다 실행
+                    //20초마다 실행
                     LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
                     String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -476,8 +497,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                                 route = ds.getValue(Route.class);
                             }
                             
-                            if(String.format("%.7f", routeLatitude).equals(String.format("%.7f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
-                                if(String.format("%.7f", routeLongitude).equals(String.format("%.7f", route.getLongitude())) == false){
+                            if(String.format("%.3f", routeLatitude).equals(String.format("%.3f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
+                                if(String.format("%.3f", routeLongitude).equals(String.format("%.3f", route.getLongitude())) == false){
                                     firebaseUpdateRoute(user, routeLatitude, routeLongitude); //DB에 경로 업로드
                                 }
                             }
@@ -490,7 +511,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     });
                 }
             };
-            timer.schedule(timerTask,0,2000);
+            timer.schedule(timerTask,0,20000);
         }
     }
 
@@ -557,7 +578,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     count++;
                     getOtherUID();
 
-                    /*if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { //위치 권한 없는 경우
+                    if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { //위치 권한 없는 경우
                         TrackingStatus trackingStatus = new TrackingStatus(false);
                         reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
                     }
@@ -565,7 +586,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     else {
                         TrackingStatus trackingStatus = new TrackingStatus(true); //위치 권한 있는 경우
                         reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
-                    }*/
+                    }
                 }
 
                 else {
@@ -687,15 +708,15 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
             if(counterpartyMarker == null){//마커가 없었을 경우
-                Log.w(TAG, "실행111");
                 counterpartyMarker = new Marker();
                 counterpartyMarker.setPosition(counterpartyCurPoint);
+                counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
                 counterpartyMarker.setMap(mNaverMap);
             }
             else if(counterpartyMarker != null) { //마커가 존재했던 경우
-                Log.w(TAG, "실행222");
                 counterpartyMarker.setMap(null); //마커삭제
                 counterpartyMarker.setPosition(counterpartyCurPoint);
+                counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
                 counterpartyMarker.setMap(mNaverMap);
             }
 
