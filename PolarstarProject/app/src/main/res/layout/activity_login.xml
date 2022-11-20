@@ -1,69 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Relative layout as parent layout-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+
+    <!-- Linear layout to contain all the
+        editText, password , logo and button-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="16dp">
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp">
 
         <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="100dp"
+            android:layout_width="300dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:padding="1dp"
+            android:text="장애인 실종 예방 서비스"
+            android:textColor="#757477"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="147dp"
+            android:layout_height="75dp"
+            android:gravity="center"
             android:text="북극성"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+            android:textColor="#6833D1"
+            android:textSize="50sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/lgnEmail"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="100dp"
-            android:ems="10"
-            android:hint="이메일 입력"
-            android:inputType="textEmailAddress" />
+            android:layout_marginTop="50dp"
+            android:background="@drawable/login_background_edit_text"
+            android:hint="이메일"
+            android:padding="12dp"
+            android:singleLine="true"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/lgnPW"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:hint="비밀번호 입력"
-            android:inputType="textPassword" />
-
-        <CheckBox
-            android:id="@+id/lgnCbAuto"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="자동로그인"
-            android:textSize="16dp" />
+            android:layout_marginTop="16dp"
+            android:background="@drawable/login_background_edit_text"
+            android:hint="비밀번호"
+            android:padding="12dp"
+            android:singleLine="true"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/lgnBt"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:backgroundTint="#6833D1"
+            android:padding="12dp"
+            android:text="로그인"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:cornerRadius="4dp" />
+
+        <CheckBox
+            android:id="@+id/lgnCbAuto"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="로그인" />
+            android:layout_marginTop="6dp"
+            android:text="자동로그인"
+            android:textSize="15sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1.5dp"
+                android:layout_weight="1"
+                android:background="#e2e2e2" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <Button
@@ -75,15 +114,15 @@
                 android:gravity="center"
                 android:text="이메일 찾기"
                 android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="10dp" />
+                android:textColor="#515151"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/slash"
                 android:layout_width="4dp"
                 android:layout_height="wrap_content"
                 android:text="|"
-                android:textColor="#000000" />
+                android:textColor="#e2e2e2" />
 
             <Button
                 android:id="@+id/rsPW"
@@ -91,19 +130,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#00ff0000"
-
                 android:gravity="center"
-                android:text="비밀번호 재설정"
+                android:text="비밀번호 찾기"
                 android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="10dp" />
+                android:textColor="#515151"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/slash2"
                 android:layout_width="4dp"
                 android:layout_height="wrap_content"
                 android:text="|"
-                android:textColor="#000000"
+                android:textColor="#e2e2e2"
                 android:textSize="16dp" />
 
             <Button
@@ -115,12 +153,11 @@
                 android:gravity="center"
                 android:text="회원가입"
                 android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="10dp" />
+                android:textColor="#515151"
+                android:textSize="12sp" />
 
         </LinearLayout>
 
-
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
