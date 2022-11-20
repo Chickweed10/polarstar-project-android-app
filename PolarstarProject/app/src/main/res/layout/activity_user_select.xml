@@ -27,6 +27,7 @@
             android:layout_width="300dp"
             android:layout_height="120dp"
             android:layout_marginTop="80dp"
+            android:layout_gravity="center"
             app:srcCompat="@drawable/polaris_temporarylogo" />
 
         <TextView
@@ -35,6 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textColor="@color/black"
             android:text="안녕하세요."
             android:textSize="40dp"/>
 
@@ -44,6 +47,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textColor="@color/black"
             android:textSize="24dp"
             android:text="북극성입니다." />
 
@@ -52,7 +57,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginTop="40dp"
+            android:textColor="@color/black"
             android:text="회원 서비스 이용을 위해 선택해주세요."
             android:textSize="20dp" />
 
@@ -69,6 +76,8 @@
                 android:layout_weight="1"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="20dp"
+                android:background="@drawable/line_color"
+                android:textColor="@color/black"
                 android:textSize="18dp"
                 android:text="장애인" />
 
@@ -79,6 +88,8 @@
                 android:layout_weight="1"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="40dp"
+                android:background="@drawable/line_color"
+                android:textColor="@color/black"
                 android:textSize="18dp"
                 android:text="보호자" />
 
