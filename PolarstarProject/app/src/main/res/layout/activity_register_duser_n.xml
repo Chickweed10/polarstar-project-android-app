@@ -8,8 +8,8 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="409dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
         android:layout_marginLeft="1dp"
         android:background="?attr/colorPrimary"
@@ -32,31 +32,50 @@
             android:paddingStart="1dp"
             android:paddingEnd="1dp">
 
-
-            <ImageButton
-                android:id="@+id/joinBtProflN"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginStart="50dp"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_RproflN"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:layout_marginEnd="50dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/profileimage" />
+                android:background="@android:color/transparent"
+                app:civ_border_overlay="true"
+                app:civ_border_width="3dp"
+                app:civ_border_color="#FFFFFF"
+                android:src="@drawable/profileimage"
+                />
 
-            <LinearLayout
+            <Button
+                android:id="@+id/joinBtProflN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:background="#00ff0000"
+                android:textColor="#006BBF"
+                android:layout_gravity="center"
+                android:text="프로필 사진 변경" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/joinEmailN"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="이메일 입력"
                     android:inputType="textEmailAddress"
+                    android:layout_weight="0.6"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:textSize="18sp" />
@@ -66,20 +85,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="40dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.4"
                     android:backgroundTint="#240070"
-                    android:padding="12dp"
                     android:text="중복 확인"
+                    android:padding="12dp"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="4dp" />
+                    android:textColor="@color/white" />
             </LinearLayout>
 
             <EditText
                 android:id="@+id/joinPWN"
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
@@ -93,7 +111,7 @@
 
             <EditText
                 android:id="@+id/joinPWCkN"
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
@@ -107,7 +125,7 @@
 
             <EditText
                 android:id="@+id/joinNameN"
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
@@ -126,12 +144,13 @@
 
                 <EditText
                     android:id="@+id/joinPhoneNumN"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="전화번호 입력"
+                    android:layout_weight="0.6"
                     android:inputType="phone"
                     android:padding="11dp"
                     android:singleLine="true"
@@ -142,15 +161,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="40dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.4"
                     android:backgroundTint="#240070"
                     android:padding="12dp"
                     android:text="인증요청"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="4dp" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
@@ -161,12 +179,13 @@
 
                 <EditText
                     android:id="@+id/joinPNCkN"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="인증번호 입력"
+                    android:layout_weight="0.6"
                     android:inputType="number"
                     android:padding="11dp"
                     android:singleLine="true"
@@ -177,35 +196,36 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="40dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.4"
                     android:backgroundTint="#240070"
                     android:padding="12dp"
                     android:text="인증확인"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="4dp" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp">
 
                 <EditText
                     android:id="@+id/joinBirthN"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
                     android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="생년월일 (ex. 19001231)"
                     android:inputType="number"
+                    android:layout_weight="0.6"
                     android:padding="11dp"
                     android:singleLine="true"
-                    android:textSize="16sp" />
+                    android:textSize="18sp" />
 
 
                 <RadioGroup
@@ -216,7 +236,11 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="0.4"
+                    >
 
                     <RadioButton
                         android:id="@+id/joinBtGenderMN"
@@ -230,7 +254,6 @@
                         android:id="@+id/joinBtGenderFN"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
                         android:text="여" />
 
                 </RadioGroup>
@@ -244,13 +267,14 @@
 
                 <EditText
                     android:id="@+id/joinRoadAddressN"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:layout_marginTop="10dp"
                     android:clickable="true"
                     android:ems="10"
                     android:focusable="false"
+                    android:layout_weight="0.6"
                     android:hint="도로명 주소"
                     android:inputType="textPersonName"
                     android:padding="11dp"
@@ -262,24 +286,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="40dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.4"
                     android:backgroundTint="#240070"
                     android:padding="12dp"
                     android:text="우편번호찾기"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="4dp" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
             <EditText
                 android:id="@+id/joinDetailAddressN"
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="40dp"
                 android:clickable="true"
                 android:ems="10"
                 android:focusable="false"
@@ -289,21 +313,22 @@
                 android:singleLine="true"
                 android:textSize="18sp" />
 
+        </LinearLayout>
 
             <Button
                 android:id="@+id/joinBtN"
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginBottom="30dp"
-                android:layout_weight="1"
                 android:backgroundTint="#240070"
+                android:layout_gravity="center"
                 android:text="회원가입"
                 android:textAllCaps="false"
-                android:textColor="@color/white"
-                app:cornerRadius="4dp" />
+                android:textColor="@color/white" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -3,26 +3,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
+    <!--
+    android:letterSpacing="" //자간
+    -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#424242"
+        android:layout_height="50dp"
+        android:background="#CBBFFF"
         android:gravity="center"
-        android:text="알　　림"
-        android:textColor="#ffffff"
+        android:text="알림"
+        android:letterSpacing="3"
+        android:textColor="#000000"
         android:textSize="16dp"
         android:textStyle="bold" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="#454545" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:layout_marginTop="60dp"
+        android:layout_height="100dp"
         android:gravity="center"
         android:text="접근 권한이 없습니다."
+        android:textColor="#000000"
         android:textSize="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="#939393" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,11 +48,11 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="#1D27FA"
+            android:background="#E1E0FF"
             android:clickable="true"
             android:gravity="center"
             android:text="확인"
-            android:textColor="#ffffff"
+            android:textColor="#000000"
             android:textSize="16dp"
             android:textStyle="bold" />
 
