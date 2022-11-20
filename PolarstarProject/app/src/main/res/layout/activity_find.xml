@@ -34,6 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="80dp"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:textColor="#454545"
                 android:text="이메일 찾기"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
@@ -51,8 +53,13 @@
                     android:layout_marginEnd="0dp"
                     android:layout_weight="0.7"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="전화번호 입력"
-                    android:inputType="phone" />
+
+                    android:inputType="phone"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="20dp" />
 
                 <View
 
@@ -66,11 +73,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="30dp"
-                    android:backgroundTint="#240070"
-                    android:textColor="@color/white"
                     android:layout_weight="0.3"
+                    android:backgroundTint="#240070"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="인증요청"
-                    android:textSize="14dp" />
+                    android:textColor="@color/white"
+                    android:textSize="16dp" />
 
             </LinearLayout>
 
@@ -87,8 +95,12 @@
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="0dp"
                     android:layout_weight="0.7"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="인증번호 입력"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="20dp" />
 
                 <View
 
@@ -96,16 +108,18 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     />
+
                 <Button
                     android:id="@+id/findPNReqCk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="30dp"
-                    android:backgroundTint="#240070"
-                    android:textColor="@color/white"
                     android:layout_weight="0.3"
+                    android:backgroundTint="#240070"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="인증확인"
-                    android:textSize="14dp" />
+                    android:textColor="@color/white"
+                    android:textSize="16dp" />
             </LinearLayout>
 
             <TextView
@@ -113,8 +127,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:gravity="center"
-                android:text="이메일:"
+                android:hint="이메일:"
+                android:textColorHint="#7E7E7E"
                 android:textSize="20dp"
                 android:visibility="visible" />
 
@@ -122,13 +138,15 @@
                 android:id="@+id/goLoginEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
                 android:layout_marginStart="40dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:backgroundTint="#240070"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:text="확인"
                 android:textColor="@color/white"
-                android:layout_gravity="center"
-                android:text="확인" />
+                android:textSize="16dp" />
 
 
         </LinearLayout>

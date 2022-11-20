@@ -29,6 +29,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="80dp"
             android:layout_marginBottom="60dp"
+            android:fontFamily="@font/nanumsquare_aac"
+            android:textColor="#454545"
             android:text="상대방과 연결"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
@@ -45,10 +47,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="4dp"
-                android:textSize="16dp"
                 android:layout_weight="0.7"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:hint="나의 코드 : "
-                android:inputType="phone" />
+                android:textColorHint="#454545"
+                android:inputType="phone"
+                android:textSize="16dp" />
 
             <Button
                 android:id="@+id/btnCopy"
@@ -59,8 +63,9 @@
                 android:layout_marginEnd="40dp"
                 android:layout_weight="0.3"
                 android:backgroundTint="#240070"
-                android:textColor="@color/white"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:text="코드 복사"
+                android:textColor="@color/white"
                 android:textSize="16dp" />
 
         </LinearLayout>
@@ -72,9 +77,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:ems="10"
             android:layout_marginBottom="10dp"
+            android:ems="10"
+            android:fontFamily="@font/nanumsquare_aab"
             android:hint="상대방 코드 입력"
+            android:padding="11dp"
+            android:singleLine="true"
+            android:textSize="20dp"
             android:inputType="textPassword" />
 
 
@@ -82,13 +91,15 @@
             android:id="@+id/btnConnect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="#240070"
-            android:textColor="@color/white"
             android:layout_gravity="center"
-            android:text="연결" />
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="40dp"
+            android:backgroundTint="#240070"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:text="연결"
+            android:textSize="16dp"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 </LinearLayout>

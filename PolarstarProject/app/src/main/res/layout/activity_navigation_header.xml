@@ -44,6 +44,8 @@
                 android:layout_gravity="center"
                 android:background="#00ff0000"
                 android:layout_marginStart="8dp"
+                android:textColor="#F1F1F1"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:text="사용자"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 android:textColorLink="#000000" />
@@ -64,6 +66,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:text="useremail@gmail.com"
+        android:textColor="#F1F1F1"
+        android:fontFamily="@font/nanumsquare_aab"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
 </LinearLayout>

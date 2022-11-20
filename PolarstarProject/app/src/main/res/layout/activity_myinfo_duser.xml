@@ -48,7 +48,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:text="회원 정보"
+                android:textColor="#454545"
                 android:textSize="16dp" />
 
             <TextView
@@ -58,8 +60,10 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="6dp"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:text="기본 정보"
-                android:textSize="12dp" />
+                android:textColor="#454545"
+                android:textSize="14dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -72,8 +76,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="이름"
-                    android:textSize="14dp"  />
+                    android:textColor="#454545"
+                    android:textSize="14dp" />
 
                 <EditText
                     android:id="@+id/mProflName"
@@ -81,8 +87,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="이름 입력"
                     android:inputType="textPersonName"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -97,8 +106,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="전화번호"
-                    android:textSize="14dp"  />
+                    android:textColor="#454545"
+                    android:textSize="14dp" />
 
                 <EditText
                     android:id="@+id/mProflPhoneNum"
@@ -107,8 +118,11 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="전화번호 입력"
                     android:inputType="phone"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -118,8 +132,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:text="계정 관리"
-                android:textSize="12dp" />
+                android:textColor="#454545"
+                android:textSize="14dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -133,9 +149,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
-                    android:layout_weight="0.6"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="(ex. OOO@mail.com)"
                     android:inputType="textEmailAddress"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
 
                 <Button
@@ -144,10 +162,11 @@
                     android:layout_height="35dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="40dp"
-                    android:layout_weight="0.4"
+                    android:layout_weight="1"
                     android:backgroundTint="#240070"
-                    android:textColor="@color/white"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="이메일 인증"
+                    android:textColor="@color/white"
                     android:textSize="12dp" />
 
             </LinearLayout>
@@ -162,9 +181,12 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_weight="0.6"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="비밀번호 재설정"
-                    android:textSize="14dp" />
+                    android:textColor="#454545"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="16dp" />
 
                 <Button
                     android:id="@+id/mProflBtPWChage"
@@ -172,10 +194,11 @@
                     android:layout_height="35dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="40dp"
-                    android:layout_weight="0.4"
+                    android:layout_weight="1"
                     android:backgroundTint="#240070"
-                    android:textColor="@color/white"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="비밀번호 재설정"
+                    android:textColor="@color/white"
                     android:textSize="12dp" />
             </LinearLayout>
 
@@ -186,8 +209,10 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="6dp"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:text="추가 정보"
-                android:textSize="12dp" />
+                android:textColor="#454545"
+                android:textSize="14dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -200,19 +225,24 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="도로명 주소"
-                    android:textSize="14dp"  />
+                    android:textColor="#454545"
+                    android:textSize="14dp" />
 
                 <EditText
                     android:id="@+id/mProflAddress"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:ems="10"
-                    android:hint="도로명 주소 입력"
                     android:clickable="true"
+                    android:ems="10"
                     android:focusable="false"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:hint="도로명 주소 입력"
                     android:inputType="textPersonName"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
 
                 <Button
@@ -220,10 +250,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:layout_marginStart="10dp"
-                    android:text="검색"
+                    android:layout_marginEnd="20dp"
                     android:backgroundTint="#240070"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="검색"
                     android:textColor="@color/white"
-                    android:textSize="12dp"/>
+                    android:textSize="12dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -237,8 +269,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="상세주소"
-                    android:textSize="14dp"  />
+                    android:textColor="#454545"
+                    android:textSize="14dp" />
 
                 <EditText
                     android:id="@+id/mProflDetailAddress"
@@ -246,8 +280,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="상세주소 입력"
                     android:inputType="textPersonName"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -262,7 +299,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="생년월일"
+                    android:textColor="#454545"
                     android:textSize="14dp" />
 
                 <EditText
@@ -272,9 +311,13 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:hint="(ex. 19001231) "
                     android:inputType="date"
-                    android:textSize="14dp" />
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="14dp"
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -289,7 +332,9 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="20dp"
                     android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:text="성별 "
+                    android:textColor="#454545"
                     android:textSize="14dp" />
 
                 <RadioGroup
@@ -307,12 +352,15 @@
                         android:id="@+id/mProflBtGenderM"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:text="남" />
 
                     <RadioButton
                         android:id="@+id/mProflBtGenderF"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:text="여" />
 
                 </RadioGroup>
@@ -331,7 +379,9 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:ems="10"
-                    android:hint="장애 정도 "
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="장애 정도 "
+                    android:textColor="#454545"
                     android:textSize="14dp" />
 
                 <Spinner
@@ -356,7 +406,11 @@
                 android:layout_marginEnd="40dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="40dp"
-                android:text="프로필 수정" />
+                android:text="프로필 수정"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:padding="11dp"
+                android:singleLine="true"
+                android:textSize="14dp"/>
 
         </LinearLayout>
     </ScrollView>
