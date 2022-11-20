@@ -389,6 +389,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
                 myMarker = new Marker();
                 myMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                myMarker.setZIndex(100); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
                 myMarker.setMap(naverMap);
 
                 if(cameraCnt == 0){ //초반 카메라 설정 (카메라 계속 따라오지 않게)
@@ -711,12 +712,16 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 counterpartyMarker = new Marker();
                 counterpartyMarker.setPosition(counterpartyCurPoint);
                 counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
+                counterpartyMarker.setZIndex(0); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
+                counterpartyMarker.setHideCollidedMarkers(true); //마커 겹치면 숨기기
                 counterpartyMarker.setMap(mNaverMap);
             }
             else if(counterpartyMarker != null) { //마커가 존재했던 경우
                 counterpartyMarker.setMap(null); //마커삭제
                 counterpartyMarker.setPosition(counterpartyCurPoint);
                 counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
+                counterpartyMarker.setZIndex(0); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
+                counterpartyMarker.setHideCollidedMarkers(true); //마커 겹치면 숨기기
                 counterpartyMarker.setMap(mNaverMap);
             }
 

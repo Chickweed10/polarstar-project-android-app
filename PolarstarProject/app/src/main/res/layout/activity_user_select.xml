@@ -1,86 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".UserSelectActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="409dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="1dp"
-            android:layout_marginLeft="1dp"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="300dp"
-            android:layout_height="120dp"
-            android:layout_marginTop="80dp"
-            app:srcCompat="@drawable/polaris_temporarylogo" />
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="40dp"
-            android:text="안녕하세요."
-            android:textSize="40dp"/>
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="40dp"
-            android:textSize="24dp"
-            android:text="북극성입니다." />
+            android:layout_width="350dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="8dp"
+            android:padding="1dp"
+            android:text="장애인 실종 예방 서비스, 북극성"
+            android:textColor="#6833D1"
+            android:textSize="19sp" />
 
         <TextView
             android:id="@+id/textView11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="40dp"
+            android:layout_width="350dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            android:padding="1dp"
             android:text="회원 서비스 이용을 위해 선택해주세요."
-            android:textSize="20dp" />
+            android:textColor="#000000"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="25dp"
+                app:srcCompat="@drawable/ic_accessible_24" />
+
+            <ImageView
+                android:layout_width="190dp"
+                android:layout_height="190dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="20dp"
+                app:srcCompat="@drawable/ic_supervisor_account_24"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btDisU"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="20dp"
-                android:textSize="18dp"
-                android:text="장애인" />
+                android:layout_weight="1"
+                android:text="장애인"
+                android:textSize="18dp" />
 
             <Button
                 android:id="@+id/btNonDisU"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="40dp"
-                android:textSize="18dp"
-                android:text="보호자" />
+                android:layout_weight="1"
+                android:text="보호자"
+                android:textSize="18dp" />
 
         </LinearLayout>
 
@@ -97,4 +110,4 @@
             app:layout_constraintVertical_bias="0.122" />
         -->
 
-</LinearLayout>
+</RelativeLayout>
