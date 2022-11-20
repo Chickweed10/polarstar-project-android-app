@@ -46,7 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:background="@drawable/login_background_edit_text"
+            android:ems="10"
             android:hint="이메일"
+            android:inputType="textEmailAddress"
             android:padding="12dp"
             android:singleLine="true"
             android:textSize="14sp" />
@@ -57,7 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/login_background_edit_text"
+            android:ems="10"
             android:hint="비밀번호"
+            android:inputType="textPassword"
             android:padding="12dp"
             android:singleLine="true"
             android:textSize="14sp" />
