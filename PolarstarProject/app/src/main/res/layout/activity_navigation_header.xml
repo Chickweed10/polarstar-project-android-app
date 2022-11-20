@@ -49,10 +49,10 @@
                 android:textColorLink="#000000" />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
-                app:srcCompat="@android:drawable/btn_star" />
+                app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24" />
 
         </LinearLayout>
 

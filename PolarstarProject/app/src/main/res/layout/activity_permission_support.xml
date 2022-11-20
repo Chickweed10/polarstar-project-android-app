@@ -137,6 +137,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
+            android:backgroundTint="#240070"
+            android:textColor="@color/white"
             android:text="모든 권한 설정하기" />
 
     </LinearLayout>
