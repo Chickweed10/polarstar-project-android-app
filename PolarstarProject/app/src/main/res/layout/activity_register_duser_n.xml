@@ -6,40 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".GuardianRegisterActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="409dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="204dp"
-        tools:layout_editor_absoluteY="16dp">
-
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="50dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="409dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="1dp"
-                android:layout_marginLeft="1dp"
-                android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="?attr/actionBarTheme"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/joinBtProflN"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="50dp"
-                app:srcCompat="@drawable/profileimage"
-                android:scaleType="centerInside"/>
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/profileimage" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,11 +53,13 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="0dp"
+                    android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="이메일 입력"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/joinBtEmailCkN"
@@ -65,8 +69,12 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="40dp"
                     android:layout_weight="1"
-                    android:text="중복확인"
-                    android:textSize="14dp" />
+                    android:backgroundTint="#240070"
+                    android:padding="12dp"
+                    android:text="중복 확인"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="4dp" />
             </LinearLayout>
 
             <EditText
@@ -74,33 +82,42 @@
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
                 android:ems="10"
                 android:hint="비밀번호 입력"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:padding="11dp"
+                android:singleLine="true"
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/joinPWCkN"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
                 android:ems="10"
                 android:hint="비밀번호 확인"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:padding="11dp"
+                android:singleLine="true"
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/joinNameN"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
                 android:ems="10"
                 android:hint="이름"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:padding="11dp"
+                android:singleLine="true"
+                android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -112,11 +129,13 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="0dp"
+                    android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="전화번호 입력"
-                    android:inputType="phone" />
+                    android:inputType="phone"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/joinPNReqN"
@@ -126,8 +145,12 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="40dp"
                     android:layout_weight="1"
+                    android:backgroundTint="#240070"
+                    android:padding="12dp"
                     android:text="인증요청"
-                    android:textSize="14dp" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="4dp" />
 
             </LinearLayout>
 
@@ -141,10 +164,13 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="0dp"
+                    android:layout_marginTop="10dp"
+                    android:ems="10"
                     android:hint="인증번호 입력"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/joinPNReqCkN"
@@ -154,8 +180,13 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="40dp"
                     android:layout_weight="1"
+                    android:backgroundTint="#240070"
+                    android:padding="12dp"
                     android:text="인증확인"
-                    android:textSize="14dp" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="4dp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -168,11 +199,14 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="0dp"
+                    android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="생년월일 (ex. 19001231)"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+
 
                 <RadioGroup
                     android:id="@+id/joinBtGenderN"
@@ -186,10 +220,10 @@
 
                     <RadioButton
                         android:id="@+id/joinBtGenderMN"
-                        android:checked="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:checked="true"
                         android:text="남" />
 
                     <RadioButton
@@ -213,23 +247,31 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="0dp"
+                    android:layout_marginTop="10dp"
                     android:clickable="true"
-                    android:focusable="false"
                     android:ems="10"
+                    android:focusable="false"
                     android:hint="도로명 주소"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/joinFdAddN"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="6dp"
                     android:layout_marginEnd="40dp"
                     android:layout_weight="1"
+                    android:backgroundTint="#240070"
+                    android:padding="12dp"
                     android:text="우편번호찾기"
-                    android:textSize="14dp" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="4dp" />
+
             </LinearLayout>
 
             <EditText
@@ -237,11 +279,16 @@
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginTop="10dp"
+                android:clickable="true"
                 android:ems="10"
+                android:focusable="false"
                 android:hint="상세 주소"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:padding="11dp"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
 
             <Button
                 android:id="@+id/joinBtN"
@@ -251,8 +298,12 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginBottom="30dp"
+                android:layout_weight="1"
+                android:backgroundTint="#240070"
                 android:text="회원가입"
-                android:textSize="14dp" />
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="4dp" />
         </LinearLayout>
     </ScrollView>
 

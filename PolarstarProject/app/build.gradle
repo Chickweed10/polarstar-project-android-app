@@ -68,4 +68,10 @@ dependencies {
 
     //핸드폰 연결 버전 오류
     implementation "androidx.work:work-runtime:2.7.1" // java
+
+    //Circle ImageView
+    /*implementation 'com.github.bumptech.glide:glidel:4.13.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+     */
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }
