@@ -47,8 +47,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:text="회원 정보"
-                android:textSize="16dp" />
+                android:textColor="#454545"
+                android:textSize="18dp"
+                />
 
             <TextView
                 android:id="@+id/textView4"
@@ -57,8 +60,10 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="6dp"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:text="기본 정보"
-                android:textSize="12dp" />
+                android:textColor="#454545"
+                android:textSize="14dp" />
 
 
             <LinearLayout
@@ -68,11 +73,12 @@
 
                 <TextView
                     android:id="@+id/textView19"
-                    android:layout_width="60dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:ems="10"
                     android:text="이름"
+                    android:textColor="#454545"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14dp" />
 
                 <EditText
@@ -83,6 +89,9 @@
                     android:ems="10"
                     android:hint="이름"
                     android:inputType="textPersonName"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -93,12 +102,14 @@
 
                 <TextView
                     android:id="@+id/textView20"
-                    android:layout_width="60dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="전화번호"
-                    android:textSize="14dp" />
+                    android:textColor="#454545"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:textSize="14dp"/>
 
                 <EditText
                     android:id="@+id/othProflPhoneNum"
@@ -110,6 +121,9 @@
                     android:hint="전화번호"
                     android:inputType="phone"
                     android:text=""
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -121,7 +135,9 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="6dp"
                 android:text="추가 정보"
-                android:textSize="12dp" />
+                android:fontFamily="@font/nanumsquare_aac"
+                android:textColor="#454545"
+                android:textSize="14dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -135,6 +151,8 @@
                     android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="도로명 주소"
+                    android:textColor="#454545"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14dp" />
 
                 <EditText
@@ -145,6 +163,9 @@
                     android:ems="10"
                     android:hint="도로명 주소"
                     android:inputType="textPersonName"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -160,6 +181,8 @@
                     android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="상세 주소"
+                    android:textColor="#454545"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14dp" />
 
                 <EditText
@@ -170,6 +193,9 @@
                     android:ems="10"
                     android:hint="상세 주소"
                     android:inputType="textPersonName"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -185,6 +211,8 @@
                     android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="생년월일"
+                    android:textColor="#454545"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14dp" />
 
                 <EditText
@@ -196,6 +224,9 @@
                     android:ems="10"
                     android:hint="생년월일"
                     android:inputType="date"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:padding="11dp"
+                    android:singleLine="true"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -212,6 +243,8 @@
                     android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="성별 "
+                    android:textColor="#454545"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14dp" />
 
                 <RadioGroup
@@ -238,6 +271,7 @@
                         android:id="@+id/othProflBtGenderF"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="여" />
 
                 </RadioGroup>
@@ -255,7 +289,9 @@
                 android:layout_marginEnd="40dp"
                 android:backgroundTint="#240070"
                 android:text="확인"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:textSize="14dp"/>
 
 
         </LinearLayout>

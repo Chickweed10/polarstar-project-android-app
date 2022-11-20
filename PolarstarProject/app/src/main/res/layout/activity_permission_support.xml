@@ -18,6 +18,7 @@
             android:textAlignment="center"
             android:layout_marginTop="60dp"
             android:text="접근 권한 요청"
+            android:fontFamily="@font/nanumsquare_aac"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
         <TextView
@@ -28,6 +29,7 @@
             android:layout_gravity="center"
             android:textAlignment="center"
             android:text="북극성 사용시 다음 접근 권한이 필요합니다."
+            android:fontFamily="@font/nanumsquare_aac"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <Switch
@@ -37,7 +39,9 @@
             android:layout_marginTop="40dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="위치 접근권한" />
+            android:text="위치 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp"/>
 
         <Switch
             android:id="@+id/switch2"
@@ -46,7 +50,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="백그라운드 위치 접근권한" />
+            android:text="백그라운드 위치 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch3"
@@ -55,7 +61,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="저장소 접근권한" />
+            android:text="저장소 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch4"
@@ -64,7 +72,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="카메라 접근권한" />
+            android:text="카메라 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch5"
@@ -73,7 +83,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="음성녹음 접근권한" />
+            android:text="음성녹음 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch6"
@@ -82,7 +94,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="활동인식 접근권한" />
+            android:text="활동인식 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch7"
@@ -91,7 +105,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="절전모드시 데이터 사용 허용" />
+            android:text="절전모드시 데이터 사용 허용"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch8"
@@ -100,7 +116,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="절전모드 해제" />
+            android:text="절전모드 해제"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch9"
@@ -109,7 +127,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="배터리 절전 제외 앱 등록" />
+            android:text="배터리 절전 제외 앱 등록"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
 
         <Switch
@@ -119,7 +139,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="다른앱 위에 표시 권한" />
+            android:text="다른앱 위에 표시 권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <Switch
             android:id="@+id/switch11"
@@ -128,7 +150,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="연락처 접근권한" />
+            android:text="연락처 접근권한"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
 
         <Button
@@ -139,7 +163,9 @@
             android:layout_gravity="center"
             android:backgroundTint="#240070"
             android:textColor="@color/white"
-            android:text="모든 권한 설정하기" />
+            android:text="모든 권한 설정하기"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
     </LinearLayout>
 

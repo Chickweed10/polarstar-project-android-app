@@ -21,7 +21,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/Theme.NavigationDrawer">
+                android:theme="@style/Theme.NavigationDrawer"
+                android:fontFamily="@font/nanumsquare_aac"
+                >
 
             </androidx.appcompat.widget.Toolbar>
 
@@ -35,13 +37,15 @@
 
         <TextView
             android:id="@+id/rName"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="0dp"
-            android:ems="10"
-            android:hint="보호구역" />
+            android:hint="보호구역"
+            android:textColorHint="#7E7E7E"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
         <TextView
             android:id="@+id/rangeAddress"
@@ -53,7 +57,10 @@
             android:ems="10"
             android:gravity="center"
             android:hint="주소"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColorHint="#7E7E7E"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp"/>
 
         <View
             android:layout_width="0dp"
@@ -69,7 +76,8 @@
             android:text="주소 검색"
             android:backgroundTint="#240070"
             android:textColor="@color/white"
-            android:textSize="12dp" />
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp" />
 
     </LinearLayout>
 
@@ -113,7 +121,9 @@
             android:layout_alignParentBottom="true"
             android:backgroundTint="#240070"
             android:textColor="@color/white"
-            android:text="거주지 설정하기" />
+            android:text="거주지 설정하기"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:textSize="14dp"/>
     </LinearLayout>
 
     <!--지도 띄우기 위한 fragment-->
