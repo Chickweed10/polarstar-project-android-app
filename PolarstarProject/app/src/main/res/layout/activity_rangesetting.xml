@@ -67,6 +67,8 @@
             android:layout_gravity="center"
             android:layout_marginEnd="20dp"
             android:text="주소 검색"
+            android:backgroundTint="#240070"
+            android:textColor="@color/white"
             android:textSize="12dp" />
 
     </LinearLayout>
@@ -109,7 +111,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-
+            android:backgroundTint="#240070"
+            android:textColor="@color/white"
             android:text="거주지 설정하기" />
     </LinearLayout>
 
