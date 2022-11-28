@@ -4,26 +4,26 @@
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
-        android:fontfamily="@font/dahaeng"/>
+        android:font="@font/dahaeng"/>
 
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
-        android:fontfamily="@font/nanumsquare_aa"/>
+        android:font="@font/nanumsquare_aa"/>
 
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
-        android:fontfamily="@font/nanumsquare_aab"/>
+        android:font="@font/nanumsquare_aab"/>
 
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
-        android:fontfamily="@font/nanumsquare_aac"/>
+        android:font="@font/nanumsquare_aac"/>
 
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
-        android:fontfamily="@font/nanumsquare_aad"/>
+        android:font="@font/nanumsquare_aad"/>
 
 </font-family>
