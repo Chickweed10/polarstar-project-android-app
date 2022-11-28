@@ -41,8 +41,6 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
     RadioGroup othProflBtGenderN;
     RadioButton othProflBtGenderMN, othProflBtGenderFN;
 
-    Spinner othProflDrDisGN;
-
     String sex, cSex, cDrDisG;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -83,8 +81,6 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
         othProflBtGenderN = findViewById(R.id.othProflBtGenderN); //성별
         othProflBtGenderMN = findViewById( R.id.othProflBtGenderMN);
         othProflBtGenderFN = findViewById( R.id.othProflBtGenderFN);
-
-        othProflDrDisGN = (Spinner)findViewById(R.id.othProflDrDisGN); //장애등급
 
         storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
         storageRef = storage.getReference();
@@ -271,14 +267,6 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
                     }
                     else {
                         othProflBtGenderMN.setChecked(true);
-                    }
-
-                    cDrDisG = disabled.getDisabilityLevel();
-                    if(cDrDisG.equals("경증")) {
-                        othProflDrDisGN.setSelection(1);
-                    }
-                    else {
-                        othProflDrDisGN.setSelection(0);
                     }
                 }
                 else {

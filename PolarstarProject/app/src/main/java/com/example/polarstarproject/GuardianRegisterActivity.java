@@ -51,14 +51,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 //보호자 회원가입
 public class GuardianRegisterActivity extends AppCompatActivity implements View.OnClickListener{
     Toolbar toolbar;
 
     EditText joinEmailN, joinPWN, joinPWCkN, joinNameN, joinPhoneNumN, joinPNCkN, joinBirthN, joinRoadAddressN, joinDetailAddressN;
     RadioGroup joinBtGenderN;
-    Button joinBtEmailCkN, joinPNReqN, joinPNReqCkN, joinFdAddN, joinBtN;
-    ImageButton joinBtProflN; //UI 변수
+    Button joinBtEmailCkN, joinPNReqN, joinPNReqCkN, joinFdAddN, joinBtN, joinBtProflN;
+    CircleImageView ivRproflN; //UI 변수
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -90,7 +92,8 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
 
         mAuth = FirebaseAuth.getInstance();
 
-        joinBtProflN = (ImageButton) findViewById(R.id.joinBtProflN); //프로필 사진
+        joinBtProflN = (Button) findViewById(R.id.joinBtProflN);
+        ivRproflN = (CircleImageView) findViewById(R.id.iv_RproflN); //프로필 사진
         joinEmailN = (EditText) findViewById(R.id.joinEmailN); //이메일
         joinBtEmailCkN = (Button) findViewById(R.id.joinBtEmailCkN); //이메일 중복 확인
         joinPWN = (EditText) findViewById(R.id.joinPWN); //비밀번호
@@ -348,7 +351,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 imageUri = intent.getData();
                 Glide.with(getApplicationContext())
                         .load(intent.getData())
-                        .into(joinBtProflN); //버튼에 이미지 삽입
+                        .into(ivRproflN); //버튼에 이미지 삽입
             }
         }
         else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
