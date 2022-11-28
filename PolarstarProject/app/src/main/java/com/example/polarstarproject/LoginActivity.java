@@ -34,7 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity"; //로그용 태그
 
-    public static Context context_main; // 다른 엑티비티에서의 접근을 위해 사용
+    public static Context context_login; // 다른 엑티비티에서의 접근을 위해 사용
     public SharedPreferences auto;
     public SharedPreferences.Editor autoLoginEdit;
 
@@ -53,12 +53,14 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseUser user;
     int classificationUserFlag = 0, connectCheckFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 연결 여부 확인 (0: 연결안됨, 1: 연결됨)
     String email, pwd;
+    public String checkBoxFlag = "f";//아이디 기억 체크박스 구별 (f: 기본값, 기억 안함 / t: 기억)
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        context_main = this;
+        context_login = this;
 
         connectCheckFlag = 0;
 
@@ -77,15 +79,24 @@ public class LoginActivity extends AppCompatActivity {
 
         onCheckPermission(); //위치권한 메소드
 
+        //autoCheck.setChecked(false); //체크박스 체크 표시 하도록 셋팅
+
         // SharedPreferences 사용해서 앱에 데이터 저장&불러오기
         auto = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
         autoLoginEdit = auto.edit();
 
-        // 로그인 데이터 불러오기
-        setId = auto.getString("Id", null);
-        setPassword = auto.getString("Password", null);
-        mEmailText.setText(setId);
-        mPasswordText.setText(setPassword);
+        /*
+        // 체크 표시했으면 로그인 데이터 불러오기
+        checkBoxFlag = auto.getString("cFlag", null);
+        if (checkBoxFlag == "t") {
+            autoCheck.setChecked(true); //체크박스 체크 표시 하도록 셋팅
+            setId = auto.getString("Id", null);
+            //setPassword = auto.getString("Password", null);
+            mEmailText.setText(setId);
+            //mPasswordText.setText(setPassword);
+            //}
+        }
+
 
         if(setId!=null && setPassword!=null) {
             firebaseAuth.signInWithEmailAndPassword(setId, setPassword)
@@ -102,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
 
         }
+         */
 
         //로그인 버튼이 눌리면
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -119,16 +131,16 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this,
                                                 "로그인 성공",
                                                 Toast.LENGTH_SHORT).show();
+                                        //로그인 정보 저장
+                                        autoLoginEdit.putString("Id", mEmailText.getText().toString().trim());
+                                        autoLoginEdit.putString("Password", mPasswordText.getText().toString().trim());
+                                        autoLoginEdit.commit(); // commit 해야지만 저장됨
+                                        /*
                                         if (autoCheck.isChecked()) {
-                                            //if(setId == null && setPassword == null) {
                                             // 로그인 데이터 저장
-                                            autoLoginEdit.putString("Id", mEmailText.getText().toString().trim());
-                                            autoLoginEdit.putString("Password", mPasswordText.getText().toString().trim());
-                                            autoLoginEdit.commit(); // commit 해야지만 저장됨
-
-                                            autoCheck.setChecked(true); //체크박스는 여전히 체크 표시 하도록 셋팅
-                                            //}
-                                        }
+                                            autoLoginEdit.putString("cFlag", "t");
+                                            //checkBoxFlag = 1;
+                                        }*/
                                         classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
 
                                     } else {

@@ -35,11 +35,13 @@ public class MenuSettingActivity extends AppCompatActivity {
     private DatabaseReference reference = database.getReference();
     private FirebaseUser user;
 
-    SharedPreferences autoM = ((LoginActivity)LoginActivity.context_main).auto;
-    SharedPreferences.Editor autoEdit = ((LoginActivity)LoginActivity.context_main).autoLoginEdit;
+    SharedPreferences autoM = ((MainActivity)MainActivity.context_main).auto;
+    SharedPreferences.Editor autoEdit;
     Button userBtLinkDisConnect, btLogout, btWithdrawal;
 
     int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
+
+    String checkBoxFlag = "f";//아이디 기억 체크박스 구별 (f: 기본값, 기억 안함 / t: 기억)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +64,24 @@ public class MenuSettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 foregroundService(); //포그라운드 서비스 종료
+                /*try{
+                    autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+                    autoEdit = autoM.edit();
 
-                autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
-                autoEdit.clear();
-                autoEdit.commit();
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
+                    checkBoxFlag = autoM.getString("cFlag", null);
+
+                    if(checkBoxFlag=="t") {
+                        autoEdit.putString("Password", "");
+                        //autoEdit.clear();
+                        //autoEdit.commit();
+                    }else {
+                        autoEdit.clear();
+                        autoEdit.commit();
+                    }
+                //}catch (Exception e){ */
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                //}
             }
         });
         btWithdrawal.setOnClickListener(new View.OnClickListener() { //회원탈퇴
