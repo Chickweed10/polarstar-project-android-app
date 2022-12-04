@@ -164,10 +164,10 @@
                     android:layout_marginEnd="40dp"
                     android:layout_weight="1"
                     android:backgroundTint="#240070"
-                    android:fontFamily="@font/nanumsquare_aab"
+                    android:fontFamily="@font/nanumsquare_aac"
                     android:text="이메일 인증"
                     android:textColor="@color/white"
-                    android:textSize="12dp" />
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -196,10 +196,10 @@
                     android:layout_marginEnd="40dp"
                     android:layout_weight="1"
                     android:backgroundTint="#240070"
-                    android:fontFamily="@font/nanumsquare_aab"
+                    android:fontFamily="@font/nanumsquare_aac"
                     android:text="비밀번호 재설정"
                     android:textColor="@color/white"
-                    android:textSize="12dp" />
+                    android:textSize="14dp" />
             </LinearLayout>
 
             <TextView
@@ -252,10 +252,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     android:backgroundTint="#240070"
-                    android:fontFamily="@font/nanumsquare_aab"
+                    android:fontFamily="@font/nanumsquare_aac"
                     android:text="검색"
                     android:textColor="@color/white"
-                    android:textSize="12dp" />
+                    android:textSize="14dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -366,6 +366,7 @@
                 </RadioGroup>
             </LinearLayout>
 
+
             <Button
                 android:id="@+id/mProflBtEdit"
                 android:layout_width="match_parent"
@@ -378,7 +379,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="40dp"
                 android:text="프로필 수정"
-                android:fontFamily="@font/nanumsquare_aab"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:padding="11dp"
                 android:singleLine="true"
                 android:textSize="14dp"/>

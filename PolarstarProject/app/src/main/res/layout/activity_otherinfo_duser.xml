@@ -290,7 +290,7 @@
                 android:backgroundTint="#240070"
                 android:text="확인"
                 android:textColor="@color/white"
-                android:fontFamily="@font/nanumsquare_aab"
+                android:fontFamily="@font/nanumsquare_aac"
                 android:textSize="14dp"/>
 
 
