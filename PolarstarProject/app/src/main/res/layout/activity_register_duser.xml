@@ -71,6 +71,7 @@
                         android:layout_marginEnd="0dp"
                         android:ems="10"
                         android:hint="이메일 입력"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:padding="11dp"
                         android:singleLine="true"
                         android:textSize="18sp"
@@ -87,6 +88,7 @@
                         android:backgroundTint="#240070"
                         android:textColor="@color/white"
                         android:layout_weight="0.4"
+                        android:fontFamily="@font/nanumsquare_aac"
                         android:text="중복확인"
                         android:textSize="14dp" />
                 </LinearLayout>
@@ -100,6 +102,7 @@
                     android:layout_marginEnd="40dp"
                     android:ems="10"
                     android:hint="비밀번호 입력"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:textSize="18sp"
@@ -114,6 +117,7 @@
                     android:layout_marginEnd="40dp"
                     android:ems="10"
                     android:hint="비밀번호 확인"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:textSize="18sp"
@@ -128,6 +132,7 @@
                     android:layout_marginEnd="40dp"
                     android:ems="10"
                     android:hint="이름"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:textSize="18sp"
@@ -148,6 +153,7 @@
                         android:layout_weight="0.6"
                         android:ems="10"
                         android:hint="전화번호 입력"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:padding="11dp"
                         android:singleLine="true"
                         android:textSize="18sp"
@@ -162,6 +168,7 @@
                         android:layout_marginEnd="40dp"
                         android:backgroundTint="#240070"
                         android:textColor="@color/white"
+                        android:fontFamily="@font/nanumsquare_aac"
                         android:layout_weight="0.4"
                         android:text="인증요청"
                         android:textSize="14dp" />
@@ -183,6 +190,7 @@
                         android:layout_weight="0.6"
                         android:ems="10"
                         android:hint="인증번호 입력"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:padding="11dp"
                         android:singleLine="true"
                         android:textSize="18sp"
@@ -199,6 +207,7 @@
                         android:textColor="@color/white"
                         android:layout_weight="0.4"
                         android:text="인증확인"
+                        android:fontFamily="@font/nanumsquare_aac"
                         android:textSize="14dp" />
                 </LinearLayout>
 
@@ -216,6 +225,7 @@
                         android:ems="10"
                         android:layout_weight="0.7"
                         android:hint="생년월일 (ex. 19001231)"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:padding="11dp"
                         android:singleLine="true"
                         android:textSize="18sp"
@@ -271,6 +281,7 @@
                         android:layout_weight="0.6"
                         android:ems="10"
                         android:hint="도로명 주소"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:padding="11dp"
                         android:singleLine="true"
                         android:textSize="18sp"
@@ -285,7 +296,8 @@
                         android:layout_marginEnd="40dp"
                         android:layout_weight="0.4"
                         android:backgroundTint="#240070"
-                        android:padding="12dp"
+                        android:fontFamily="@font/nanumsquare_aac"
+                        android:padding="14dp"
                         android:text="우편번호찾기"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
@@ -301,6 +313,7 @@
                     android:layout_marginEnd="40dp"
                     android:ems="10"
                     android:hint="상세 주소"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:textSize="18sp"
@@ -318,7 +331,9 @@
                 android:layout_marginBottom="30dp"
                 android:backgroundTint="#240070"
                 android:textColor="@color/white"
-                android:text="회원가입" />
+                android:text="회원가입"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:textSize="14dp"/>
         </LinearLayout>
     </ScrollView>
 

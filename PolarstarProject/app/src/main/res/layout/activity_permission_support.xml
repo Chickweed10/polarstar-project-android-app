@@ -164,7 +164,7 @@
             android:backgroundTint="#240070"
             android:textColor="@color/white"
             android:text="모든 권한 설정하기"
-            android:fontFamily="@font/nanumsquare_aab"
+            android:fontFamily="@font/nanumsquare_aac"
             android:textSize="14dp" />
 
     </LinearLayout>
