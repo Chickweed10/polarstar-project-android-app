@@ -319,26 +319,6 @@
                     android:textSize="18sp"
                     android:inputType="textPersonName" />
 
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="50dp"
-                    android:text="장애 정도" />
-
-                <Spinner
-                    android:id="@+id/joinDrDisG"
-                    android:layout_width="100dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="40dp"
-                    android:entries="@array/test">
-
-                </Spinner>
-
             </LinearLayout>
 
             <Button

@@ -46,7 +46,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address, mProflDetailAddress;
     Button Bt, mProflBtEmailCk;
-    String sex,  cSex, cDrDisG;
+    String sex,  cSex;
     Spinner DrDisG;
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;
@@ -95,7 +95,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         //RadioButton rdoButton = findViewById( rdgGroup.getCheckedRadioButtonId() );
         //String sex = rdoButton.getText().toString();
 
-        DrDisG = (Spinner)findViewById(R.id.mProflDrDisG); //장애정도 (pre.장애등급)
         Bt = (Button) findViewById(R.id.mProflBtEdit); //프로필 수정
         Bt.setOnClickListener(this);
 
@@ -226,8 +225,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 //스피너 라디오 버튼 세팅 가져오기
                 cSex = user.sex;
                 Log.w(TAG, "성별: "+ cSex);
-                cDrDisG = user.disabilityLevel;
-                Log.w(TAG, "정도: "+ cDrDisG);
+
                 if(cSex.equals("여")) {
                     mProflBtGenderF.setChecked(true);
                 }
@@ -235,12 +233,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                     mProflBtGenderM.setChecked(true);
                 }Log.w(TAG, "선택: "+ mProflBtGenderF.isChecked());
 
-                if(cDrDisG.equals("경증")) {
-                    DrDisG.setSelection(1);
-                }
-                else {
-                    DrDisG.setSelection(0);
-                }Log.w(TAG, "선택: "+ DrDisG);
 
             }
 

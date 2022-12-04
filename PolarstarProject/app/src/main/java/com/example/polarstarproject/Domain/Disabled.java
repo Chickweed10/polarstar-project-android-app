@@ -10,7 +10,6 @@ public class Disabled { //장애인
     public String sex;
     public String address;
     public String detailAddress;
-    public String disabilityLevel;
 
 
     public Disabled(){
@@ -19,7 +18,7 @@ public class Disabled { //장애인
 
     public Disabled(String profileImage, String email, String password, String name,
                     String phoneNumber, String birth, String sex,
-                    String address, String detailAddress, String disabilityLevel) {
+                    String address, String detailAddress) {
         this.profileImage = profileImage;
         this.email = email;
         this.password = password;
@@ -29,7 +28,6 @@ public class Disabled { //장애인
         this.sex = sex;
         this.address = address;
         this.detailAddress = detailAddress;
-        this.disabilityLevel = disabilityLevel;
     }
 
     public String getProfileImage() {
@@ -102,13 +100,5 @@ public class Disabled { //장애인
 
     public void setDetailAddress(String detailAddress) {
         this.detailAddress = detailAddress;
-    }
-
-    public String getDisabilityLevel() {
-        return disabilityLevel;
-    }
-
-    public void setDisabilityLevel(String disabilityLevel) {
-        this.disabilityLevel = disabilityLevel;
     }
 }

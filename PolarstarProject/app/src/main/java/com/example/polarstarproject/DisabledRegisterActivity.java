@@ -1,37 +1,20 @@
 package com.example.polarstarproject;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.PermissionRequest;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
@@ -58,23 +41,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 //장애인 회원가입
 public class DisabledRegisterActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
 
     EditText joinEmail, joinPW, joinPWCk, joinName, joinPhoneNum, joinPNCk, joinBirth, joinRoadAddress, joinDetailAddress;
-    Spinner joinDrDisG;
+    //Spinner joinDrDisG;
     RadioGroup joinBtGender;
-    Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinFdAdd, joinBt;
-    ImageButton joinBtProfl; //UI 변수
+    Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinFdAdd, joinBt, joinBtProfl;
+    CircleImageView ivRprofl; //UI 변수
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -106,7 +88,8 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
         mAuth = FirebaseAuth.getInstance();
 
-        joinBtProfl = (ImageButton) findViewById(R.id.joinBtProfl); //프로필 사진
+        joinBtProfl = (Button) findViewById(R.id.joinBtProfl);
+        ivRprofl = (CircleImageView) findViewById(R.id.iv_Rprofl); //프로필 사진
         joinEmail = (EditText) findViewById(R.id.joinEmail); //이메일
         joinBtEmailCk = (Button) findViewById(R.id.joinBtEmailCk); //이메일 중복 확인
         joinPW = (EditText) findViewById(R.id.joinPW); //비밀번호
@@ -120,7 +103,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         joinBtGender = findViewById(R.id.joinBtGender); //성별
         joinRoadAddress = (EditText) findViewById(R.id.joinRoadAddress); //도로명 주소
         joinDetailAddress = (EditText) findViewById(R.id.joinDetailAddress); //상세 주소
-        joinDrDisG = (Spinner)findViewById(R.id.joinDrDisG); //장애등급
+        //joinDrDisG = (Spinner)findViewById(R.id.joinDrDisG); //장애등급
         joinFdAdd = (Button) findViewById(R.id.joinFdAdd); //우편번호 찾기
         joinBt = (Button) findViewById(R.id.joinBt); //회원가입
 
@@ -381,7 +364,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                 imageUri = intent.getData();
                 Glide.with(getApplicationContext())
                         .load(intent.getData())
-                        .into(joinBtProfl); //버튼에 이미지 삽입
+                        .into(ivRprofl); //버튼에 이미지 삽입
             }
         }
         else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
@@ -397,7 +380,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     /////////////////////////////////////////회원 가입////////////////////////////////////////
     private void signUp(String email, String password, String name,
                         String phoneNumber, String birth, String sex,
-                        String address, String detailAddress, String disabilityLevel) {
+                        String address, String detailAddress) {
 
         //공란 검사 및 예외 처리
         if (!validateForm()) {
@@ -418,7 +401,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                             }
 
                             Disabled disabled = new Disabled(pathUri, email, password, name,
-                                    phoneNumber, birth, sex, address, detailAddress, disabilityLevel); //장애인 객체 생성
+                                    phoneNumber, birth, sex, address, detailAddress); //장애인 객체 생성
                             reference.child("disabled").child(uid).setValue(disabled); //DB에 장애인 정보 삽입
 
                             //DB에 저장되어있는 플래그들 초기화
@@ -643,7 +626,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             case R.id.joinBt: //회원가입
                 signUp(joinEmail.getText().toString(), joinPW.getText().toString(), joinName.getText().toString(),
                         joinPhoneNum.getText().toString(), joinBirth.getText().toString(), sex,
-                        joinRoadAddress.getText().toString(), joinDetailAddress.getText().toString(), joinDrDisG.getSelectedItem().toString());
+                        joinRoadAddress.getText().toString(), joinDetailAddress.getText().toString());
         }
     }
 }
