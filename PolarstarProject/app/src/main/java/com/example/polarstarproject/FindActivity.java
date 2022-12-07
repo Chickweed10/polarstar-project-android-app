@@ -35,8 +35,8 @@ public class FindActivity extends AppCompatActivity {
     EditText findPhoneNum, findPNCk;
     Button findPNReq, findPNReqCk;
     TextView tEmail;
-    String Id = ((LoginActivity)LoginActivity.context_main).setId;
-    String Password = ((LoginActivity)LoginActivity.context_main).setPassword;
+    String Id = ((LoginActivity)LoginActivity.context_login).setId;
+    String Password = ((LoginActivity)LoginActivity.context_login).setPassword;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
