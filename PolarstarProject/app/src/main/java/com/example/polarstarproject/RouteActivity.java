@@ -41,6 +41,7 @@ import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
@@ -77,6 +78,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     private NaverMap mNaverMap;
 
     ArrayList<LatLng> arrayPoints; //위치 경로 리스트
+    LocationOverlay locationOverlay; //경로 하나일 때 점
     PathOverlay path = new PathOverlay(); //경로선
 
     CameraUpdate cameraUpdate; //지도 카메라
@@ -154,6 +156,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     public void onMapReady(@NonNull NaverMap naverMap) {
         mNaverMap = naverMap;
         mNaverMap.setLocationSource(mLocationSource);
+        locationOverlay = mNaverMap.getLocationOverlay();
 
         getOtherUID(); //상대방 UID 가져오기
     }
@@ -247,7 +250,13 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
                 if (route.getNowTime() != null) {
                     drawPolyline();
-                } else {
+                }
+                else { //경로가 존재하지 않을 경우
+                    arrayPoints.clear();
+                    locationOverlay.setVisible(false);
+                    path.setMap(null); //지도 초기화
+                    Toast.makeText(RouteActivity.this, "위치 기록이 존재하지 않습니다.",
+                            Toast.LENGTH_SHORT).show();
                     Log.w(TAG, "경로 없음");
                 }
             }
@@ -258,7 +267,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
-
+    
     private void drawPolyline() { //경로선 그리기
         //카메라 설정
         CameraPosition cameraPosition;
@@ -268,21 +277,32 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             builder.include(arrayPoints.get(i));
         }
 
-        LatLngBounds bounds = builder.build();
-        cameraUpdate = CameraUpdate.fitBounds(bounds, 100); //경로 다 들어오게 카메라 이동
-        mNaverMap.moveCamera(cameraUpdate);
-
         //경로선 설정
         int width = getResources().getDimensionPixelSize(R.dimen.path_overlay_width);
 
-        path = new PathOverlay();
-        path.setCoords(arrayPoints);
-        path.setWidth(width); //경로선 두께
-        path.setOutlineWidth(0); //경로선 테두리 두께
-        path.setColor(Color.BLUE); //경로선 색상
-        path.setPatternImage(OverlayImage.fromResource(R.drawable.path_pattern)); //경로선 패턴
-        path.setPatternInterval(getResources().getDimensionPixelSize(R.dimen.overlay_pattern_interval)); //패턴 간격
-        path.setMap(mNaverMap);
+        if(arrayPoints.size() == 1){ //좌표가 한개일 경우
+            cameraUpdate = CameraUpdate.scrollTo(arrayPoints.get(0))
+                    .animate(CameraAnimation.Linear);
+            mNaverMap.moveCamera(cameraUpdate);
+
+            locationOverlay.setVisible(true);
+            locationOverlay.setPosition(arrayPoints.get(0));
+        } 
+        else{
+            LatLngBounds bounds = builder.build();
+            cameraUpdate = CameraUpdate.fitBounds(bounds, 100); //경로 다 들어오게 카메라 이동
+            mNaverMap.moveCamera(cameraUpdate);
+
+            path = new PathOverlay();
+            path.setCoords(arrayPoints);
+            path.setWidth(width); //경로선 두께
+            path.setOutlineWidth(0); //경로선 테두리 두께
+            path.setColor(Color.BLUE); //경로선 색상
+            path.setPatternImage(OverlayImage.fromResource(R.drawable.path_pattern)); //경로선 패턴
+            path.setPatternInterval(getResources().getDimensionPixelSize(R.dimen.overlay_pattern_interval)); //패턴 간격
+            path.setMap(mNaverMap);
+        }
+
     }
 
     //////////////////////////////////////// 달력 ///////////////////////////////////
