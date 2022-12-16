@@ -135,7 +135,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
-    public boolean departureFlag, arrivalFlag, inFlag, outFlag = false; //출발, 도착, 복귀, 이탈 플래그
+    public boolean inFlag, outFlag = false; //복귀, 이탈 플래그
+    DepartureArrivalStatus departureArrivalStatus; //출도착 플래그 변수
 
     public LocationManager manager; //GPS 위치 권한
 
@@ -846,21 +847,19 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         departureArrivalCheck(); //출도착 판단
     }
 
-    public void departureArrivalCheck(){ //출발 도착 판단 후 알림
-        Query query = reference.child("departurearrivalstatus").orderByKey().equalTo(counterpartyUID);
+    public void departureArrivalCheck(){ //출도착 테이블 조회 후 값 삽입
+        Query query = reference.child("departurearrivalstatus").orderByKey().equalTo(counterpartyUID); //출도착 플래그 테이블 조회
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus();
+                departureArrivalStatus = new DepartureArrivalStatus();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     departureArrivalStatus = ds.getValue(DepartureArrivalStatus.class);
                 }
-
                 if(departureArrivalStatus != null){
-                    departureFlag = departureArrivalStatus.departureStatus;
-                    arrivalFlag = departureArrivalStatus.arrivalStatus; //값 집어넣기
+                    departureArrivaljudgment(); //출발 도착 판단 후 알림
                 }
-                else { //추적 가능
+                else {
 
                 }
             }
@@ -870,35 +869,36 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
+    }
 
+    public void departureArrivaljudgment() { //출발 도착 판단 후 알림
         //경도(longitude)가 X, 위도(latitude)가 Y
         distance = Math.sqrt(((counterpartyCurPoint.longitude-disabledAddressLongitude)*(counterpartyCurPoint.longitude-disabledAddressLongitude))+((counterpartyCurPoint.latitude-disabledAddressLatitude)*(counterpartyCurPoint.latitude-disabledAddressLatitude)));
 
         if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
-            if(!departureFlag){ //아직 출발 안했을 경우
+            if(!departureArrivalStatus.departureStatus){ //아직 출발 안했을 경우 (집 출발 알림)
                 if(distance*1000 > DEFAULTDISTANCE) { //1000곱하면 단위가 미터임
                     if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
-                        departureNotification(DEFAULT, 1); //출발 알림 울리기
                         DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
                         reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                        departureNotification(DEFAULT, 1); //출발 알림 울리기
                     }
                 }
             }
 
-            if(!arrivalFlag){ //아직 도착안했을 경우
-                if(departureFlag){ //출발함
+            if(!departureArrivalStatus.arrivalStatus){ //아직 도착안했을 경우 (집 도착 알림)
+                if(departureArrivalStatus.getDepartureStatus()){ //출발함
                     if(distance*1000 < DEFAULTDISTANCE) {
                         if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
-                            arrivalNotification(DEFAULT, 2); //도착 알림 울리기
                             DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
                             reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
+                            arrivalNotification(DEFAULT, 2); //도착 알림 울리기
                         }
                     }
                 }
             }
         }
     }
-
     /////////////////////////////////////////장애인 추적불가 알림////////////////////////////////////////
     private void trackingStatusCheck() {
         Query disabledQuery = reference.child("trackingstatus").orderByKey().equalTo(counterpartyUID); //추적불가 상태 검사
@@ -930,6 +930,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         });
     }
+
     public void inOutCheck(){ //출발 도착 판단 후 알림
         Query query = reference.child("inoutstatus").orderByKey().equalTo(counterpartyUID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
