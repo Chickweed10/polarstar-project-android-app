@@ -31,6 +31,8 @@ import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -433,7 +435,18 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
             case R.id.btnSet:
                 Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
-                reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange);
+                reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange)
+                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) { //보호구역 설정 성공
+                                    Toast.makeText(getApplicationContext(),"보호구역 설정 완료" , Toast.LENGTH_SHORT).show();
+                                }
+                                else { //보호구역 설정 실패
+                                    Toast.makeText(getApplicationContext(),"보호구역 설정 실패" , Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
 
                 break;
         }

@@ -32,7 +32,6 @@ public class RefactoringForegroundService {
             Intent intent = new Intent(context, LocationService.class);
             intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
             context.startService(intent);
-            //Toast.makeText(this, "Location service started", Toast.LENGTH_SHORT).show();
             Log.w(TAG, "실행");
         }
     }
@@ -43,7 +42,6 @@ public class RefactoringForegroundService {
             Intent intent = new Intent(context, LocationService.class);
             intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
             context.startService(intent);
-            //Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
             Log.w(TAG, "종료");
         }
     }

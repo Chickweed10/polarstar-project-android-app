@@ -194,8 +194,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         navigationView.setItemIconTintList(null); //설정 안하면 회색
 
         View headerView = navigationView.getHeaderView(0);
-        ImageView headerViewImageContent = (ImageView) headerView.findViewById(R.id.iv_image);
-        TextView headerViewNameContent = (TextView) headerView.findViewById(R.id.tv_name); //네비게이션 바 프로필
+        ImageView headerViewImageContent = (ImageView) headerView.findViewById(R.id.iv_image); //네비게이션 바 프로필 사진
+        TextView headerViewNameContent = (TextView) headerView.findViewById(R.id.tv_name); //네비게이션 바 프로필 이름
+        TextView headerViewEmailContent = (TextView) headerView.findViewById(R.id.Edit_UserEmail); //네비게이션 바 프로필 이메일
 
         //네비게이션 바 프로필 사진 띄우기
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -217,17 +218,18 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             });
         }
         
-        //네비게이션 바 이름 띄우기
+        //네비게이션 바 이름, 이메일 띄우기
         reference.child("disabled").child(user.getUid()).addValueEventListener(new ValueEventListener() { //장애인 테이블 조회
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Disabled disabled = snapshot.getValue(Disabled.class);
-                if(disabled == null){
-                    reference.child("guardian").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+                if(disabled == null){ //보호자일 경우
+                    reference.child("guardian").child(user.getUid()).addValueEventListener(new ValueEventListener() { //보호자 테이블 조회
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             Guardian guardian = snapshot.getValue(Guardian.class);
                             headerViewNameContent.setText(guardian.getName());
+                            headerViewEmailContent.setText(guardian.getEmail());
                         }
 
                         @Override
@@ -238,12 +240,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
                 else{
                     headerViewNameContent.setText(disabled.getName());
+                    headerViewEmailContent.setText(disabled.getEmail());
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) { //참조에 액세스 할 수 없을 때 호출
-                Toast.makeText(getApplicationContext(),"데이터를 가져오는데 실패했습니다" , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"데이터를 가져오는데 실패했습니다" , Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -286,7 +289,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         else if(classificationUserFlag == 2){ //보호자일 경우
                             Intent otherInfoIntent = new Intent(getApplicationContext(), RouteActivity.class);
                             startActivity(otherInfoIntent);
-                            finish(); //상대 정보 화면으로 이동
+                            finish(); //위치 기록 화면으로 이동
                         }
 
                         break;
@@ -298,7 +301,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         else if(classificationUserFlag == 2){ //보호자일 경우
                             Intent otherInfoIntent = new Intent(getApplicationContext(), RangeSettingActivity.class);
                             startActivity(otherInfoIntent);
-                            finish(); //상대 정보 화면으로 이동
+                            finish(); //보호구역 화면으로 이동
                         }
 
                         break;
@@ -457,7 +460,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
-        Log.w(TAG, "firebaseUpdate: " + latitude + " " + longitude);
+        Log.w(TAG, "firebaseUpdate " + user.getUid()+ " : " + latitude + ", " + longitude);
         reference.child("realtimelocation").child(user.getUid()).setValue(realTimeLocation)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
