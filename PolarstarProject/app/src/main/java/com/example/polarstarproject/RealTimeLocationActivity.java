@@ -3,11 +3,13 @@ package com.example.polarstarproject;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -287,7 +289,23 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                     case R.id.item_route: //위치 기록
                         if(classificationUserFlag == 1){ //장애인일 경우
-                            startAuthorityDialog();
+                            startAuthorityDialog(); //커스텀 Dialog
+
+                            /*AlertDialog.Builder oDialog = new AlertDialog.Builder(RealTimeLocationActivity.this,
+                                    android.R.style.Theme_DeviceDefault_Light_Dialog);
+
+                            oDialog.setMessage("접근 권한이 없습니다.")
+                                    .setTitle("알 림")
+                                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+
+                                        }
+                                    })
+                                    .setCancelable(false) // 백버튼으로 팝업창이 닫히지 않도록 한다.
+                                    .show();*/
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
                             Intent otherInfoIntent = new Intent(getApplicationContext(), RouteActivity.class);
@@ -330,7 +348,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void startAuthorityDialog(){
-        authorityDialog = new AuthorityDialog(this);
+        authorityDialog = new AuthorityDialog(this, "접근 권한이 없습니다.");
         authorityDialog.setCancelable(false);
         authorityDialog.show();
         //authorityDialog.
@@ -494,7 +512,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
                     String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                    Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //보호자 테이블 조회
+                    Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //경로 테이블 조회
                     routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                         @SuppressLint("DefaultLocale")
                         @Override
@@ -551,6 +569,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
 
+    /////////////////////////////////////////경로 삭제////////////////////////////////////////
+    public void routeDelete(){
+        //String clientageRouteDate = reference.child("route").child(user.getUid()).; //피보호자 경로 테이블 날짜 조회
+
+        //Log.w(TAG, "경로 날짜: " + clientageRouteDate);
+    }
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
     public void counterpartyLocationScheduler(){ //20초마다 상대방 DB 검사 후, 위치 띄우기
@@ -580,6 +604,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
                     if(count == 0){
+                        routeDelete(); //30일 이전 피보호자 경로 삭제
                         routeScheduler(); //장애인 경로 저장 함수 호출
                     }
                     count++;
