@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
@@ -41,6 +42,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -63,6 +73,8 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
     private FirebaseAuth mAuth;
     private FirebaseStorage storage = FirebaseStorage.getInstance();;
     private StorageReference storageRef, riversRef; //firebase DB, Storage 변수
+
+    private String uid; //사용자 uid
 
     private Uri imageUri;
     private String pathUri = "profile/default.png"; //프로필 이미지 처리 변수
@@ -393,7 +405,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         //가입 성공시
                         if (task.isSuccessful()) {
-                            final String uid = task.getResult().getUser().getUid();
+                            uid = task.getResult().getUser().getUid();
 
                             if(imageUri != null){ //프로필 설정 했을 시
                                 pathUri = "profile/"+uid;
@@ -403,6 +415,14 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                             Disabled disabled = new Disabled(pathUri, email, password, name,
                                     phoneNumber, birth, sex, address, detailAddress); //장애인 객체 생성
                             reference.child("disabled").child(uid).setValue(disabled); //DB에 장애인 정보 삽입
+
+                            String finalAddress = address.substring(7); //주소 지오코딩
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    geoCoding(finalAddress);
+                                }
+                            }).start();
 
                             //DB에 저장되어있는 플래그들 초기화
                             EmailVerified emailVerified = new EmailVerified(false);
@@ -431,6 +451,62 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
 
                     }
                 });
+    }
+
+    /////////////////////////////////////////지오코딩////////////////////////////////////////
+    private void geoCoding(String address) {
+        try{
+            BufferedReader bufferedReader;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            String query = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + URLEncoder.encode(address, "UTF-8");
+            URL url = new URL(query);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            if(conn != null) {
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", BuildConfig.CLIENT_ID);
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY", BuildConfig.CLIENT_SECRET);
+                conn.setDoInput(true);
+
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == 200) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                } else {
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                }
+
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line + "\n");
+                }
+
+                int indexFirstLatitude = stringBuilder.indexOf("\"y\":\"");
+                int indexLastLatitude = stringBuilder.indexOf("\",\"distance\":"); //위도
+                
+                int indexFirstLongitude = stringBuilder.indexOf("\"x\":\"");
+                int indexLastLongitude = stringBuilder.indexOf("\",\"y\":"); //경도
+
+                AddressGeocoding addressGeocoding = new AddressGeocoding(
+                        Double.parseDouble(stringBuilder.substring(indexFirstLatitude + 5, indexLastLatitude)),
+                        Double.parseDouble(stringBuilder.substring(indexFirstLongitude + 5, indexLastLongitude)));
+                reference.child("addressgeocoding").child(uid).setValue(addressGeocoding); //지오코딩 DB에 저장
+
+                bufferedReader.close();
+                conn.disconnect();
+            }
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /////////////////////////////////////////연결 코드 생성////////////////////////////////////////

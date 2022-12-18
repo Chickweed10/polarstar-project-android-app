@@ -37,6 +37,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.Disabled;
@@ -90,7 +91,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 //실시간 위치
-public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback { //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
+public class RealTimeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
+    //프로젝트에서 우클릭 이 디바이스 항상 켜놓기 누름
     Toolbar toolbar;
     DrawerLayout drawerLayout;
     NavigationView navigationView; //네비게이션 바
@@ -130,8 +132,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
     private double routeLatitude, routeLongitude; //장애인 경로 저장
     
-
-    public static double disabledAddressLatitude, disabledAddressLongitude; //장애인 집 주소 위도 경도
+    AddressGeocoding addressGeocoding;
+    public static double disabledAddressLatitude, disabledAddressLongitude;  //피보호자 집 주소 지오코딩
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
@@ -551,7 +553,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
-    public void counterpartyLocationScheduler(){ //1초마다 상대방 DB 검사 후, 위치 띄우기
+    public void counterpartyLocationScheduler(){ //20초마다 상대방 DB 검사 후, 위치 띄우기
         Timer timer = new Timer();
 
         TimerTask timerTask = new TimerTask() {
@@ -632,7 +634,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
-        if(classificationUserFlag == 1) { //내가 장애인이고, 상대방이 보호자일 경우
+        if(classificationUserFlag == 1) { //내가 피보호자고, 상대방이 보호자일 경우
             Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
                 @Override
@@ -643,7 +645,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     }
 
                     if(counterpartyUID != null  && !counterpartyUID.isEmpty()){
-                        counterpartyMarker();
+                        counterpartyMarker(); //실시간 위치 마커
                     }
                     else {
                         Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
@@ -657,9 +659,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
             });
         }
-        else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
+        else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 피보호자일 경우
             Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
-            query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //피보호자 코드로 장애인 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
@@ -667,6 +669,22 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     }
 
                     if(counterpartyUID != null  && !counterpartyUID.isEmpty()){
+                        Query clientageQuery = reference.child("addressgeocoding").orderByKey().equalTo(counterpartyUID); //피보호자 주소 지오코딩 테이블 조회
+                        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                addressGeocoding = new AddressGeocoding();
+                                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                    addressGeocoding = ds.getValue(AddressGeocoding.class);
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                         counterpartyMarker();
                     }
                     else {
@@ -740,7 +758,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         }
                         if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
                             counterpartyName = disabled.getName();
-                            departureArrivalNotification(); //장애인 출도착 알림
+                            departureArrivalNotification(); //출도착 알림
                             trackingStatusCheck(); //추적불가 알림
                             inOutCheck(); // 복귀이탈 알림
                         }
@@ -759,105 +777,17 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
 
-    /////////////////////////////////////////장애인 집 출발&도착 알림////////////////////////////////////////
-    public void departureArrivalNotification(){
-        reference.child("disabled").child(counterpartyUID).orderByKey().equalTo("address"). //장애인 집 주소 가져오기
-                addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String address = null;
-                for(DataSnapshot ds : snapshot.getChildren()){
-                    address = ds.getValue().toString();
-                }
-                if (!snapshot.exists()) {
-                    Log.w(TAG, "장애인 집 주소 오류");
-                }
-                else { //장애인 집 주소 받아오면
-                    String finalAddress = address.substring(7);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            geoCoding(finalAddress);
-                        }
-                    }).start();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void geoCoding(String address) {
-        try{
-            BufferedReader bufferedReader;
-            StringBuilder stringBuilder = new StringBuilder();
-
-            String query = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + URLEncoder.encode(address, "UTF-8");
-            URL url = new URL(query);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            if(conn != null) {
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(5000);
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", BuildConfig.CLIENT_ID);
-                conn.setRequestProperty("X-NCP-APIGW-API-KEY", BuildConfig.CLIENT_SECRET);
-                conn.setDoInput(true);
-
-                int responseCode = conn.getResponseCode();
-
-                if (responseCode == 200) {
-                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                } else {
-                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                }
-
-                String line = null;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line + "\n");
-                }
-
-                int indexFirst;
-                int indexLast;
-
-                indexFirst = stringBuilder.indexOf("\"x\":\"");
-                indexLast = stringBuilder.indexOf("\",\"y\":");
-                disabledAddressLongitude = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
-
-                indexFirst = stringBuilder.indexOf("\"y\":\"");
-                indexLast = stringBuilder.indexOf("\",\"distance\":");
-                disabledAddressLatitude = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
-
-                bufferedReader.close();
-                conn.disconnect();
-            }
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        departureArrivalCheck(); //출도착 판단
-    }
-
-    public void departureArrivalCheck(){ //출도착 테이블 조회 후 값 삽입
+    public void departureArrivalNotification(){ //출도착 알림
         Query query = reference.child("departurearrivalstatus").orderByKey().equalTo(counterpartyUID); //출도착 플래그 테이블 조회
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 departureArrivalStatus = new DepartureArrivalStatus();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    departureArrivalStatus = ds.getValue(DepartureArrivalStatus.class);
+                    departureArrivalStatus = ds.getValue(DepartureArrivalStatus.class); //값 가져오기
                 }
                 if(departureArrivalStatus != null){
-                    departureArrivaljudgment(); //출발 도착 판단 후 알림
+                    departureArrivalCheck(); //출발 도착 판단 후 알림
                 }
                 else {
 
@@ -871,8 +801,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         });
     }
 
-    public void departureArrivaljudgment() { //출발 도착 판단 후 알림
+    public void departureArrivalCheck() { //출발 도착 판단 후 알림
         //경도(longitude)가 X, 위도(latitude)가 Y
+        disabledAddressLatitude = addressGeocoding.getAddressLatitude();
+        disabledAddressLongitude = addressGeocoding.getAddressLongitude();
+
         distance = Math.sqrt(((counterpartyCurPoint.longitude-disabledAddressLongitude)*(counterpartyCurPoint.longitude-disabledAddressLongitude))+((counterpartyCurPoint.latitude-disabledAddressLatitude)*(counterpartyCurPoint.latitude-disabledAddressLatitude)));
 
         if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
