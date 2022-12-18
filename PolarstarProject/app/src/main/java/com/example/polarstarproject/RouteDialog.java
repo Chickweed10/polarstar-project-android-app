@@ -1,24 +1,20 @@
 package com.example.polarstarproject;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-public class AuthorityDialog extends Dialog implements View.OnClickListener{
+public class RouteDialog extends Dialog implements View.OnClickListener{
     private Context mContext;
 
     private TextView btn_ok, dialogTextView;
     String text;
 
-    public AuthorityDialog(@NonNull Context context, String text) {
+    public RouteDialog(@NonNull Context context, String text) {
         super(context);
         mContext = context;
         this.text = text;

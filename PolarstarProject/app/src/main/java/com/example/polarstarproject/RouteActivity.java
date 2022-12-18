@@ -48,9 +48,11 @@ import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.GeometryUtils;
 
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat; //달력
 import java.util.Calendar; //달력
@@ -61,6 +63,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     Toolbar toolbar;
 
     private static final String TAG = "Route";
+
+    private RouteDialog routeDialog; //경로 조회 다이얼로그 팝업
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -309,6 +313,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     Calendar mCalendar = Calendar.getInstance();
 
     DatePickerDialog.OnDateSetListener mDatePicker = new DatePickerDialog.OnDateSetListener() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             mCalendar.set(Calendar.YEAR, year);
@@ -318,10 +323,36 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
             arrayPoints.clear();
             path.setMap(null);
-            
-            disabledRoute(year, month, dayOfMonth);
+
+            String monthToString = String.format("%02d", month+1);
+            String dayOfMonthToString = String.format("%02d", dayOfMonth); //월, 일 00 형식으로 변경
+
+            String clickDateString =  Integer.toString(year)+"-"+monthToString+"-"+dayOfMonthToString;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate clickDate = LocalDate.parse(clickDateString, formatter); //String을 LocalDate로 형변환
+
+            LocalDate now = LocalDate.now();
+
+            long diff = clickDate.until(now, ChronoUnit.DAYS); //날짜 뺄셈
+
+            if(clickDate.compareTo(now) > 0) { //현재일 이후 선택 시
+                startRouteDialog("현재일 이후 날짜는 선택할 수 없습니다.");
+            }
+            else if(diff > 30) { //30일 이전 선택 시
+                startRouteDialog("30일 이전의 기록은 조회할 수 없습니다.");
+            }
+            else {
+                disabledRoute(year, month, dayOfMonth);
+            }
         }
     };
+
+    //////////////////////////////////////// 다이얼로그 ///////////////////////////////////
+    public void startRouteDialog(String text) {
+        routeDialog = new RouteDialog(this, text);
+        routeDialog.setCancelable(false);
+        routeDialog.show();
+    }
 
     public void mOnClick_DatePick(View view) {
         // DatePicker가 처음 떴을 때, 오늘 날짜가 보이도록 설정.

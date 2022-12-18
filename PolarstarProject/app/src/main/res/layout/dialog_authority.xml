@@ -25,10 +25,10 @@
         android:background="#454545" />
 
     <TextView
+        android:id="@+id/dialogTextView"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:gravity="center"
-        android:text="접근 권한이 없습니다."
         android:textColor="#000000"
         android:textSize="16dp" />
 
