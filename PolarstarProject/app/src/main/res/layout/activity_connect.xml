@@ -44,7 +44,7 @@
             android:hint="나의 코드 : "
             android:inputType="phone"
             android:textColorHint="#454545"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/btnCopy"
@@ -57,7 +57,7 @@
             android:fontFamily="@font/nanumsquare_aac"
             android:text="코드 복사"
             android:textColor="@color/white"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -75,7 +75,7 @@
         android:inputType="textPassword"
         android:padding="11dp"
         android:singleLine="true"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/btnConnect"
@@ -88,6 +88,6 @@
         android:fontFamily="@font/nanumsquare_aac"
         android:text="연결"
         android:textColor="@color/white"
-        android:textSize="16dp" />
+        android:textSize="16sp" />
 
 </LinearLayout>

@@ -22,6 +22,7 @@
             android:textColor="#faf7f0"
             android:textSize="46dp"
             android:text="북극성"
+            android:fontFamily="@font/nanumsquare_aac"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
 
@@ -38,6 +39,7 @@
             android:layout_gravity="center"
             android:textSize="16dp"
             android:textColor="#faf7f0"
+            android:fontFamily="@font/nanumsquare_aac"
             android:text="어두운 밤하늘에서도 빛나는 길잡이입니다."
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 

@@ -71,7 +71,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/nanumsquare_aab"
                 android:text="보호구역 관리"
-                android:textSize="18dp"/>
+                android:textSize="18sp"/>
 
             <View
                 android:layout_width="0dp"
@@ -85,7 +85,7 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/nanumsquare_aab"
                 android:layout_gravity="top|right"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:text="알림" />
 
 

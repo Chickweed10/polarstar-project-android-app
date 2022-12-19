@@ -77,7 +77,7 @@
                     android:textColor="@color/white"
                     android:text="피보호자"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -104,7 +104,7 @@
                     android:textColor="@color/white"
                     android:text="보호자"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
 
 
             </LinearLayout>

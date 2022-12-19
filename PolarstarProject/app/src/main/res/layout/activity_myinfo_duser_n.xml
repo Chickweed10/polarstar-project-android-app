@@ -48,7 +48,7 @@
                 android:text="회원 정보"
                 android:textColor="#454545"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -60,7 +60,7 @@
                 android:text="기본 정보"
                 android:textColor="#454545"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:textSize="14dp" />
+                android:textSize="14sp" />
 
 
             <LinearLayout
@@ -77,7 +77,7 @@
                     android:text="이름"
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/mProflNameN"
@@ -90,7 +90,7 @@
                     android:padding="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -107,7 +107,7 @@
                     android:text="전화번호"
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/mProflPhoneNumN"
@@ -122,7 +122,7 @@
                     android:singleLine="true"
                     android:inputType="phone"
                     android:text=""
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <TextView
@@ -134,7 +134,7 @@
                 android:text="계정 관리"
                 android:textColor="#454545"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:textSize="14dp" />
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -153,7 +153,7 @@
                     android:padding="11dp"
                     android:singleLine="true"
                     android:inputType="textEmailAddress"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/mProflBtEmailCkN"
@@ -166,7 +166,7 @@
                     android:textColor="@color/white"
                     android:text="이메일 인증"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -185,7 +185,7 @@
                     android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/mProflBtPWChageN"
@@ -198,7 +198,7 @@
                     android:textColor="@color/white"
                     android:text="비밀번호 재설정"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <TextView
@@ -211,7 +211,7 @@
                 android:text="추가 정보"
                 android:textColor="#454545"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:textSize="14dp" />
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -227,7 +227,7 @@
                     android:text="도로명 주소"
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:textSize="14dp"  />
+                    android:textSize="14sp"  />
 
                 <EditText
                     android:id="@+id/mProflAddressN"
@@ -242,7 +242,7 @@
                     android:clickable="true"
                     android:focusable="false"
                     android:inputType="textPersonName"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/mProflFdAddN"
@@ -254,7 +254,7 @@
                     android:textColor="@color/white"
                     android:text="검색"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -271,7 +271,7 @@
                     android:text="상세주소"
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:textSize="14dp"  />
+                    android:textSize="14sp"  />
 
                 <EditText
                     android:id="@+id/mProflDetailAddressN"
@@ -284,7 +284,7 @@
                     android:padding="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
             <LinearLayout
@@ -301,7 +301,7 @@
                     android:text="생년월일"
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/mProflBirthN"
@@ -315,7 +315,7 @@
                     android:singleLine="true"
                     android:hint="(ex. 19001231) "
                     android:inputType="date"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -333,7 +333,7 @@
                     android:text="성별 "
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
                 <RadioGroup
                     android:id="@+id/mProflBtGenderN"
@@ -377,7 +377,7 @@
                 android:layout_marginBottom="40dp"
                 android:fontFamily="@font/nanumsquare_aac"
                 android:text="프로필 수정"
-                android:textSize="14dp"/>
+                android:textSize="16sp"/>
 
 
         </LinearLayout>
