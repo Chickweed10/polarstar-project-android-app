@@ -9,6 +9,7 @@
         android:id="@+id/vDatePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/nanumsquare_aab"
         android:calendarViewShown="false" />
 
     <LinearLayout

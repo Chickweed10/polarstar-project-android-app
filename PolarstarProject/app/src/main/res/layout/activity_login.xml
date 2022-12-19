@@ -27,6 +27,7 @@
             android:gravity="center"
             android:padding="1dp"
             android:text="장애인 실종 예방 서비스"
+            android:fontFamily="@font/nanumsquare_aab"
             android:textColor="#757477"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -36,6 +37,7 @@
             android:layout_height="75dp"
             android:gravity="center"
             android:text="북극성"
+            android:fontFamily="@font/nanumsquare_aab"
             android:textColor="#6833D1"
             android:textSize="50sp"
             android:textStyle="bold" />
@@ -48,8 +50,9 @@
             android:background="@drawable/login_background_edit_text"
             android:ems="10"
             android:hint="이메일"
+            android:fontFamily="@font/nanumsquare_aab"
             android:inputType="textEmailAddress"
-            android:padding="12dp"
+            android:padding="14dp"
             android:singleLine="true"
             android:textSize="14sp" />
 
@@ -57,12 +60,13 @@
             android:id="@+id/lgnPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/login_background_edit_text"
+            android:fontFamily="@font/nanumsquare_aab"
             android:ems="10"
             android:hint="비밀번호"
             android:inputType="textPassword"
-            android:padding="12dp"
+            android:padding="14dp"
             android:singleLine="true"
             android:textSize="14sp" />
 
@@ -72,10 +76,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
             android:backgroundTint="#6833D1"
+            android:fontFamily="@font/nanumsquare_aab"
             android:padding="12dp"
             android:text="로그인"
             android:textAllCaps="false"
             android:textColor="@color/white"
+            android:textSize="16sp"
             app:cornerRadius="4dp" />
 
         <!--
@@ -119,10 +125,11 @@
                 android:layout_weight="1"
                 android:background="#00ff0000"
                 android:gravity="center"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:text="이메일 찾기"
                 android:textAlignment="center"
                 android:textColor="#515151"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/slash"
@@ -138,10 +145,11 @@
                 android:layout_weight="1"
                 android:background="#00ff0000"
                 android:gravity="center"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:text="비밀번호 찾기"
                 android:textAlignment="center"
                 android:textColor="#515151"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/slash2"
@@ -158,10 +166,11 @@
                 android:layout_weight="1"
                 android:background="#00ff0000"
                 android:gravity="center"
+                android:fontFamily="@font/nanumsquare_aab"
                 android:text="회원가입"
                 android:textAlignment="center"
                 android:textColor="#515151"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 

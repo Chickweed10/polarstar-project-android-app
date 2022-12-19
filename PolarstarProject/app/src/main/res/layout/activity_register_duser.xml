@@ -89,7 +89,7 @@
                         android:layout_weight="0.4"
                         android:fontFamily="@font/nanumsquare_aac"
                         android:text="중복확인"
-                        android:textSize="14dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <EditText
@@ -170,7 +170,7 @@
                         android:fontFamily="@font/nanumsquare_aac"
                         android:layout_weight="0.4"
                         android:text="인증요청"
-                        android:textSize="14dp" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -207,7 +207,7 @@
                         android:layout_weight="0.4"
                         android:text="인증확인"
                         android:fontFamily="@font/nanumsquare_aac"
-                        android:textSize="14dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -332,7 +332,7 @@
                 android:textColor="@color/white"
                 android:text="회원가입"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:textSize="14dp"/>
+                android:textSize="16sp"/>
         </LinearLayout>
     </ScrollView>
 
