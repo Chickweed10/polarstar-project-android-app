@@ -217,8 +217,20 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    //이미지 로드 실패시
-                    Log.w(TAG, "이미지 로드 실패");
+                    StorageReference defaultPro = storageRef.child("profile").child("default.png");
+                    defaultPro.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            //이미지 로드 성공시
+                            Glide.with(headerView).load(uri).into(headerViewImageContent);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //이미지 로드 실패시
+                            Log.w(TAG, "이미지 로드 실패");
+                        }
+                    });
                 }
             });
         }
