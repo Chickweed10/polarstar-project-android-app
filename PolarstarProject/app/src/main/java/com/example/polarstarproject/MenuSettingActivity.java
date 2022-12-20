@@ -187,6 +187,7 @@ public class MenuSettingActivity extends AppCompatActivity {
     private void getOtherUID(String uid){
         if(classificationUserFlag == 1) { //내가 피보호자고, 상대방이 보호자일 경우
             Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+
             query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
