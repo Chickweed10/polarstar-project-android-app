@@ -10,12 +10,15 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.Disabled;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +37,9 @@ public class MenuSettingActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference reference = database.getReference();
     private FirebaseUser user;
+    private String cUid;
+    private String counterpartyUID;
+    Connect myConnect;
 
     SharedPreferences autoM = ((MainActivity)MainActivity.context_main).auto;
     SharedPreferences.Editor autoEdit;
@@ -55,35 +61,44 @@ public class MenuSettingActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
+        cUid = user.getUid();
 
         userBtLinkDisConnect = findViewById(R.id.userBtLinkDisConnect);
         btLogout = findViewById(R.id.btLogout);
         btWithdrawal = findViewById(R.id.btWithdrawal);
 
+        classificationUser(user.getUid()); //사용자 구별
+
+        userBtLinkDisConnect.setOnClickListener(new View.OnClickListener() { //연결 끊기
+            @Override
+            public void onClick(View v) {
+                foregroundService(); //포그라운드 서비스 종료
+                disConnectUser(cUid); //연결 끊기
+
+
+                //Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                //startActivity(intent);
+
+            }
+        });
+
         btLogout.setOnClickListener(new View.OnClickListener() { //로그아웃
             @Override
             public void onClick(View v) {
                 foregroundService(); //포그라운드 서비스 종료
-                /*try{
-                    autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
-                    autoEdit = autoM.edit();
 
-                    checkBoxFlag = autoM.getString("cFlag", null);
+                autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+                autoEdit = autoM.edit();
 
-                    if(checkBoxFlag=="t") {
-                        autoEdit.putString("Password", "");
-                        //autoEdit.clear();
-                        //autoEdit.commit();
-                    }else {
-                        autoEdit.clear();
-                        autoEdit.commit();
-                    }
-                //}catch (Exception e){ */
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                //}
+                autoEdit.clear();
+                autoEdit.commit();
+
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+
             }
         });
+
         btWithdrawal.setOnClickListener(new View.OnClickListener() { //회원탈퇴
             @Override
             public void onClick(View v) {
@@ -111,14 +126,14 @@ public class MenuSettingActivity extends AppCompatActivity {
         disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Connect myConnect = new Connect();
+                myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
                 }
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
-                    skipScreen(); //화면 넘어가기
+                    getOtherUID(user.getUid()); //상대방 UID 가져오기
                 }
                 else {
 
@@ -135,14 +150,14 @@ public class MenuSettingActivity extends AppCompatActivity {
         guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Connect myConnect = new Connect();
+                myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
                 }
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 2;
-                    skipScreen(); //화면 넘어가기
+                    getOtherUID(user.getUid()); //상대방 UID 가져오기
                 }
                 else {
 
@@ -161,8 +176,8 @@ public class MenuSettingActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
-                classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
-
+                //classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
+                skipScreen();
                 return true;
             }
         }
@@ -170,20 +185,95 @@ public class MenuSettingActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() { //뒤로가기 했을 때
-        classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
+        //classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
+        skipScreen();
     }
 
     /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
     public void skipScreen(){
-        if(classificationUserFlag == 1){ //장애인
-            Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
-            startActivity(intent);
-            finish();
+        Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
+    private void getOtherUID(String uid){
+        if(classificationUserFlag == 1) { //내가 피보호자고, 상대방이 보호자일 경우
+            Query query = reference.child("connect").child("guardian").child(uid).orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        counterpartyUID = ds.getKey();
+                        Log.w(TAG, "counterpartyUID: "+counterpartyUID);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
-        else if(classificationUserFlag == 2){ //보호자
-            Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
-            startActivity(intent);
-            finish();
+        else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 피보호자일 경우
+            Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //피보호자 코드로 장애인 uid 가져오기
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        counterpartyUID = ds.getKey();
+                        Log.w(TAG, "counterpartyUID: "+counterpartyUID);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else { //올바르지 않은 사용자
+            Log.w(TAG, "상대방 인적사항 확인 오류");
+        }
+    }
+
+    /////////////////////////////////////////연결 해제////////////////////////////////////////
+    private void disConnectUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
+        if(classificationUserFlag == 1 ){ //내가 피보호자일 경우
+            Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
+            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    reference.child("connect").child("disabled").child(cUid).child("counterpartyCode").setValue(null);
+                    reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").setValue(null);
+                    Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else if(classificationUserFlag == 2){ //내가 보호자일 경우
+            Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(uid); //보호자 테이블 조회
+            guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    reference.child("connect").child("guardian").child(cUid).child("counterpartyCode").setValue(null);
+                    reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").setValue(null);
+                    Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
