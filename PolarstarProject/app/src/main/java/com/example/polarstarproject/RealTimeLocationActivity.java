@@ -685,7 +685,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         counterpartyMarker(); //실시간 위치 마커
                     }
                     else {
-                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class); //연결 화면 넘어가기
+                        startActivity(intent);
+                        finish();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -725,7 +727,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         counterpartyMarker();
                     }
                     else {
-                        Toast.makeText(RealTimeLocationActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class); //연결 화면 넘어가기
+                        startActivity(intent);
+                        finish();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
