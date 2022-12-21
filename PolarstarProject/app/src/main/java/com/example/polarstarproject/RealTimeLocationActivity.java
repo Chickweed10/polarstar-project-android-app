@@ -128,6 +128,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     CameraUpdate cameraUpdate; //지도 카메라
     int cameraCnt = 0; //카메라 이동 제어 위한 카운트
+    int screenCnt = 0; //연결 화면 넘어가기 위한 카운트
 
     Connect myConnect;
     String counterpartyUID = "";
@@ -245,8 +246,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             Guardian guardian = snapshot.getValue(Guardian.class);
-                            headerViewNameContent.setText(guardian.getName());
-                            headerViewEmailContent.setText(guardian.getEmail());
+                            if(guardian != null){
+                                headerViewNameContent.setText(guardian.getName());
+                                headerViewEmailContent.setText(guardian.getEmail());
+                            }
                         }
 
                         @Override
@@ -360,7 +363,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void startAuthorityDialog(){
-        authorityDialog = new AuthorityDialog(this, "접근 권한이 없습니다.");
+        authorityDialog = new AuthorityDialog(this);
         authorityDialog.setCancelable(false);
         authorityDialog.show();
         //authorityDialog.
@@ -581,7 +584,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
     }
 
-    /////////////////////////////////////////경로 삭제////////////////////////////////////////
+    /////////////////////////////////////////경로 삭제 스케쥴러////////////////////////////////////////
     public void routeDelete(){
         //String clientageRouteDate = reference.child("route").child(user.getUid()).; //피보호자 경로 테이블 날짜 조회
 
@@ -589,17 +592,25 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
-    public void counterpartyLocationScheduler(){ //20초마다 상대방 DB 검사 후, 위치 띄우기
+    public void counterpartyLocationScheduler(){ //2초마다 상대방 DB 검사 후, 위치 띄우기
         Timer timer = new Timer();
 
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                //1초마다 실행
+                //2초마다 실행
                 classificationUser(user.getUid());
             }
         };
         timer.schedule(timerTask,0,2000);
+    }
+
+    private void startDisconnectDialog(){
+        DisconnectDialog disconnectDialog;
+        disconnectDialog = new DisconnectDialog(this, "상대방과의 연결이 해제되었습니다.");
+        disconnectDialog.setCancelable(false);
+        disconnectDialog.show();
+        //authorityDialog.
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
@@ -615,6 +626,17 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
+
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 탈퇴할 경우
+                        if(screenCnt == 0){
+                            if(! RealTimeLocationActivity.this.isFinishing()){
+                                startDisconnectDialog();
+                            }
+                            Log.w(TAG, "상대 보호자 없음");
+                            screenCnt++;
+                        }
+                    }
+
                     if(count == 0){
                         routeDelete(); //30일 이전 피보호자 경로 삭제
                         routeScheduler(); //장애인 경로 저장 함수 호출
@@ -631,10 +653,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         TrackingStatus trackingStatus = new TrackingStatus(true); //위치 권한 있는 경우
                         reference.child("trackingstatus").child(user.getUid()).setValue(trackingStatus);
                     }
-                }
-
-                else {
-
                 }
             }
 
@@ -655,6 +673,17 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 2;
+
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 탈퇴할 경우
+                        if(screenCnt == 0){
+                            if(! RealTimeLocationActivity.this.isFinishing()){
+                                startDisconnectDialog();
+                            }
+                            Log.w(TAG, "상대 피보호자 없음");
+                            screenCnt++;
+                        }
+                    }
+
                     getOtherUID();
                 }
                 else {
@@ -683,12 +712,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                     if(counterpartyUID != null  && !counterpartyUID.isEmpty()){
                         counterpartyMarker(); //실시간 위치 마커
-                    }
-                    else {
-                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class); //연결 화면 넘어가기
-                        startActivity(intent);
-                        finish();
-                        Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
 
@@ -726,17 +749,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         });
                         counterpartyMarker();
                     }
-                    else {
-                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class); //연결 화면 넘어가기
-                        startActivity(intent);
-                        finish();
-                        Log.w(TAG, "상대방 인적사항 확인 오류");
-                    }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Intent intent = new Intent(getApplicationContext(), ConnectActivity.class); //연결 화면 넘어가기
+                    startActivity(intent);
+                    finish();
+                    Log.w(TAG, "상대 피보호자 없음");
                 }
             });
         }
