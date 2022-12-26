@@ -195,12 +195,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else { //이미 연결되어 있는 경우
-            if(classificationUserFlag == 1){ //장애인
-                Intent intent = new Intent(MainActivity.this, RealTimeLocationActivity.class);
-                startActivity(intent);
-                finish();
-            }
-            else if(classificationUserFlag == 2){ //보호자
+            if(classificationUserFlag == 1 || classificationUserFlag == 2){
+                //메인 화면으로 이동
                 Intent intent = new Intent(MainActivity.this, RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish();
