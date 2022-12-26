@@ -31,7 +31,7 @@
         android:layout_height="100dp"
         android:fontFamily="@font/nanumsquare_aab"
         android:gravity="center"
-        android:textColor="#FFFFFF"
+        android:textColor="#1E1E1E"
         android:textSize="18sp" />
 
     <View
