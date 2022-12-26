@@ -4,6 +4,7 @@ package com.example.polarstarproject;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -22,6 +24,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -99,6 +102,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     DrawerLayout drawerLayout;
     NavigationView navigationView; //네비게이션 바
     private AuthorityDialog authorityDialog; //권한 다이얼로그 팝업
+    private DisconnectDialog disconnectDialog; //연결끊기 다이얼로그 팝업
 
     private static final String TAG = "RealTimeLocation";
     
@@ -160,7 +164,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        //다이얼로그 밖의 화면은 흐리게 만들어줌
+        //다이얼로그 초기 설정
+        authorityDialog = new AuthorityDialog(this);
+        authorityDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
+
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
+
+        //다이얼로그 밖 화면 흐리게
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         layoutParams.dimAmount = 0.8f;
@@ -366,7 +377,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         authorityDialog = new AuthorityDialog(this);
         authorityDialog.setCancelable(false);
         authorityDialog.show();
-        //authorityDialog.
+        authorityDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
     }
 
     /////////////////////////////////////////네비게이션 바 설정////////////////////////////////////////
@@ -606,11 +617,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void startDisconnectDialog(){
-        DisconnectDialog disconnectDialog;
-        disconnectDialog = new DisconnectDialog(this, "상대방과의 연결이 해제되었습니다.");
+        disconnectDialog = new DisconnectDialog(this);
         disconnectDialog.setCancelable(false);
         disconnectDialog.show();
-        //authorityDialog.
+        disconnectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////

@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,7 +18,8 @@ import androidx.annotation.NonNull;
 public class AuthorityDialog extends Dialog implements View.OnClickListener{
     private Context mContext;
 
-    private TextView btn_ok, dialogTextView;
+    private TextView dialogTextView;
+    private Button btn_ok;
 
     public AuthorityDialog(@NonNull Context context) {
         super(context);
@@ -30,7 +34,7 @@ public class AuthorityDialog extends Dialog implements View.OnClickListener{
         dialogTextView = (TextView) findViewById(R.id.dialogTextView);
         dialogTextView.setText("접근 권한이 없습니다.");
 
-        btn_ok = (TextView) findViewById(R.id.btn_ok);
+        btn_ok = (Button) findViewById(R.id.btn_ok);
         btn_ok.setOnClickListener(this);
     }
 
