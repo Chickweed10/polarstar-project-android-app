@@ -92,10 +92,15 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     Marker counterpartyMarker; //상대방 마커
     LatLng counterpartyCurPoint; //상대방 위치
 
+    Marker sMarker; //상대방 마커
+    LatLng sPoint; //상대방 위치
+
     Connect myConnect;
     String counterpartyUID = "";
 
-    double disabledAddressLat, disabledAddressLng; //장애인 집 주소 위도 경도
+    String area = "";
+
+    double disabledAddressLat, disabledAddressLng; //장애인 주소 위도 경도
 
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
@@ -169,7 +174,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                reference.child("range").child(user.getUid()).child(rName.getText().toString()).child("distance").setValue(rad);
+                //reference.child("range").child(user.getUid()).child(rName.getText().toString()).child("distance").setValue(rad);
 
             }
         });
@@ -182,7 +187,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
                 Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
                 startActivity(intent);
-                finish(); //로그인 화면으로 이동
+                finish(); //화면 이동
 
                 return true;
             }
@@ -193,7 +198,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     public void onBackPressed() { //뒤로가기 했을 때
         Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
-        finish(); //로그인 화면으로 이동
+        finish(); //화면 이동
     }
 
     //////////////////////////////////////////지도 설정////////////////////////////////////////////
@@ -206,7 +211,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
         // 권한확인. 결과는 onRequestPermissionsResult 콜백 매서드 호출
         ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
-        classificationUser(user.getUid());
+        getRange();
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
@@ -263,6 +268,31 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         });
     }
 
+    /////////////////////////////////////////보호구역 가져오기////////////////////////////////////////
+    private void getRange(){
+        Query query = reference.child("range").orderByKey().equalTo(user.getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    area = ds.getKey();
+                }
+
+                if(area != null  && !area.isEmpty()){
+                    mapMarker();
+                }
+                else {
+                    classificationUser(user.getUid());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     /////////////////////////////////////////상대방 주소 기준 위치 마커////////////////////////////////////////
     private void counterpartyMarker() {
         counterpartyCurPoint = new LatLng(RealTimeLocationActivity.disabledAddressLatitude, RealTimeLocationActivity.disabledAddressLongitude);
@@ -288,7 +318,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     }
 
 
-    ////////////////////////////////////검색한 주소지로 이동한 마커/////////////////////////////////////////////
+    ////////////////////////////////////저장된 주소지로 이동한 마커/////////////////////////////////////////////
     private void mapMarker() {
         if(reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()) != null){
             reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()). //저장명으로 접근
@@ -308,7 +338,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                                 .animate(CameraAnimation.Linear); //카메라 애니메이션
                         mNaverMap.moveCamera(cameraUpdate);
                         Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
-                        if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
+                        if(counterpartyCurPoint != null) { // 보호구역이 존재하면
                             if (counterpartyMarker == null) {//마커가 없었을 경우
                                 counterpartyMarker = new Marker();
                                 counterpartyMarker.setPosition(counterpartyCurPoint);
@@ -345,6 +375,27 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             });
         }
     }
+    /////////////////////////////////////////상대방 주소 기준 위치 마커////////////////////////////////////////
+    private void searchMarker(double lat, double lng) {
+        counterpartyCurPoint = new LatLng(lat, lng);
+        cameraUpdate = CameraUpdate.scrollTo(counterpartyCurPoint)
+                .animate(CameraAnimation.Linear); //카메라 애니메이션
+        mNaverMap.moveCamera(cameraUpdate);
+        Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
+        if(counterpartyCurPoint != null) { // 보호구역이 존재하면
+            if (counterpartyMarker == null) {//마커가 없었을 경우
+                counterpartyMarker = new Marker();
+                counterpartyMarker.setPosition(counterpartyCurPoint);
+                counterpartyMarker.setMap(mNaverMap);
+                Log.w(TAG, "첫 마커 위치 "+ counterpartyCurPoint);
+            }
+            else if (counterpartyMarker != null) { //마커가 존재했던 경우
+                counterpartyMarker.setMap(null); //마커삭제
+                counterpartyMarker.setPosition(counterpartyCurPoint);
+                counterpartyMarker.setMap(mNaverMap);
+            }
+        }
+    }
     /////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -358,12 +409,12 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                     rangeAddress.setText(data);
                     new Thread(() -> {
                         geoC(data.substring(7));
-                        //여기서 파이어베이스에 저장하고
-                        Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
-                        Log.w(TAG, "로그: "+ disabledAddressLat+disabledAddressLng+rad);
-                        reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange);
+                        //Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
+                        //Log.w(TAG, "로그: "+ disabledAddressLat+disabledAddressLng+rad);
+                        //reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange);
                         // 밑 메소드 뺴고 카메라 이동해보기
-                        mapMarker();
+                        //mapMarker();
+                        //searchMarker(disabledAddressLat, disabledAddressLng);
                     }).start();
                 }
             }
@@ -435,21 +486,25 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
             case R.id.btnSet:
                 Range myRange = new Range(disabledAddressLat, disabledAddressLng, rad);
-                reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange)
-                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) { //보호구역 설정 성공
-                                    Toast.makeText(getApplicationContext(),"보호구역 설정 완료" , Toast.LENGTH_SHORT).show();
+                if(disabledAddressLat!=0 && disabledAddressLng!=0){ // 주소 검색 안하면 저장 안 되게
+                    reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange)
+                            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) { //보호구역 설정 성공
+                                        mapMarker();
+                                        Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
+                                    } else { //보호구역 설정 실패
+                                        Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                                else { //보호구역 설정 실패
-                                    Toast.makeText(getApplicationContext(),"보호구역 설정 실패" , Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
+                            });
+                } else { //보호구역 설정 실패
+                    Toast.makeText(getApplicationContext(), "주소를 검색해주세요.", Toast.LENGTH_SHORT).show();
+                }
                 break;
-        }
 
+
+        }
     }
 }
