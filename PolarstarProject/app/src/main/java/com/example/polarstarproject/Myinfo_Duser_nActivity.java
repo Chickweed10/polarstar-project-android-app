@@ -192,16 +192,9 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
     public void skipScreen(){
-        if(classificationUserFlag == 1){ //장애인
-            Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
-            startActivity(intent);
-            finish();
-        }
-        else if(classificationUserFlag == 2){ //보호자
-            Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void readUser(String uid) {

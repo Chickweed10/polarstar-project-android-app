@@ -107,16 +107,9 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
 
     /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
     public void skipScreen(){
-        if(classificationUserFlag == 1){ //장애인
-            Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
-            startActivity(intent);
-            finish();
-        }
-        else if(classificationUserFlag == 2){ //보호자
-            Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
