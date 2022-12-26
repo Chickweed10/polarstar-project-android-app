@@ -16,10 +16,6 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,9 +25,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="보호구역 관리"
+            android:text="알림 내역"
             android:fontFamily="@font/nanumsquare_aac"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="50dp"
             android:layout_marginBottom="20dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -44,17 +40,6 @@
             android:text="피보호자가 설정된 보호구역 진입/이탈 시 알림을 보냅니다."
             android:layout_marginBottom="26dp"/>
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="26dp"
-            android:backgroundTint="#240070"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textColor="@color/white"
-            android:text="보호구역 설정하기" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="2px"
@@ -64,8 +49,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp">
 
@@ -76,8 +59,24 @@
                 android:layout_marginStart="20dp"
                 android:layout_gravity="center"
                 android:fontFamily="@font/nanumsquare_aab"
-                android:text="보호구역 관리"
+                android:text="사용 내역"
                 android:textSize="18sp"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Switch
+                android:id="@+id/switch13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:layout_gravity="top|right"
+                android:textSize="18sp"
+                android:text="알림" />
+
 
         </LinearLayout>
 
@@ -92,14 +91,10 @@
             android:orientation="vertical">
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    </ScrollView>
 
 </LinearLayout>
