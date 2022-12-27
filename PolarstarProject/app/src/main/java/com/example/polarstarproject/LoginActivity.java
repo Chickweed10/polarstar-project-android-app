@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mEmailText = findViewById(R.id.lgnEmail);
         mPasswordText = findViewById(R.id.lgnPW);
-        autoCheck = findViewById(R.id.lgnCbAuto);
+        //autoCheck = findViewById(R.id.lgnCbAuto);
 
         onCheckPermission(); //위치권한 메소드
 
@@ -145,13 +145,15 @@ public class LoginActivity extends AppCompatActivity {
 
                                     } else {
                                         Toast.makeText(LoginActivity.this,
-                                                "로그인 오류",
+                                                "아이디 혹은 비밀번호를 잘못 입력하셨습니다.",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
                 }catch (IllegalArgumentException e){
-
+                    Toast.makeText(LoginActivity.this,
+                            "아이디 및 비밀번호를 입력해주세요.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -352,12 +354,8 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else { //이미 연결되어 있는 경우
-            if(classificationUserFlag == 1){ //장애인
-                Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
-                startActivity(intent);
-                finish();
-            }
-            else if(classificationUserFlag == 2){ //보호자
+            if(classificationUserFlag == 1 || classificationUserFlag == 2){
+                //메인 화면으로 이동
                 Intent intent = new Intent(LoginActivity.this, RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish();

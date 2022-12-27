@@ -168,7 +168,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                         reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
 
-                        //매칭 성공시 장애인 메뉴 화면으로 이동
+                        //매칭 성공시 메인 화면으로 이동
                         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
@@ -202,7 +202,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                         reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
 
-                        //매칭 성공시 보호자 메뉴 화면으로 이동
+                        //매칭 성공시 메인 화면으로 이동
                         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
@@ -253,7 +253,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timer.cancel();
                         timerTask.cancel(); //타이머 종료
                         
-                        //장애인 메뉴 화면으로 이동
+                        //메인 화면으로 이동
                         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();
@@ -283,7 +283,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         timer.cancel();
                         timerTask.cancel(); //타이머 종료
 
-                        //보호자 메뉴 화면으로 이동
+                        //메인 화면으로 이동
                         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
                         startActivity(intent);
                         finish();

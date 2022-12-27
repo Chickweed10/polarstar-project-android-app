@@ -1,27 +1,22 @@
 package com.example.polarstarproject;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-public class AuthorityDialog extends Dialog implements View.OnClickListener{
+public class DisconnectDialog extends Dialog implements View.OnClickListener{
     private Context mContext;
 
     private TextView dialogTextView;
     private Button btn_ok;
 
-    public AuthorityDialog(@NonNull Context context) {
+    public DisconnectDialog(@NonNull Context context) {
         super(context);
         mContext = context;
     }
@@ -32,7 +27,7 @@ public class AuthorityDialog extends Dialog implements View.OnClickListener{
         setContentView(R.layout.dialog_authority);
 
         dialogTextView = (TextView) findViewById(R.id.dialogTextView);
-        dialogTextView.setText("접근 권한이 없습니다.");
+        dialogTextView.setText("상대방과의 연결이 해제되었습니다.");
 
         btn_ok = (Button) findViewById(R.id.btn_ok);
         btn_ok.setOnClickListener(this);
@@ -43,6 +38,8 @@ public class AuthorityDialog extends Dialog implements View.OnClickListener{
         switch (v.getId()) {
             case R.id.btn_ok:
                 dismiss();
+                Intent intent = new Intent(mContext, ConnectActivity.class); //연결 화면 넘어가기
+                mContext.startActivity(intent);
                 break;
         }
     }
