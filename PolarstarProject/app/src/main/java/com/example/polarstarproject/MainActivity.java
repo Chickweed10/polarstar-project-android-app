@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.polarstarproject.Domain.Connect;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -71,12 +74,14 @@ public class MainActivity extends AppCompatActivity {
                                 /*Toast.makeText(MainActivity.this,
                                         "로그인 성공",
                                         Toast.LENGTH_SHORT).show(); */
+                                user = firebaseAuth.getCurrentUser();
                                 classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
                             }
                         }
                     });
 
         }else {
+            Log.w(TAG, "실행");
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -190,19 +195,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void skipScreen(int connectCheckFlag){
-        if(connectCheckFlag == 0){ //상대방과 연결되어있지 않은 경우
-            Intent intent = new Intent(MainActivity.this, ConnectActivity.class);
-            startActivity(intent);
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isPowersaveMode = powerManager.isPowerSaveMode();
+
+        if ( //권한이 모두 있는 경우
+            //위치 접근 권한
+                ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        //카메라 접근 권한
+                        && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                        //저장소 접근 권한
+                        && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        //절전모드
+                        && isPowersaveMode == false)
+        {
+            if(connectCheckFlag == 0){ //상대방과 연결되어있지 않은 경우
+                Intent intent = new Intent(MainActivity.this, ConnectActivity.class);
+                startActivity(intent);
+            }
+            else { //이미 연결되어 있는 경우
+                if(classificationUserFlag == 1 || classificationUserFlag == 2){
+                    //메인 화면으로 이동
+                    Intent intent = new Intent(MainActivity.this, RealTimeLocationActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                else {
+                    Log.w(TAG, "본인 확인 오류");
+                }
+            }
         }
-        else { //이미 연결되어 있는 경우
-            if(classificationUserFlag == 1 || classificationUserFlag == 2){
-                //메인 화면으로 이동
-                Intent intent = new Intent(MainActivity.this, RealTimeLocationActivity.class);
+        else { //권한 없는 경우
+            if(connectCheckFlag == 0){ //연결 안 된 경우
+                Intent intent = new Intent(MainActivity.this, PermissionActivity.class);
+                intent.putExtra("skipIntent", 1);
                 startActivity(intent);
                 finish();
             }
-            else {
-                Log.w(TAG, "본인 확인 오류");
+            else { //이미 연결되어 있는 경우
+                if(classificationUserFlag == 1 || classificationUserFlag == 2){
+                    Intent intent = new Intent(MainActivity.this, PermissionActivity.class);
+                    intent.putExtra("skipIntent", 2);
+                    startActivity(intent);
+                    finish();
+                }
             }
         }
     }

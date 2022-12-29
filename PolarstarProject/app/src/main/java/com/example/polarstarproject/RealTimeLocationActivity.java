@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -21,6 +22,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -192,8 +194,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         // 위치를 반환하는 구현체인 FusedLocationSource 생성
         mLocationSource = new FusedLocationSource(this, PERMISSION_REQUEST_CODE);
 
-        counterpartyLocationScheduler();
-
+        counterpartyLocationScheduler(); //스케쥴러 실행
 
         ///////////////////////////////툴바 & 네비게이션 바////////////////////////////////
         toolbar = findViewById(R.id.toolbar);
@@ -380,13 +381,40 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         authorityDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
     }
 
+    //권한 설정
+    public void onCheckPermission() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isPowersaveMode = powerManager.isPowerSaveMode();
+
+        if ( //권한이 모두 있는 경우
+            //위치 접근 권한
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        //카메라 접근 권한
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                        //저장소 접근 권한
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        //절전모드
+                        && isPowersaveMode == false) 
+        {
+
+        }
+        else { //하나라도 없는 경우
+            Intent intent = new Intent(RealTimeLocationActivity.this, PermissionActivity.class);
+            intent.putExtra("skipIntent", 2);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     /////////////////////////////////////////네비게이션 바 설정////////////////////////////////////////
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:{ // 왼쪽 상단 버튼 눌렀을 때
                 drawerLayout.openDrawer(GravityCompat.START);
-
 
                 return true;
             }
@@ -478,6 +506,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
    @Override
     protected void onStart(){ //Activity가 사용자에게 보여지면
         super.onStart();
+        onCheckPermission(); //권한 체크
 
         //이메일 유효성 검사
         if(user.isEmailVerified()) {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -77,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordText = findViewById(R.id.lgnPW);
         //autoCheck = findViewById(R.id.lgnCbAuto);
 
-        onCheckPermission(); //위치권한 메소드
+        onCheckPermission(); //권한 메소드
 
         //autoCheck.setChecked(false); //체크박스 체크 표시 하도록 셋팅
 
@@ -141,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                                             autoLoginEdit.putString("cFlag", "t");
                                             //checkBoxFlag = 1;
                                         }*/
+                                        user = firebaseAuth.getCurrentUser();
                                         classificationUser(user.getUid()); //연결 여부 확인 후 화면 넘어가기
 
                                     } else {
@@ -209,40 +211,31 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    //위치권한 설정
+    //권한 설정
     public void onCheckPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다.", Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this,
-                        new String[]{ Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSIONS_REQUEST);
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{ Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSIONS_REQUEST);
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isPowersaveMode = powerManager.isPowerSaveMode();
 
-            }
+        if ( //권한이 모두 있는 경우
+            //위치 접근 권한
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        //카메라 접근 권한
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                        //저장소 접근 권한
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        //절전모드
+                        && isPowersaveMode == false) {
+
+        } else { //하나라도 없는 경우
+            Intent intent = new Intent(LoginActivity.this, PermissionActivity.class);
+            intent.putExtra("skipIntent", 0);
+            startActivity(intent);
+            finish();
         }
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST :
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "앱 실행을 위한 권한이 설정 되었습니다", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
         Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
