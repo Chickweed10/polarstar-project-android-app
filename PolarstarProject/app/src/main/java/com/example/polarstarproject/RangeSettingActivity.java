@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.Range;
 import com.example.polarstarproject.Domain.RealTimeLocation;
+import com.example.polarstarproject.Domain.SafeZone;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -64,7 +66,7 @@ import java.net.URLEncoder;
 
 public class RangeSettingActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     Toolbar toolbar;
-    TextView rName;
+    EditText rName;
     TextView rangeAddress;
     Button btnSet, btnAdd;
     SeekBar seekBar;
@@ -375,29 +377,62 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             });
         }
     }
-    /////////////////////////////////////////상대방 주소 기준 위치 마커////////////////////////////////////////
-    private void searchMarker(double lat, double lng) {
-        counterpartyCurPoint = new LatLng(lat, lng);
-        cameraUpdate = CameraUpdate.scrollTo(counterpartyCurPoint)
-                .animate(CameraAnimation.Linear); //카메라 애니메이션
-        mNaverMap.moveCamera(cameraUpdate);
-        Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
-        if(counterpartyCurPoint != null) { // 보호구역이 존재하면
-            if (counterpartyMarker == null) {//마커가 없었을 경우
-                counterpartyMarker = new Marker();
-                counterpartyMarker.setPosition(counterpartyCurPoint);
-                counterpartyMarker.setMap(mNaverMap);
-                Log.w(TAG, "첫 마커 위치 "+ counterpartyCurPoint);
-            }
-            else if (counterpartyMarker != null) { //마커가 존재했던 경우
-                counterpartyMarker.setMap(null); //마커삭제
-                counterpartyMarker.setPosition(counterpartyCurPoint);
-                counterpartyMarker.setMap(mNaverMap);
-            }
-        }
+    public void markerCamera(double disabledAddressLng, double disabledAddressLat){
+            reference.child("range").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()). //저장명으로 접근
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Range myRangeP = new Range();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        myRangeP = ds.getValue(Range.class);
+                    }
+                    if (!snapshot.exists()) {
+                        Log.w(TAG, "상대방 실시간 위치 오류");
+                    }
+                    else {
+                        counterpartyCurPoint = new LatLng(disabledAddressLat, disabledAddressLng);
+                        cameraUpdate = CameraUpdate.scrollTo(counterpartyCurPoint)
+                                .animate(CameraAnimation.Linear); //카메라 애니메이션
+                        mNaverMap.moveCamera(cameraUpdate);
+                        Log.w(TAG, "첫 카메라 위치 "+ counterpartyCurPoint);
+                        if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
+                            if (counterpartyMarker == null) {//마커가 없었을 경우
+                                counterpartyMarker = new Marker();
+                                counterpartyMarker.setPosition(counterpartyCurPoint);
+                                counterpartyMarker.setMap(mNaverMap);
+                                Log.w(TAG, "첫 마커 위치 "+ counterpartyCurPoint);
+                            }
+                            else if (counterpartyMarker != null) { //마커가 존재했던 경우
+                                counterpartyMarker.setMap(null); //마커삭제
+                                counterpartyMarker.setPosition(counterpartyCurPoint);
+                                counterpartyMarker.setMap(mNaverMap);
+
+                                //cir.radius(0);
+                                if (circle != null) { //이미 존재했던 경우
+                                    circle.setMap(null);
+                                }
+                                //반경 원
+                                circle = new CircleOverlay();
+                                circle.setCenter(counterpartyCurPoint);
+                                circle.setRadius(myRangeP.getDis()); //반경
+                                circle.setColor(Color.parseColor("#880000ff")); //원 내부 색
+                                circle.setOutlineWidth(5); //원 테두리
+                                circle.setOutlineColor(Color.BLUE); //원 테두리 색
+                                circle.setMap(mNaverMap);
+                            }
+                        }
+                        return;
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
     }
     /////////////////////////////////////////////////////////////////////////////////////
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -462,6 +497,8 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                 indexLast = stringBuilder.indexOf("\",\"distance\":");
                 disabledAddressLat = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
 
+                markerCamera(disabledAddressLng, disabledAddressLat);
+
                 bufferedReader.close();
                 conn.disconnect();
             }
@@ -499,6 +536,24 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                                     }
                                 }
                             });
+
+                //////// 보호구역 저장 5개 개수 제한 필요//////
+                SafeZone sZone = new SafeZone(rName.getText().toString(), rangeAddress.getText().toString());
+                reference.child("safezone").child(user.getUid()).child(rName.getText().toString()).setValue(sZone)
+                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) { //보호구역 설정 성공
+                                    mapMarker();
+                                    Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
+                                    startActivity(intent);
+                                } else { //보호구역 설정 실패
+                                    Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
                 } else { //보호구역 설정 실패
                     Toast.makeText(getApplicationContext(), "주소를 검색해주세요.", Toast.LENGTH_SHORT).show();
                 }

@@ -39,7 +39,7 @@
         android:paddingBottom="10dp"
         android:orientation="horizontal">
 
-        <TextView
+        <EditText
             android:id="@+id/rName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
