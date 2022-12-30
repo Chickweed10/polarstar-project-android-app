@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
@@ -120,24 +121,25 @@ public class SafeZoneActivity extends AppCompatActivity {
             }
         });
 
+        //리사이클러뷰 클릭 이벤트
+        mAdapter.setOnItemClickListener (new SafeZoneRecyclerViewAdapter.OnItemClickListener() {
 
-/*
-        Button buttonInsert = (Button)findViewById(R.id.button_main_insert);
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onEditClick(View v, int position) {
+                String name = mArrayList.get (position).getName ();
 
-                count++;
+            }
 
-                Dictionary data = new Dictionary(count+"","Apple" + count, "사과" + count);
+            //삭제
+            @Override
+            public void onDeleteClick(View v, int position) {
+                String name = mArrayList.get(position).getName();
+                ItemDelete(name);
+                mArrayList.remove (position);
+                mAdapter.notifyItemRemoved (position);
+            }
 
-                //mArrayList.add(0, dict); //RecyclerView의 첫 줄에 삽입
-                mArrayList.add(data); // RecyclerView의 마지막 줄에 삽입
-
-                mAdapter.notifyDataSetChanged();             }
         });
-
- */
 
     }
     /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
@@ -159,6 +161,11 @@ public class SafeZoneActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
         finish(); //화면 이동
+    }
+
+    public void ItemDelete(String name){
+        databaseReference.child("safezone").child(user.getUid()).child(name).setValue(null);
+        databaseReference.child("range").child(user.getUid()).child(name).setValue(null);
     }
 
 }
