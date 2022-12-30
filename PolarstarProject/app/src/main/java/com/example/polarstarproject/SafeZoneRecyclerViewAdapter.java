@@ -22,6 +22,18 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
     ArrayList<SafeZone> RangeArrayList;
     Context Rcontext;
 
+    //아이템 클릭 리스너 인터페이스
+    public interface OnItemClickListener{
+        void onEditClick(View v, int position); //수정
+        void onDeleteClick(View v, int position);//삭제
+    }
+    //리스너 객체 참조 변수
+    private OnItemClickListener mListener = null;
+    //리스너 객체 참조를 어댑터에 전달 메서드
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mListener = listener;
+    }
+
     //생성자를 통하여 데이터 리스트 context를 받음
     public SafeZoneRecyclerViewAdapter(ArrayList<SafeZone> arrayList, Context context){
         this.RangeArrayList = arrayList;
@@ -66,6 +78,30 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
             //sfzImg = itemView.findViewById(R.id.sfzImg);
             sfzEditBtn = itemView.findViewById(R.id.sfzEditBtn);
             sfzDeleteBtn = itemView.findViewById(R.id.sfzDeleteBtn);
+
+            sfzEditBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition ();
+                    if (position!=RecyclerView.NO_POSITION){
+                        if (mListener!=null){
+                            mListener.onEditClick (view,position);
+                        }
+                    }
+                }
+            });
+
+            sfzDeleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition ();
+                    if (position!=RecyclerView.NO_POSITION){
+                        if (mListener!=null){
+                            mListener.onDeleteClick(view,position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

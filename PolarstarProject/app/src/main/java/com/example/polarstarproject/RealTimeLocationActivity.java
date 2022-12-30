@@ -347,7 +347,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             startAuthorityDialog();
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
-                            Intent otherInfoIntent = new Intent(getApplicationContext(), RangeSettingActivity.class);
+                            Intent otherInfoIntent = new Intent(getApplicationContext(), SafeZoneActivity.class);
                             startActivity(otherInfoIntent);
                             finish(); //보호구역 화면으로 이동
                         }
