@@ -24,7 +24,7 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
 
     //아이템 클릭 리스너 인터페이스
     public interface OnItemClickListener{
-        void onEditClick(View v, int position); //수정
+        //void onEditClick(View v, int position); //수정
         void onDeleteClick(View v, int position);//삭제
     }
     //리스너 객체 참조 변수
@@ -68,7 +68,8 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
     public class sViewHolder extends RecyclerView.ViewHolder {
         TextView sfzUsrEntPl, sfzUsrSrchPl;
         //ImageView sfzImg;
-        ImageButton sfzEditBtn, sfzDeleteBtn;
+        //ImageButton sfzEditBtn;
+        ImageButton sfzDeleteBtn;
 
         public sViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,9 +77,10 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
             sfzUsrSrchPl =  itemView.findViewById(R.id.sfzUsrSrchPl);
 
             //sfzImg = itemView.findViewById(R.id.sfzImg);
-            sfzEditBtn = itemView.findViewById(R.id.sfzEditBtn);
+            //sfzEditBtn = itemView.findViewById(R.id.sfzEditBtn);
             sfzDeleteBtn = itemView.findViewById(R.id.sfzDeleteBtn);
 
+            /*
             sfzEditBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -90,6 +92,8 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
                     }
                 }
             });
+
+             */
 
             sfzDeleteBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
