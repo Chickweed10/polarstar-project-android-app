@@ -167,7 +167,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         //다이얼로그 초기 설정
-        authorityDialog = new AuthorityDialog(this);
+        authorityDialog = new AuthorityDialog(this, null);
         authorityDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
 
         disconnectDialog = new DisconnectDialog(this);
@@ -317,22 +317,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     case R.id.item_route: //위치 기록
                         if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog(); //커스텀 Dialog
-
-                            /*AlertDialog.Builder oDialog = new AlertDialog.Builder(RealTimeLocationActivity.this,
-                                    android.R.style.Theme_DeviceDefault_Light_Dialog);
-
-                            oDialog.setMessage("접근 권한이 없습니다.")
-                                    .setTitle("알 림")
-                                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
-                                        {
-
-                                        }
-                                    })
-                                    .setCancelable(false) // 백버튼으로 팝업창이 닫히지 않도록 한다.
-                                    .show();*/
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
                             Intent otherInfoIntent = new Intent(getApplicationContext(), RouteActivity.class);
@@ -375,7 +359,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void startAuthorityDialog(){
-        authorityDialog = new AuthorityDialog(this);
+        authorityDialog = new AuthorityDialog(this, "접근 권한이 없습니다.");
         authorityDialog.setCancelable(false);
         authorityDialog.show();
         authorityDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
@@ -1067,7 +1051,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     public void arrivalNotification(String channelId, int id) { //도착 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -1085,7 +1069,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
     ////범위 이탈 알림 만들기
     private void outNotification(String channelId, int id) { //이탈 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -1102,7 +1086,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         notificationManager.notify(id, builder.build());
     }
     private void inNotification(String channelId, int id) { //돌아옴 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -1120,7 +1104,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void trackingImpossibleNotification(String channelId, int id){ //추적 불가 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -1138,7 +1122,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void trackingPossibleNotification(String channelId, int id){ //추적 가능 알림
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
