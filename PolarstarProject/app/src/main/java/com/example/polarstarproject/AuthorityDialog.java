@@ -20,10 +20,12 @@ public class AuthorityDialog extends Dialog implements View.OnClickListener{
 
     private TextView dialogTextView;
     private Button btn_ok;
+    String text;
 
-    public AuthorityDialog(@NonNull Context context) {
+    public AuthorityDialog(@NonNull Context context, String text) {
         super(context);
         mContext = context;
+        this.text = text;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class AuthorityDialog extends Dialog implements View.OnClickListener{
         setContentView(R.layout.dialog_authority);
 
         dialogTextView = (TextView) findViewById(R.id.dialogTextView);
-        dialogTextView.setText("접근 권한이 없습니다.");
+        dialogTextView.setText(text);
 
         btn_ok = (Button) findViewById(R.id.btn_ok);
         btn_ok.setOnClickListener(this);
