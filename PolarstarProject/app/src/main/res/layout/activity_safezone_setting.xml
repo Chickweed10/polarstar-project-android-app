@@ -16,10 +16,6 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -92,15 +88,19 @@
             android:orientation="vertical">
 
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview_main_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            </ScrollView>
+
         </LinearLayout>
 
     </LinearLayout>
-
-    </ScrollView>
 
 </LinearLayout>

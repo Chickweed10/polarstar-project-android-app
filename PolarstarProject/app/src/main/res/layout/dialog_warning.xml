@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:minHeight="50dp"
-        android:textSize="17sp"
+        android:textSize="16sp"
         android:textColor="#535252"
         android:fontFamily="@font/nanumsquare_aab"/>
 
@@ -24,6 +24,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancle"
+            android:background="@drawable/cancle_button"
+            android:textColor="@drawable/cancle_button_text_color"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="7dp"
+            android:layout_weight="1"
+            android:text="취소"
+            android:textSize="15sp"
+            android:fontFamily="@font/nanumsquare_aab"/>
 
         <Button
             android:id="@+id/btn_ok"

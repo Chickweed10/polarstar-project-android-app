@@ -5,11 +5,15 @@ import static android.content.ContentValues.TAG;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -36,7 +40,8 @@ import com.google.firebase.storage.StorageReference;
 
 public class MenuSettingActivity extends AppCompatActivity {
     Toolbar toolbar;
-
+    private WarningDialog warningDialog; //경고 다이얼로그 팝업
+    
     private static final String TAG = "MenuSetting";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -73,38 +78,131 @@ public class MenuSettingActivity extends AppCompatActivity {
         btLogout = findViewById(R.id.btLogout);
         btWithdrawal = findViewById(R.id.btWithdrawal);
 
+        //다이얼로그 초기 설정
+        warningDialog = new WarningDialog(MenuSettingActivity.this, "");
+        warningDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
+        warningDialog.setContentView(R.layout.dialog_warning);
+
+        //다이얼로그 밖 화면 흐리게
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        layoutParams.dimAmount = 0.8f;
+        getWindow().setAttributes(layoutParams);
+
         classificationUser(user.getUid()); //사용자 구별
 
         userBtLinkDisConnect.setOnClickListener(new View.OnClickListener() { //연결 끊기
             @Override
             public void onClick(View v) {
-                foregroundService(1); //포그라운드 서비스 종료
+                showWarningDialog(1); //연결 끊기 다이얼로그
             }
         });
 
         btLogout.setOnClickListener(new View.OnClickListener() { //로그아웃
             @Override
             public void onClick(View v) {
-                foregroundService(0); //포그라운드 서비스 종료
-
-                autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
-                autoEdit = autoM.edit();
-
-                autoEdit.clear();
-                autoEdit.commit();
-
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-
+                showWarningDialog(0); //로그아웃 다이얼로그
             }
         });
 
         btWithdrawal.setOnClickListener(new View.OnClickListener() { //회원 탈퇴
             @Override
             public void onClick(View v) {
-                foregroundService(2); //포그라운드 서비스 종료
+                showWarningDialog(2); //회원 탈퇴 다이얼로그
             }
         });
+    }
+
+    private void showWarningDialog(int num){
+        if(num == 0){ //로그아웃
+            warningDialog = new WarningDialog(MenuSettingActivity.this, "로그아웃 하시겠습니까?");
+            warningDialog.show(); // 다이얼로그 띄우기
+            warningDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+
+            //취소 버튼
+            Button btnCancle = warningDialog.findViewById(R.id.btn_cancle);
+            btnCancle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 원하는 기능 구현
+                    warningDialog.dismiss(); // 다이얼로그 닫기
+                }
+            });
+
+            //확인 버튼
+            Button btnOk = warningDialog.findViewById(R.id.btn_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 원하는 기능 구현
+                    warningDialog.dismiss(); // 다이얼로그 닫기
+                    foregroundService(0); //포그라운드 서비스 종료
+
+                    autoM = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+                    autoEdit = autoM.edit();
+
+                    autoEdit.clear();
+                    autoEdit.commit();
+
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+
+        else if(num == 1){ //연결 끊기
+            warningDialog = new WarningDialog(MenuSettingActivity.this, "정말 상대방과의 연결을 끊으시겠습니까?");
+            warningDialog.show(); // 다이얼로그 띄우기
+            warningDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+
+            //취소 버튼
+            Button btnCancle = warningDialog.findViewById(R.id.btn_cancle);
+            btnCancle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 원하는 기능 구현
+                    warningDialog.dismiss(); // 다이얼로그 닫기
+                }
+            });
+
+            //확인 버튼
+            Button btnOk = warningDialog.findViewById(R.id.btn_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 원하는 기능 구현
+                    warningDialog.dismiss(); // 다이얼로그 닫기
+                    foregroundService(1); //포그라운드 서비스 종료
+                }
+            });
+        }
+
+        else if(num == 2){ //회원 탈퇴
+            warningDialog = new WarningDialog(MenuSettingActivity.this, "정말 북극성 앱을 탈퇴하시겠습니까?");
+            warningDialog.show(); // 다이얼로그 띄우기
+            warningDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+
+            //취소 버튼
+            Button btnCancle = warningDialog.findViewById(R.id.btn_cancle);
+            btnCancle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 원하는 기능 구현
+                    warningDialog.dismiss(); // 다이얼로그 닫기
+                }
+            });
+
+            //확인 버튼
+            Button btnOk = warningDialog.findViewById(R.id.btn_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 원하는 기능 구현
+                    warningDialog.dismiss(); // 다이얼로그 닫기
+                    foregroundService(2); //포그라운드 서비스 종료
+                }
+            });
+        }
     }
 
     private void foregroundService(int num) {
@@ -458,15 +556,21 @@ public class MenuSettingActivity extends AppCompatActivity {
                             }
                         }
                     });
-            reference.child("disabled").child(uid).removeValue() //disabled 삭제
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "firebase disabled delete");
-                            }
-                        }
-                    });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    reference.child("disabled").child(uid).removeValue() //disabled 삭제
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "firebase disabled delete");
+                                    }
+                                }
+                            });
+                }
+            },2000);
         }
 
         else if(classificationUserFlag == 2){ //보호자
@@ -479,15 +583,21 @@ public class MenuSettingActivity extends AppCompatActivity {
                             }
                         }
                     });
-            reference.child("guardian").child(uid).removeValue() //guardian 삭제
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "firebase guardian delete");
-                            }
-                        }
-                    });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    reference.child("guardian").child(uid).removeValue() //guardian 삭제
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "firebase guardian delete");
+                                    }
+                                }
+                            });
+                }
+            },2000);
         }
 
         //로그인 화면으로 이동
