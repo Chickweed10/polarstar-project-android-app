@@ -187,7 +187,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
-                Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
                 startActivity(intent);
                 finish(); //화면 이동
 
@@ -198,7 +198,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     }
     @Override
     public void onBackPressed() { //뒤로가기 했을 때
-        Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+        Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
         startActivity(intent);
         finish(); //화면 이동
     }

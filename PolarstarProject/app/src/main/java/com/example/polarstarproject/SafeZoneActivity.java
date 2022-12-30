@@ -1,10 +1,13 @@
 package com.example.polarstarproject;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -28,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 
 public class SafeZoneActivity extends AppCompatActivity {
-
     private ArrayList<SafeZone> mArrayList;
     private SafeZoneRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -44,7 +46,7 @@ public class SafeZoneActivity extends AppCompatActivity {
     Toolbar toolbar;
     Button btn_Set;
 
-
+    private AuthorityDialog safeZoneDialog; //권한 다이얼로그 팝업
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,9 @@ public class SafeZoneActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        //다이얼로그 초기 설정
+        safeZoneDialog = new AuthorityDialog(this, null);
+        safeZoneDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
 
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -106,7 +111,10 @@ public class SafeZoneActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), RangeSettingActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(SafeZoneActivity.this, "보호구역 개수는 5개로 제한되어 있습니다.", Toast.LENGTH_SHORT).show();
+                    safeZoneDialog = new AuthorityDialog(SafeZoneActivity.this, "보호구역은 5개까지만 설정할 수 있습니다.");
+                    safeZoneDialog.setCancelable(false);
+                    safeZoneDialog.show();
+                    safeZoneDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
                 }
 
             }
