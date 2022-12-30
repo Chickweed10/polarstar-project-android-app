@@ -123,12 +123,14 @@ public class SafeZoneActivity extends AppCompatActivity {
 
         //리사이클러뷰 클릭 이벤트
         mAdapter.setOnItemClickListener (new SafeZoneRecyclerViewAdapter.OnItemClickListener() {
-
+            /*
             @Override
             public void onEditClick(View v, int position) {
                 String name = mArrayList.get (position).getName ();
 
             }
+
+             */
 
             //삭제
             @Override

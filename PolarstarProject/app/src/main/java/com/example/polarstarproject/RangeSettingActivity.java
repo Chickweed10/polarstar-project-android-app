@@ -504,6 +504,44 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             e.printStackTrace();
         }
     }
+    public void Save(){
+        Range myRange = new Range(searchAddressLat, searchAddressLng, rad);
+        if (searchAddressLat != 0 && searchAddressLng != 0) { // 주소 검색 안하면 저장 안 되게
+            reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange)
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) { //보호구역 설정 성공
+                                mapMarker();
+                                Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
+                            } else { //보호구역 설정 실패
+                                Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+            //////// 보호구역 저장 5개 개수 제한 필요//////
+            SafeZone sZone = new SafeZone(rName.getText().toString(), rangeAddress.getText().toString());
+            reference.child("safezone").child(user.getUid()).child(rName.getText().toString()).setValue(sZone)
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) { //보호구역 설정 성공
+                                mapMarker();
+                                Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
+                                startActivity(intent);
+                            } else { //보호구역 설정 실패
+                                Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+        } else { //보호구역 설정 실패
+            Toast.makeText(getApplicationContext(), "주소를 검색해주세요.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -514,41 +552,25 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                 break;
 
             case R.id.btnSet:
-                Range myRange = new Range(searchAddressLat, searchAddressLng, rad);
-                if(searchAddressLat!=0 && searchAddressLng!=0){ // 주소 검색 안하면 저장 안 되게
-                    reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange)
-                            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) { //보호구역 설정 성공
-                                        mapMarker();
-                                        Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
-                                    } else { //보호구역 설정 실패
-                                        Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                reference.child("safezone").child(user.getUid()).child(rName.getText().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        SafeZone value = snapshot.getValue(SafeZone.class);
 
-                //////// 보호구역 저장 5개 개수 제한 필요//////
-                SafeZone sZone = new SafeZone(rName.getText().toString(), rangeAddress.getText().toString());
-                reference.child("safezone").child(user.getUid()).child(rName.getText().toString()).setValue(sZone)
-                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) { //보호구역 설정 성공
-                                    mapMarker();
-                                    Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
-                                    startActivity(intent);
-                                } else { //보호구역 설정 실패
-                                    Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                        if(value!=null){
+                            Toast.makeText(getApplicationContext(),"저장명은 중복될 수 없습니다.",Toast.LENGTH_SHORT).show();//토스메세지 출력
+                        }
+                        else{
+                            Save();
+                        }
+                    }
 
-                } else { //보호구역 설정 실패
-                    Toast.makeText(getApplicationContext(), "주소를 검색해주세요.", Toast.LENGTH_SHORT).show();
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // 디비를 가져오던중 에러 발생 시
+                        //Log.e("MainActivity", String.valueOf(databaseError.toException())); // 에러문 출력
+                    }
+                });
                 break;
 
 
