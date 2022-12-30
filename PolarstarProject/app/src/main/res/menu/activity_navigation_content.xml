@@ -3,18 +3,23 @@
 
     <item
         android:id="@+id/item_myinfo"
+        android:icon="@drawable/ic_baseline_clear_24"
         android:title="내 정보" />
     <item
         android:id="@+id/item_otherinfo"
+        android:icon="@drawable/ic_baseline_clear_24"
         android:title="상대 정보" />
     <item
         android:id="@+id/item_route"
+        android:icon="@drawable/ic_baseline_clear_24"
         android:title="위치 기록" />
     <item
         android:id="@+id/item_range"
+        android:icon="@drawable/ic_baseline_clear_24"
         android:title="보호구역" />
     <item
         android:id="@+id/item_setting"
+        android:icon="@drawable/ic_baseline_clear_24"
         android:title="설정" />
 
 </menu>
