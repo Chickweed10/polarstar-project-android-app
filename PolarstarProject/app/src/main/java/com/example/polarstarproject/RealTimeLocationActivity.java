@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -105,6 +106,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     NavigationView navigationView; //네비게이션 바
     private AuthorityDialog authorityDialog; //권한 다이얼로그 팝업
     private DisconnectDialog disconnectDialog; //연결끊기 다이얼로그 팝업
+    private WarningDialog terminationDialog; //앱 종료 다이얼로그 팝업
 
     private static final String TAG = "RealTimeLocation";
     
@@ -247,7 +249,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
             });
         }
-        
+
         //네비게이션 바 이름, 이메일 띄우기
         reference.child("disabled").child(user.getUid()).addValueEventListener(new ValueEventListener() { //장애인 테이블 조회
             @Override
@@ -408,21 +410,30 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onBackPressed() { //뒤로가기 했을 때
-        long tempTime = System.currentTimeMillis();
-        long intervalTime = tempTime - presstime;
+        terminationDialog = new WarningDialog(RealTimeLocationActivity.this, "북극성 앱을 종료하시겠습니까?");
+        terminationDialog.show(); // 다이얼로그 띄우기
+        terminationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
 
-        if (0 <= intervalTime && finishtimeed >= intervalTime)
-        {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START);
+        //취소 버튼
+        Button btnCancle = terminationDialog.findViewById(R.id.btn_cancle);
+        btnCancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 원하는 기능 구현
+                terminationDialog.dismiss(); // 다이얼로그 닫기
             }
-            finish();
-        }
-        else
-        {
-            presstime = tempTime;
-            Toast.makeText(getApplicationContext(), "한번 더 누르시면 앱이 종료됩니다", Toast.LENGTH_SHORT).show();
-        }
+        });
+
+        //확인 버튼
+        Button btnOk = terminationDialog.findViewById(R.id.btn_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 원하는 기능 구현
+                terminationDialog.dismiss(); // 다이얼로그 닫기
+                finish();
+            }
+        });
     }
 
     /////////////////////////////////////////알림 화면 설정////////////////////////////////////////
@@ -511,6 +522,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
 
     public void realTimeDeviceLocationBackground(FirebaseUser user, double latitude, double longitude) { //백그라운드 실시간 위치 갱신
+        Log.w (TAG, "백그라운드 실시간 위치 갱신");
         firebaseUpdateLocation(user, latitude, longitude); //firebase 실시간 위치 저장
     }
 
@@ -537,7 +549,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 });
     }
 
-    private void routeScheduler(){ //경로 저장용 스케쥴러
+    /*public void routeScheduler(){ //경로 저장용 스케쥴러
         Log.d(TAG,"경로 저장용 스케쥴러 실행");
 
         if(classificationUserFlag == 1){
@@ -563,6 +575,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             
                             if(String.format("%.3f", routeLatitude).equals(String.format("%.3f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
                                 if(String.format("%.3f", routeLongitude).equals(String.format("%.3f", route.getLongitude())) == false){
+                                    Log.w(TAG, "메인 화면 실행");
                                     firebaseUpdateRoute(user, routeLatitude, routeLongitude); //DB에 경로 업로드
                                 }
                             }
@@ -577,7 +590,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             };
             timer.schedule(timerTask,0,20000);
         }
-    }
+    }*/
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void firebaseUpdateRoute(FirebaseUser user, double latitude, double longitude) { //firebase에 경로용 위치 저장
@@ -586,6 +599,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             String nowTime = localTime.format(formatter); //현재 시간 구하기
 
+            Log.w(TAG, "경로 위치: " + latitude + ", " + longitude);
             Route route = new Route(nowTime, latitude,longitude);
 
             LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
@@ -662,7 +676,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                     if(count == 0){
                         routeDelete(); //30일 이전 피보호자 경로 삭제
-                        routeScheduler(); //장애인 경로 저장 함수 호출
+                        //routeScheduler(); //장애인 경로 저장 함수 호출
                     }
                     count++;
                     getOtherUID();

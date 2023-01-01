@@ -52,6 +52,8 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //백그라운드 위치 서비스
 public class LocationService extends Service {
@@ -63,6 +65,9 @@ public class LocationService extends Service {
     private FirebaseUser user; //firebase 변수
 
     int classificationUserFlag = 0; //사용자 구별 플래그
+    int count = 0; //경로 스케쥴러 카운트
+
+    double latitude, longitude;
 
     Connect myConnect; //내 연결 객체
 
@@ -84,8 +89,8 @@ public class LocationService extends Service {
             super.onLocationResult(locationResult);
 
             if (locationResult != null && locationResult.getLastLocation() != null) {
-                double latitude = locationResult.getLastLocation().getLatitude();
-                double longitude = locationResult.getLastLocation().getLongitude();
+                latitude = locationResult.getLastLocation().getLatitude();
+                longitude = locationResult.getLastLocation().getLongitude();
                 Log.v(TAG, latitude + ", " + longitude);
 
                 mAuth = FirebaseAuth.getInstance();
@@ -95,31 +100,10 @@ public class LocationService extends Service {
                 classificationUserBackground(); //사용자 구별
 
                 if(classificationUserFlag == 1){ //장애인일 경우
-                    LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
-                    String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-                    Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //장애인 경로 테이블 최근 기록 조회
-                    routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @SuppressLint("DefaultLocale")
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            Route route = new Route();
-                            for(DataSnapshot ds : snapshot.getChildren()){
-                                route = ds.getValue(Route.class);
-                            }
-
-                            if(String.format("%.3f", latitude).equals(String.format("%.3f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
-                                if(String.format("%.3f", longitude).equals(String.format("%.3f", route.getLongitude())) == false){
-                                    realTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+                    if(count == 0){
+                        routeScheduler(); //경로 스케쥴러 실행
+                        count++;
+                    }
                 }
             }
         }
@@ -166,6 +150,44 @@ public class LocationService extends Service {
 
             }
         });
+    }
+
+    public void routeScheduler(){
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() { //경로 저장용 스케쥴러
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                //20초마다 실행
+                LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
+                String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //장애인 경로 테이블 최근 기록 조회
+                routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("DefaultLocale")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Route route = new Route();
+                        for(DataSnapshot ds : snapshot.getChildren()){
+                            route = ds.getValue(Route.class);
+                        }
+
+                        if(String.format("%.3f", latitude).equals(String.format("%.3f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
+                            if(String.format("%.3f", longitude).equals(String.format("%.3f", route.getLongitude())) == false){
+                                Log.w(TAG, "백그라운드 실행");
+                                realTimeLocationActivity.firebaseUpdateRoute(user, latitude, longitude); //firebase에 경로 저장
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        };
+        timer.schedule(timerTask,0,20000);
     }
 
     public void createNotificationChannel(String channelId, String channelName, int importance) { //알림 초기화
