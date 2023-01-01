@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -33,13 +35,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //장애인 정보 (본인이 보호자)
+public class OtherInformationDisableCheckActivity extends AppCompatActivity implements View.OnClickListener{ //장애인 정보 (본인이 보호자)
     Toolbar toolbar;
 
     ImageView othProflN;
     EditText othProflNameN, othProflPhoneNumN, othProflAddressN, othProflDetailAddN, othProflBirthN;
     RadioGroup othProflBtGenderN;
     RadioButton othProflBtGenderMN, othProflBtGenderFN;
+    Button othProflBtEditN;
 
     String sex, cSex, cDrDisG;
 
@@ -81,6 +84,10 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
         othProflBtGenderN = findViewById(R.id.othProflBtGenderN); //성별
         othProflBtGenderMN = findViewById( R.id.othProflBtGenderMN);
         othProflBtGenderFN = findViewById( R.id.othProflBtGenderFN);
+
+        othProflBtEditN = (Button) findViewById( R.id.othProflBtEditN); //확인 버튼
+
+        othProflBtEditN.setOnClickListener(this);
 
         storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
         storageRef = storage.getReference();
@@ -272,5 +279,14 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity{ //�
 
             }
         });
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.othProflBtEditN: //확인 버튼 클릭 시
+                skipScreen(); //메인화면으로 이동
+                break;
+        }
     }
 }

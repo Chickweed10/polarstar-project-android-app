@@ -84,13 +84,13 @@
                     <Button
                         android:id="@+id/joinBtEmailCkN"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="0.4"
-                        android:backgroundTint="#240070"
+                        android:background="@drawable/ok_button"
+                        android:textColor="@drawable/ok_button_text_color"
                         android:fontFamily="@font/nanumsquare_aac"
                         android:text="중복 확인"
-                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textAllCaps="false"/>
                 </LinearLayout>
@@ -156,11 +156,11 @@
                     <Button
                         android:id="@+id/joinPNReqN"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="0.4"
-                        android:backgroundTint="#240070"
-                        android:textColor="@color/white"
+                        android:background="@drawable/ok_button"
+                        android:textColor="@drawable/ok_button_text_color"
                         android:fontFamily="@font/nanumsquare_aac"
                         android:text="인증요청"
                         android:textSize="14sp"
@@ -189,10 +189,10 @@
                     <Button
                         android:id="@+id/joinPNReqCkN"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_marginStart="10dp"
-                        android:backgroundTint="#240070"
-                        android:textColor="@color/white"
+                        android:background="@drawable/ok_button"
+                        android:textColor="@drawable/ok_button_text_color"
                         android:layout_weight="0.4"
                         android:text="인증확인"
                         android:fontFamily="@font/nanumsquare_aac"
@@ -274,14 +274,14 @@
                     <Button
                         android:id="@+id/joinFdAddN"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="0.4"
-                        android:backgroundTint="#240070"
+                        android:background="@drawable/ok_button"
+                        android:textColor="@drawable/ok_button_text_color"
                         android:fontFamily="@font/nanumsquare_aac"
-                        android:text="우편번호찾기"
+                        android:text="검색"
                         android:textAllCaps="false"
-                        android:textColor="@color/white"
                         android:textSize="14sp"/>
 
                 </LinearLayout>
@@ -303,15 +303,15 @@
                 <Button
                     android:id="@+id/joinBtN"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="30dp"
-                    android:backgroundTint="#240070"
+                    android:background="@drawable/ok_button"
+                    android:textColor="@drawable/ok_button_text_color"
                     android:layout_gravity="center"
                     android:fontFamily="@font/nanumsquare_aac"
                     android:text="회원가입"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
                     android:textSize="18sp"/>
 
 

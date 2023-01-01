@@ -15,79 +15,168 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="70dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_baseline_person_24" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_baseline_add_circle_outline_24" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_supervisor_account_24" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textview4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="60dp"
         android:fontFamily="@font/nanumsquare_aac"
-        android:text="상대방과 연결"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:text="서로의 코드를 입력하여 연결해주세요."
+        android:textSize="18sp"
         android:textColor="#454545" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvMyCode"
-            android:layout_width="190dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_weight="0.7"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:hint="나의 코드 : "
-            android:inputType="phone"
-            android:textColorHint="#454545"
-            android:textSize="16sp" />
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnCopy"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_weight="0.7"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:hint="내 연결코드"
+                android:inputType="phone"
+                android:textColorHint="#454545"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="40dp"
-            android:layout_weight="0.3"
-            android:backgroundTint="#240070"
-            android:fontFamily="@font/nanumsquare_aac"
-            android:text="코드 복사"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:layout_marginBottom="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvMyCode"
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_weight="0.7"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:hint="내 연결코드 텍스트 뷰"
+                android:inputType="phone"
+                android:textColorHint="#454545"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnCopy"
+                android:layout_width="30dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/ok_button"
+                android:textColor="@drawable/ok_button_text_color"
+                android:layout_weight="1"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:text="복사"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_weight="0.7"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:hint="상대방 연결코드"
+                android:inputType="phone"
+                android:textColorHint="#454545"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editOtherCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="37dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="30dp"
+                android:ems="10"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:hint="상대방 연결코드를 입력해주세요"
+                android:singleLine="true"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnConnect"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/ok_button"
+                android:textColor="@drawable/ok_button_text_color"
+                android:layout_weight="1"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:text="연결하기"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/editOtherCode"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="10dp"
-        android:ems="10"
-        android:fontFamily="@font/nanumsquare_aab"
-        android:hint="상대방 코드 입력"
-        android:inputType="textPassword"
-        android:padding="11dp"
-        android:singleLine="true"
-        android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/btnConnect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:backgroundTint="#240070"
-        android:fontFamily="@font/nanumsquare_aac"
-        android:text="연결"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
 
 </LinearLayout>
