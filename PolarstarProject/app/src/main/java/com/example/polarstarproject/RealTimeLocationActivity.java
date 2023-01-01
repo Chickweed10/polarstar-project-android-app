@@ -974,10 +974,73 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         });
         alertNotification();
     }
-    ////거리계산해서 벗어나면 알림 항수 호출하는 메소드 만들기
+
+    ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기
+    private void alertNotification2(){
+        if(reference.child("range").child(user.getUid()).orderByKey() != null){
+            reference.child("range").child(user.getUid()).orderByKey(). //장애인 집 주소 가져오기
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int sCount=0; //보호구역 개수
+                    int outCount=0; // 이탈 횟수
+
+                    Range myRangeP = new Range();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        sCount++;
+                        myRangeP = ds.getValue(Range.class);
+
+                        if (!snapshot.exists()) {
+                            Log.w(TAG, "보호구역 가져오기 오류");
+                        }
+                        else { //장애인 집 주소 받아오면
+                            double sDis = myRangeP.distance;
+                            //경도(longitude)가 X, 위도(latitude)가 Y
+                            //double nDis = Math.sqrt(((counterpartyCurPoint.longitude-myRangeP.longitude)*(counterpartyCurPoint.longitude-myRangeP.longitude))+((counterpartyCurPoint.latitude-myRangeP.latitude)*(counterpartyCurPoint.latitude-myRangeP.latitude)));
+                            double nDis = cDistance(counterpartyCurPoint.latitude, counterpartyCurPoint.longitude, myRangeP.latitude, myRangeP.longitude);
+                            Log.w(TAG, "현재거리: " + nDis + "세팅거리: "+sDis);
+
+                            if(myRangeP.latitude != 0.0 && myRangeP.longitude != 0.0){
+                                if(!outFlag) { //아직 이탈 안했을 경우
+                                    if (nDis > sDis) { //1000곱하면 단위가 미터임
+                                        outCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if(!outFlag) { //아직 이탈 안했을 경우
+                        if (outCount == sCount) { //
+                            outNotification(DEFAULT, 3);//이탈 알림 울리기
+                            InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
+                            reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
+                            outCount = 0;
+                        }
+                    }
+                    if(outFlag){ //아직 안 돌아간 경우
+                        if(outCount != sCount) {
+                            inNotification(DEFAULT, 4); //도착 알림 울리기
+                            InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
+                            reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
+                        }
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기
     private void alertNotification(){
-        if(reference.child("range").child(user.getUid()).orderByKey().equalTo("보호구역") != null){
-            reference.child("range").child(user.getUid()).orderByKey().equalTo("보호구역"). //장애인 집 주소 가져오기
+        if(reference.child("range").child(user.getUid()).orderByKey() != null){
+            reference.child("range").child(user.getUid()).orderByKey(). //장애인 집 주소 가져오기
                     addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {

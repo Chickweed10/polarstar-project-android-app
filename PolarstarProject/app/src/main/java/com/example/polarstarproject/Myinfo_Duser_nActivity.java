@@ -35,6 +35,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.OnClickListener{
     Toolbar toolbar;
@@ -43,7 +44,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address, dAddress;
-    Button Bt, mProflBtEmailCkN;
+    Button Bt, mProflBtEmailCkN, mProflBtChnN;
     String sex,  cSex;
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;
@@ -54,7 +55,10 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     private static final String TAG = "MyinfonDuser";
 
-    int classificationUserFlag = 0; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자)
+    private FirebaseStorage storage = FirebaseStorage.getInstance();;
+    private StorageReference storageRef, riversRef; //firebase DB, Storage 변수
+    private Uri imageUri;
+    private String pathUri = "profile/default.png"; //프로필 이미지 처리 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,9 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         Bt = (Button) findViewById(R.id.mProflBtEditN); //프로필 수정
         Bt.setOnClickListener(this);
 
+        mProflBtChnN = (Button) findViewById(R.id.mProflBtChnN); //프로필 사진
+        mProflBtChnN.setOnClickListener(this);
+
         mProflBtEmailCkN = (Button) findViewById(R.id.mProflBtEmailCkN); //이메일 인증
         mProflBtEmailCkN.setOnClickListener(this);
 
@@ -100,7 +107,6 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //현재 로그인한 유저
         mynUid = user.getUid(); // 이 유저 uid 가져오기
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference myPro = storageRef.child("profile").child(mynUid);
         if (myPro != null) {
@@ -122,63 +128,15 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         readUser(mynUid);
     }
 
-    /////////////////////////////////////////사용자 구별////////////////////////////////////////
-    private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Query disabledQuery = mDatabase.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Connect myConnect = new Connect();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    myConnect = ds.getValue(Connect.class);
-                }
-
-                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
-                    classificationUserFlag = 1;
-                    skipScreen(); //화면 넘어가기
-                }
-                else {
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Query guardianQuery = mDatabase.child("connect").child("guardian").orderByKey().equalTo(uid); //보호자 테이블 조회
-        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Connect myConnect = new Connect();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    myConnect = ds.getValue(Connect.class);
-                }
-
-                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
-                    classificationUserFlag = 2;
-                    skipScreen(); //화면 넘어가기
-                }
-                else {
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 
     /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
-                classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
+                Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+                startActivity(intent);
+                finish(); //화면 이동
 
                 return true;
             }
@@ -187,14 +145,9 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
     }
     @Override
     public void onBackPressed() { //뒤로가기 했을 때
-        classificationUser(user.getUid()); //사용자 구별 후 실시간 위치 화면으로 돌아감
-    }
-
-    /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
-    public void skipScreen(){
         Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
-        finish();
+        finish(); //화면 이동
     }
 
     private void readUser(String uid) {
@@ -309,11 +262,53 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         });
     }
 
+    /////////////////////////////////////////프로필 사진 등록////////////////////////////////////////
+    private void gotoAlbum() { //갤러리 이동
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 0);
+    }
+
+    private void firebaseImageUpload(String pathUri) { //파이어베이스 이미지 등록
+        storageRef = storage.getReference();
+        riversRef = storageRef.child(pathUri);
+        UploadTask uploadTask = riversRef.putFile(imageUri); //이미지 업로드
+
+        uploadTask.addOnFailureListener(new OnFailureListener() { //업로드 실패시
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "사진 업로드 실패", e);
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() { //업로드 성공시
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.w(TAG, "사진 업로드 성공");
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == 0) { //프로필 사진
+            if (resultCode == RESULT_OK) {
+                imageUri = intent.getData();
+                Glide.with(getApplicationContext())
+                        .load(intent.getData())
+                        .into(Profl); //버튼에 이미지 삽입
+            }
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mProflBtEmailCkN: //이메일 인증 버튼 클릭
                 emailAuthentication(); //이메일 인증 함수 호출
+                break;
+            case R.id.mProflBtChnN: //프로필 이미지 버튼 클릭 시
+                gotoAlbum(); //
                 break;
             case R.id.mProflBtEditN: //수정 버튼 클릭 시 저장
                 mDatabase.child("guardian").child(mynUid).child("name").setValue(Name.getText().toString());
@@ -323,6 +318,11 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 mDatabase.child("guardian").child(mynUid).child("detailAddress").setValue(dAddress.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("birth").setValue(Birth.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("sex").setValue(sex);
+
+                if(imageUri != null){ //프로필 수정 했을 시
+                    pathUri = "profile/"+mynUid;
+                    firebaseImageUpload(pathUri); //이미지 등록
+                }
                 break;
         }
     }
