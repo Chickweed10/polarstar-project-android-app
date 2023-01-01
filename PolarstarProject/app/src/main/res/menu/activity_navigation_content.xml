@@ -13,8 +13,13 @@
     <item
         android:id="@+id/item_range"
         android:title="보호구역" />
+
     <item
         android:id="@+id/item_setting"
         android:title="설정" />
+
+    <item
+        android:id="@+id/item_manual"
+        android:title="사용 설명서" />
 
 </menu>

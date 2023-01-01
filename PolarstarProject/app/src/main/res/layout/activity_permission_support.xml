@@ -3,11 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
         android:orientation="vertical">
 
         <TextView
@@ -15,12 +19,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textAlignment="center"
-            android:layout_marginTop="60dp"
-            android:text="접근 권한 요청"
-            android:textColor="#535252"
             android:fontFamily="@font/nanumsquare_aac"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+            android:text="접근 권한 요청"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#535252" />
 
         <TextView
             android:id="@+id/textView10"
@@ -30,94 +33,189 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/nanumsquare_aac"
             android:text="북극성 앱 사용시 다음 접근 권한이 필요합니다."
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            android:textAlignment="center" />
 
-        <TextView
-            android:id="@+id/textView11"
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="90dp"
+            android:layout_height="match_parent"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:text="위치 접근 권한"
-            android:textColor="#000000"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textSize="20sp"/>
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="40dp"
+            android:background="@drawable/border_color"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp">
 
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:text="카메라 접근 권한"
-            android:textColor="#000000"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textSize="20sp"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:text="저장소 접근 권한"
-            android:textColor="#000000"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textSize="20sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="●      "
+                    android:textSize="10dp" />
 
-        <TextView
-            android:id="@+id/textView14"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:text="절전모드 해제"
-            android:textColor="#000000"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textSize="20sp"/>
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="위치 접근 권한"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView15"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:text="절약모드시 데이터 사용허용"
-            android:textColor="#000000"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textSize="20sp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/textView16"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:text="배터리 절전 제외 앱 등록"
-            android:textColor="#000000"
-            android:fontFamily="@font/nanumsquare_aab"
-            android:textSize="20sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="●      "
+                    android:textSize="10dp" />
 
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="카메라 접근 권한"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="●      "
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="저장소 접근 권한"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="●      "
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="절전모드 해제"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="●      "
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="절약모드시 데이터 사용허용"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="●      "
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="배터리 절전 제외 앱 등록"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/rqBtAllPermission"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="90dp"
-            android:layout_gravity="center"
             android:backgroundTint="#240070"
-            android:textColor="@color/white"
-            android:text="모든 권한 설정하기"
             android:fontFamily="@font/nanumsquare_aac"
+            android:layout_weight="1"
+            android:text="모든 권한 설정하기"
+            android:textColor="@color/white"
             android:textSize="14sp" />
-
     </LinearLayout>
 
 </LinearLayout>
