@@ -17,7 +17,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
-                android:text="[2] 상대방과 연결하기"
+                android:text="[5] 보호구역 설정"
                 android:textColor="#252525"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -53,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:text="1. 앱 '북극성'에서는 상대방과 위치공유를 하기 위해 각각 코드(고유번호)를 부여합니다."
+                    android:text="1. 보호구역을 설정할 수 있습니다."
                     android:textColor="#4A4A4A"
                     android:textStyle="bold"
                     android:textSize="20sp" />
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:text="2. 상대방의 코드(고유번호)를 확인하여 코드 입력란에 기재 후, 1:1로 연결합니다."
+                    android:text="2. 피보호자가 설정된 보호구역 진입/이탈 시 보호자에게 알림을 보냅니다."
                     android:layout_marginTop="20dp"
                     android:textColor="#4A4A4A"
                     android:textSize="20sp"
@@ -74,67 +74,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:text="3. 상대방과 연결시, 아래의 내용을 확인할 수 있습니다."
+                    android:text="3. 5개 이내(1~5개) 보호구역을 설정할 수 있습니다. (0개 일 때는 알림을 받지 못합니다.)"
                     android:layout_marginTop="20dp"
                     android:textColor="#4A4A4A"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:text="4. 보호구역 관리에서 주소 이름, 주소를 수정이 가능합니다."
+                    android:layout_marginTop="20dp"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/textView33"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:text="(1) 서로 위치를 공유"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:text="(2) 상대 정보를 확인"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:text="(3) 경로를 기록하여 위치 기록 내역 확인"
-                        android:textSize="16sp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/nanumsquare_aab"
-                            android:text="(4) 보호구역 설정  "
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/nanumsquare_aab"
-                            android:text="※(4) - 보호자만 가능"
-                            android:textColor="#2748FF"
-                            android:textStyle="bold"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:text="5. 보호구역 관리에서 설정한 주소 내역을 삭제가 가능합니다."
+                    android:layout_marginTop="20dp"
+                    android:textColor="#4A4A4A"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
 
             </LinearLayout>
@@ -143,24 +107,6 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nanumsquare_aac"
-            android:text="일단 버튼,,,," />
-
-    </LinearLayout>
 
 
 </LinearLayout>

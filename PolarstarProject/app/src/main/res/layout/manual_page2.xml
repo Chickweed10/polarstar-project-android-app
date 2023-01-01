@@ -17,7 +17,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
-                android:text="[1] 접근 권한 요청"
+                android:text="[2] 상대방과 연결하기"
                 android:textColor="#252525"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -42,139 +42,104 @@
             android:paddingBottom="40dp">
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:text="1. 앱 '북극성'에서는 상대방과 위치공유를 하기 위해 각각 코드(고유번호)를 부여합니다."
+                android:textColor="#4A4A4A"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:text="2. 상대방의 코드(고유번호)를 확인하여 코드 입력란에 기재 후, 1:1로 연결합니다."
+                android:layout_marginTop="20dp"
+                android:textColor="#4A4A4A"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nanumsquare_aac"
+                android:text="3. 상대방과 연결시, 아래의 내용을 확인할 수 있습니다."
+                android:layout_marginTop="20dp"
+                android:textColor="#4A4A4A"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="1. 위치 접근 권한"
-                    android:textColor="#4A4A4A"
-                    android:textStyle="bold"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/textView27"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aab"
-                    android:layout_marginTop="4dp"
-                    android:text="앱 '북극성' 서비스를 원활히 이용하기 위해 권한 설정이 필요합니다."
-                    android:textSize="16sp"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="2-1. 카메라 접근 권한"
-                    android:textColor="#4A4A4A"
-                    android:textStyle="bold"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="2-2. 저장소 접근 권한"
-                    android:textColor="#4A4A4A"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textView33"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aab"
                     android:layout_marginTop="4dp"
-                    android:text="회원가입/내정보 프로필에 저장할 사진을 가져오기 위해 권한 설정이 필요합니다."
-                    android:textSize="16sp"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
-                android:orientation="vertical">
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="(1) 서로 위치를 공유"
+                    android:textSize="16sp" />
 
                 <TextView
-                        android:id="@+id/textView14"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/nanumsquare_aac"
-                        android:text="3-1. 절전모드 해제"
-
-                    android:textColor="#4A4A4A"
-                        android:textStyle="bold"
-                        android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/textView16"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="3-3. 배터리 절전 제외 앱 등록"
-                    android:textColor="#4A4A4A"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textView15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="3-2. 절약모드시 데이터 사용허용"
-                    android:textColor="#4A4A4A"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textView37"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aab"
                     android:layout_marginTop="4dp"
-                    android:text="절전 모드로 데이터가 제한되어 특정 지점에서 경로가 누락되지 않게 권한 설정이 필요합니다."
-                    android:textSize="16sp"/>
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="(2) 상대 정보를 확인"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="(3) 경로를 기록하여 위치 기록 내역 확인"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nanumsquare_aab"
+                        android:text="(4) 보호구역 설정  "
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nanumsquare_aab"
+                        android:text="※(4) - 보호자만 가능"
+                        android:textColor="#2748FF"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
             </LinearLayout>
+        </LinearLayout>
 
 
         </LinearLayout>
 
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nanumsquare_aac"
-            android:text="일단 버튼,,,," />
-
-    </LinearLayout>
-
 
 </LinearLayout>
