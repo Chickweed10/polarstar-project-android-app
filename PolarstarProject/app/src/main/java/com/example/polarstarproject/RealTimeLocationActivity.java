@@ -342,6 +342,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         startActivity(settingIntent);
                         finish(); //설정 화면으로 이동
                         break;
+
+                    case R.id.item_manual: //메뉴얼
+                        Intent manualIntent = new Intent(getApplicationContext(), ManualActivity.class);
+                        startActivity(manualIntent);
+                        finish(); //설정 화면으로 이동
+                        break;
                 }
 
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -937,7 +943,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
-        alertNotification();
+        //alertNotification2();
     }
 
     ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기
@@ -958,7 +964,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         if (!snapshot.exists()) {
                             Log.w(TAG, "보호구역 가져오기 오류");
                         }
-                        else { //장애인 집 주소 받아오면
+                        else {
                             double sDis = myRangeP.distance;
                             //경도(longitude)가 X, 위도(latitude)가 Y
                             //double nDis = Math.sqrt(((counterpartyCurPoint.longitude-myRangeP.longitude)*(counterpartyCurPoint.longitude-myRangeP.longitude))+((counterpartyCurPoint.latitude-myRangeP.latitude)*(counterpartyCurPoint.latitude-myRangeP.latitude)));
@@ -976,7 +982,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     }
 
                     if(!outFlag) { //아직 이탈 안했을 경우
-                        if (outCount == sCount) { //
+                        if (outCount == sCount) {
                             outNotification(DEFAULT, 3);//이탈 알림 울리기
                             InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
                             reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
