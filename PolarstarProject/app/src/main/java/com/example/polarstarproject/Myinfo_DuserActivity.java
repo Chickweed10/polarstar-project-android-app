@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,6 +47,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address, mProflDetailAddress;
+    TextView mProflPassword;
     Button Bt, mProflBtEmailCk, mProflBtChn;
     String sex,  cSex;
     //Spinner DrDisG;
@@ -85,6 +87,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
         Address = (EditText) findViewById(R.id.mProflAddress); //주소
         mProflDetailAddress = (EditText) findViewById(R.id.mProflDetailAddress); //주소
+        mProflPassword = (TextView) findViewById(R.id.mProflPassword); //비밀번호
         mProflBtGenderF = findViewById( R.id.mProflBtGenderF);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderM);
         rdgGroup = findViewById( R.id.mProflBtGender );
@@ -165,6 +168,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 Disabled user = snapshot.getValue(Disabled.class);
                 Name.setText(user.name);
                 Email.setText(user.email);
+                mProflPassword.setText(user.password);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
                 Address.setText(user.address);
