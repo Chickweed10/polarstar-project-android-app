@@ -240,8 +240,14 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
     }
 
     /////////////////////////////////////////전화번호////////////////////////////////////////
-    private void phoneNumberDuplicateCheck(String phoneNumber){ //전화번호 중복 검사
+    private void phoneNumberDuplicateCheck(String phoneNumber){ //전화번호 공백 & 중복 검사
         phoneNumberDuplicateCheckFlag = 0; //전화번호 중복 flag 값 초기화
+
+        if(phoneNumber == null || phoneNumber.isEmpty()){
+            Toast.makeText(GuardianRegisterActivity.this, "전화번호를 입력해주세요.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         reference.child("disabled").orderByChild("phoneNumber").equalTo(phoneNumber). //장애인 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
