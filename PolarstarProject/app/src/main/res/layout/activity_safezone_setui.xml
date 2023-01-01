@@ -13,14 +13,23 @@
         android:orientation="horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center"
+            android:text="●" />
 
         <LinearLayout
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_gravity="center"
             android:orientation="vertical"
             android:paddingTop="0dp">
 
@@ -52,19 +61,10 @@
             android:id="@+id/sfzImgTwinBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+            android:layout_gravity="center|right"
             android:orientation="horizontal"
             app:layout_constraintLeft_toRightOf="@id/sfzUsrSrchPl"
             app:layout_constraintTop_toTopOf="parent">
-
-            <ImageButton
-                android:id="@+id/sfzEditBtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@drawable/ic_baseline_create_24"
-                android:layout_marginEnd="5dp"
-                android:padding="0dp"
-                app:srcCompat="@drawable/border_color" />
 
             <ImageButton
                 android:id="@+id/sfzDeleteBtn"
@@ -86,3 +86,16 @@
 
 
 </LinearLayout>
+
+    <!--
+    // sfzImgTwinBtn 레이아웃안에 들어가는 수정 아이콘
+    <ImageButton
+                    android:id="@+id/sfzEditBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/ic_baseline_create_24"
+                    android:layout_marginEnd="5dp"
+                    android:padding="0dp"
+                    app:srcCompat="@drawable/border_color" />
+
+    -->
