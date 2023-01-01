@@ -7,4 +7,32 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- 배경색-->
+    <color name="bg_manual">#E6E6E6</color>
+
+
+    <!-- 선택되지 않은 점(선택 되지 않은 페이지 점) -->
+    <color name="dot_dark_manual">#222222</color>
+
+
+    <!-- 선택된 점(해당 페이지 일 때) -->
+    <color name="dot_light_manual">#A5A5A5</color>
+
+    <array name="array_dot_active">
+        <item>@color/dot_light_manual</item>
+        <item>@color/dot_light_manual</item>
+        <item>@color/dot_light_manual</item>
+        <item>@color/dot_light_manual</item>
+        <item>@color/dot_light_manual</item>
+    </array>
+
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_manual</item>
+        <item>@color/dot_dark_manual</item>
+        <item>@color/dot_dark_manual</item>
+        <item>@color/dot_dark_manual</item>
+        <item>@color/dot_dark_manual</item>
+    </array>
+
 </resources>
