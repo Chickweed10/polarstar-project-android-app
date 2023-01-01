@@ -38,6 +38,19 @@
                 android:src="@drawable/profileimage"
                 />
 
+            <Button
+                android:id="@+id/mProflBtChn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:background="#00ff0000"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:text="프로필 사진 변경"
+                android:textColor="#006BBF"
+                android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
