@@ -26,6 +26,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="130dp"
             android:orientation="vertical">
 
             <TextView
@@ -33,23 +35,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="30dp"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:text="이메일 찾기"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:text="회원정보에 등록한 전화번호를 입력해주세요."
+                android:textSize="17sp"
                 android:textColor="#454545" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="60dp"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/findPhoneNum"
-                    android:layout_width="210dp"
+                    android:layout_width="180dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
+                    android:layout_marginStart="40dp"
                     android:layout_marginEnd="0dp"
                     android:layout_weight="0.7"
                     android:ems="10"
@@ -58,39 +60,38 @@
                     android:inputType="phone"
                     android:padding="11dp"
                     android:singleLine="true"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <View
-
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
 
                 <Button
                     android:id="@+id/findPNReq"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="30dp"
+                    android:layout_width="80dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="50dp"
                     android:layout_weight="0.3"
-                    android:backgroundTint="#240070"
+                    android:background="@drawable/ok_button"
+                    android:textColor="@drawable/ok_button_text_color"
                     android:fontFamily="@font/nanumsquare_aac"
                     android:text="인증요청"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/findPNCk"
-                    android:layout_width="210dp"
+                    android:layout_width="180dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
+                    android:layout_marginStart="40dp"
                     android:layout_marginEnd="0dp"
                     android:layout_weight="0.7"
                     android:fontFamily="@font/nanumsquare_aab"
@@ -98,51 +99,76 @@
                     android:inputType="number"
                     android:padding="11dp"
                     android:singleLine="true"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <View
-
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
 
                 <Button
                     android:id="@+id/findPNReqCk"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="30dp"
+                    android:layout_width="80dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="50dp"
                     android:layout_weight="0.3"
-                    android:backgroundTint="#240070"
+                    android:background="@drawable/ok_button"
+                    android:textColor="@drawable/ok_button_text_color"
                     android:fontFamily="@font/nanumsquare_aac"
                     android:text="인증확인"
-                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="44dp"
+                    android:layout_weight="0.7"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:hint="이메일"
+                    android:inputType="phone"
+                    android:textColorHint="#454545"
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:fontFamily="@font/nanumsquare_aab"
-                android:gravity="center"
-                android:hint="이메일:"
-                android:textColorHint="#7E7E7E"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
-            <Button
-                android:id="@+id/goLoginEmail"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
-                android:backgroundTint="#240070"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/editOtherCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginBottom="30dp"
+                    android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:hint="이메일이 표시됩니다."
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/tEmail"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="45dp"
+                android:layout_marginEnd="50dp"
+                android:background="@drawable/ok_button"
+                android:textColor="@drawable/ok_button_text_color"
                 android:fontFamily="@font/nanumsquare_aac"
                 android:text="확인"
-                android:textColor="@color/white"
                 android:textSize="16sp" />
 
 
