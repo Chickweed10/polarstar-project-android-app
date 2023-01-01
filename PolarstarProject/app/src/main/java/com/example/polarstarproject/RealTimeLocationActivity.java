@@ -109,9 +109,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     private WarningDialog terminationDialog; //앱 종료 다이얼로그 팝업
 
     private static final String TAG = "RealTimeLocation";
-    
-    private final long finishtimeed = 2000; //뒤로가기 기준 시간
-    private long presstime = 0; //뒤로가기 버튼 누른 시간
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -549,49 +546,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 });
     }
 
-    /*public void routeScheduler(){ //경로 저장용 스케쥴러
-        Log.d(TAG,"경로 저장용 스케쥴러 실행");
-
-        if(classificationUserFlag == 1){
-            Timer timer = new Timer();
-
-            TimerTask timerTask = new TimerTask() {
-                @RequiresApi(api = Build.VERSION_CODES.O)
-                @Override
-                public void run() {
-                    //20초마다 실행
-                    LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul")); //현재 날짜 구하기
-                    String nowDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-                    Query routeQuery = reference.child("route").child(user.getUid()).child(nowDate).limitToLast(1); //경로 테이블 조회
-                    routeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @SuppressLint("DefaultLocale")
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            Route route = new Route();
-                            for(DataSnapshot ds : snapshot.getChildren()){
-                                route = ds.getValue(Route.class);
-                            }
-                            
-                            if(String.format("%.3f", routeLatitude).equals(String.format("%.3f", route.getLatitude())) == false){ //위치를 이동했을 경우에만 경로 저장
-                                if(String.format("%.3f", routeLongitude).equals(String.format("%.3f", route.getLongitude())) == false){
-                                    Log.w(TAG, "메인 화면 실행");
-                                    firebaseUpdateRoute(user, routeLatitude, routeLongitude); //DB에 경로 업로드
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                }
-            };
-            timer.schedule(timerTask,0,20000);
-        }
-    }*/
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void firebaseUpdateRoute(FirebaseUser user, double latitude, double longitude) { //firebase에 경로용 위치 저장
         if(latitude != 0 && longitude != 0){
@@ -624,9 +578,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////경로 삭제 스케쥴러////////////////////////////////////////
     public void routeDelete(){
-        //String clientageRouteDate = reference.child("route").child(user.getUid()).; //피보호자 경로 테이블 날짜 조회
-
-        //Log.w(TAG, "경로 날짜: " + clientageRouteDate);
+        //30일 이전 기록은 자동으로 삭제 되도록
     }
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
@@ -676,7 +628,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                     if(count == 0){
                         routeDelete(); //30일 이전 피보호자 경로 삭제
-                        //routeScheduler(); //장애인 경로 저장 함수 호출
                     }
                     count++;
                     getOtherUID();
