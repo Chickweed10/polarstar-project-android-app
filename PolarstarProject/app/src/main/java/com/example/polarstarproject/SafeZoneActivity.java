@@ -37,6 +37,8 @@ public class SafeZoneActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
 
+    private WarningDialog deleteDialog; //보호구역 삭제 다이얼로그 팝업
+
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
 
@@ -135,10 +137,34 @@ public class SafeZoneActivity extends AppCompatActivity {
             //삭제
             @Override
             public void onDeleteClick(View v, int position) {
-                String name = mArrayList.get(position).getName();
-                ItemDelete(name);
-                mArrayList.remove (position);
-                mAdapter.notifyItemRemoved (position);
+                deleteDialog = new WarningDialog(SafeZoneActivity.this, "보호구역을 삭제하시겠습니까?");
+                deleteDialog.show(); // 다이얼로그 띄우기
+                deleteDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+
+                //취소 버튼
+                Button btnCancle = deleteDialog.findViewById(R.id.btn_cancle);
+                btnCancle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 원하는 기능 구현
+                        deleteDialog.dismiss(); // 다이얼로그 닫기
+                    }
+                });
+
+                //확인 버튼
+                Button btnOk = deleteDialog.findViewById(R.id.btn_ok);
+                btnOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 원하는 기능 구현
+                        deleteDialog.dismiss(); // 다이얼로그 닫기
+                        Toast.makeText(getApplicationContext(),"보호구역이 삭제되었습니다." , Toast.LENGTH_SHORT).show();
+                        String name = mArrayList.get(position).getName();
+                        ItemDelete(name);
+                        mArrayList.remove (position);
+                        mAdapter.notifyItemRemoved (position);
+                    }
+                });
             }
 
         });
