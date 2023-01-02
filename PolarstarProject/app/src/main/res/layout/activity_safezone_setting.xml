@@ -43,12 +43,12 @@
         <Button
             android:id="@+id/btn_Set"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_marginBottom="26dp"
-            android:backgroundTint="#240070"
+            android:background="@drawable/ok_button"
+            android:textColor="@drawable/ok_button_text_color"
             android:fontFamily="@font/nanumsquare_aab"
-            android:textColor="@color/white"
             android:text="보호구역 설정하기" />
 
         <View

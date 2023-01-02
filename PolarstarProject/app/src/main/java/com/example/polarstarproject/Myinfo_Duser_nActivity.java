@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     ImageView Profl;
     EditText Name, Email, PhoneNum, Birth, Address, dAddress;
+    TextView mProflPasswordN;
     Button Bt, mProflBtEmailCkN, mProflBtChnN;
     String sex,  cSex;
     RadioGroup rdgGroup;
@@ -81,6 +83,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         Birth = (EditText) findViewById(R.id.mProflBirthN); //생년월일
         Address = (EditText) findViewById(R.id.mProflAddressN); //주소
         dAddress = (EditText) findViewById(R.id.mProflDetailAddressN); //주소
+        mProflPasswordN = (TextView) findViewById(R.id.mProflPasswordN); //비밀번호
         mProflBtGenderF = findViewById( R.id.mProflBtGenderFN);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderMN);
         rdgGroup = findViewById( R.id.mProflBtGenderN );
@@ -161,6 +164,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 //Profl.setImageURI(uri);
                 Name.setText(user.name);
                 Email.setText(user.email);
+                mProflPasswordN.setText(user.password);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
                 Address.setText(user.address);
