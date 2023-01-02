@@ -110,6 +110,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     private static final String TAG = "RealTimeLocation";
 
+    Button itemMyinfo, itemOtherinfo, itemRoute, itemRange, itemSetting, itemManual;
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -216,6 +218,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         ImageView headerViewImageContent = (ImageView) headerView.findViewById(R.id.iv_image); //네비게이션 바 프로필 사진
         TextView headerViewNameContent = (TextView) headerView.findViewById(R.id.tv_name); //네비게이션 바 프로필 이름
         TextView headerViewEmailContent = (TextView) headerView.findViewById(R.id.Edit_UserEmail); //네비게이션 바 프로필 이메일
+        
+        //네비게이션 콘텐츠
+        itemMyinfo = (Button)headerView.findViewById(R.id.item_myinfo);
+        itemOtherinfo = (Button)headerView.findViewById(R.id.item_otherinfo);
+        itemRoute = (Button)headerView.findViewById(R.id.item_route);
+        itemRange = (Button)headerView.findViewById(R.id.item_range);
+        itemSetting = (Button)headerView.findViewById(R.id.item_setting);
+        itemManual = (Button)headerView.findViewById(R.id.item_manual);
 
         //네비게이션 바 프로필 사진 띄우기
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -283,26 +293,30 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         });
 
-
-        //네비게이션 바
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        //네비게이션 버튼 이동
+        itemMyinfo.setOnClickListener(new View.OnClickListener() { //내 정보
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+            public void onClick(View view) {
+                switch (view.getId()) {
                     case R.id.item_myinfo: //내 정보
-                        if(classificationUserFlag == 1){ //장애인일 경우
+                        if (classificationUserFlag == 1) { //장애인일 경우
                             Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
                             startActivity(myInfoIntent);
                             finish(); //내 정보 화면으로 이동
-                        }
-                        else if(classificationUserFlag == 2){ //보호자일 경우
+                        } else if (classificationUserFlag == 2) { //보호자일 경우
                             Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
                             startActivity(myInfoIntent);
                             finish(); //내 정보 화면으로 이동
                         }
                         break;
-
-                    case R.id.item_otherinfo: //상대 정보
+                }
+            }
+        });
+        itemOtherinfo.setOnClickListener(new View.OnClickListener() { //상대 정보
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_otherinfo: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
                             Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationGuardianCheckActivity.class);
                             startActivity(otherInfoIntent);
@@ -314,8 +328,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             finish(); //상대 정보 화면으로 이동
                         }
                         break;
-
-                    case R.id.item_route: //위치 기록
+                }
+            }
+        });
+        itemRoute.setOnClickListener(new View.OnClickListener() { //경로
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_route: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog(); //커스텀 Dialog
                         }
@@ -326,8 +346,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         }
 
                         break;
-
-                    case R.id.item_range: //보호구역
+                }
+            }
+        });
+        itemRange.setOnClickListener(new View.OnClickListener() { //보호구역
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_range: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog();
                         }
@@ -336,24 +362,32 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             startActivity(otherInfoIntent);
                             finish(); //보호구역 화면으로 이동
                         }
-
                         break;
-
-                    case R.id.item_setting: //설정
+                }
+            }
+        });
+        itemSetting.setOnClickListener(new View.OnClickListener() { //설정
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_setting: //내 정보
                         Intent settingIntent = new Intent(getApplicationContext(), MenuSettingActivity.class);
                         startActivity(settingIntent);
                         finish(); //설정 화면으로 이동
                         break;
-
-                    case R.id.item_manual: //메뉴얼
-                        Intent manualIntent = new Intent(getApplicationContext(), ManualActivity.class);
-                        startActivity(manualIntent);
-                        finish(); //설정 화면으로 이동
+                }
+            }
+        });
+        itemManual.setOnClickListener(new View.OnClickListener() { //메뉴얼
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_manual: //내 정보
+                        Intent settingIntent = new Intent(getApplicationContext(), ManualActivity.class);
+                        startActivity(settingIntent);
+                        finish(); //메뉴얼 화면으로 이동
                         break;
                 }
-
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
             }
         });
 
