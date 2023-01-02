@@ -277,15 +277,15 @@
             <Button
                 android:id="@+id/othProflBtEditN"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="40dp"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
-                android:backgroundTint="#240070"
+                android:background="@drawable/ok_button"
+                android:textColor="@drawable/ok_button_text_color"
                 android:text="확인"
-                android:textColor="@color/white"
                 android:fontFamily="@font/nanumsquare_aac"
                 android:textSize="14sp"/>
 

@@ -424,8 +424,6 @@
                 android:textColor="@drawable/ok_button_text_color"
                 android:text="프로필 수정"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:padding="11dp"
-                android:singleLine="true"
                 android:textSize="16sp"/>
 
         </LinearLayout>
