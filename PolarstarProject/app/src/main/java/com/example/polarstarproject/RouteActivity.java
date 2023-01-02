@@ -61,6 +61,8 @@ import java.util.Locale; //달력
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
     Toolbar toolbar;
+    Calendar mCalendar;
+    DatePickerDialog mDatePicker;
 
     private static final String TAG = "Route";
 
@@ -120,6 +122,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         // 위치를 반환하는 구현체인 FusedLocationSource 생성
         mLocationSource = new FusedLocationSource(this, PERMISSION_REQUEST_CODE);
 
+        datePickerInit();
+
         /////////////////////////////////////////달력///////////////////////////////////
         EditText et_Date = (EditText) findViewById(R.id.Date);
         Calendar cal = Calendar.getInstance();
@@ -128,7 +132,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(RouteActivity.this, mDatePicker, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                mDatePicker.show();
             }
         });
     }
@@ -306,46 +310,46 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             path.setPatternInterval(getResources().getDimensionPixelSize(R.dimen.overlay_pattern_interval)); //패턴 간격
             path.setMap(mNaverMap);
         }
-
     }
 
     //////////////////////////////////////// 달력 ///////////////////////////////////
-    Calendar mCalendar = Calendar.getInstance();
+    public void datePickerInit(){
+        mCalendar = Calendar.getInstance();
+        mDatePicker = new DatePickerDialog(this, R.style.MySpinnerDatePickerStyle, new DatePickerDialog.OnDateSetListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                mCalendar.set(Calendar.YEAR, year);
+                mCalendar.set(Calendar.MONTH, month);
+                mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
 
-    DatePickerDialog.OnDateSetListener mDatePicker = new DatePickerDialog.OnDateSetListener() {
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            mCalendar.set(Calendar.YEAR, year);
-            mCalendar.set(Calendar.MONTH, month);
-            mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateLabel();
+                arrayPoints.clear();
+                path.setMap(null);
 
-            arrayPoints.clear();
-            path.setMap(null);
+                String monthToString = String.format("%02d", month+1);
+                String dayOfMonthToString = String.format("%02d", dayOfMonth); //월, 일 00 형식으로 변경
 
-            String monthToString = String.format("%02d", month+1);
-            String dayOfMonthToString = String.format("%02d", dayOfMonth); //월, 일 00 형식으로 변경
+                String clickDateString =  Integer.toString(year)+"-"+monthToString+"-"+dayOfMonthToString;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate clickDate = LocalDate.parse(clickDateString, formatter); //String을 LocalDate로 형변환
 
-            String clickDateString =  Integer.toString(year)+"-"+monthToString+"-"+dayOfMonthToString;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate clickDate = LocalDate.parse(clickDateString, formatter); //String을 LocalDate로 형변환
+                LocalDate now = LocalDate.now();
 
-            LocalDate now = LocalDate.now();
+                long diff = clickDate.until(now, ChronoUnit.DAYS); //날짜 뺄셈
 
-            long diff = clickDate.until(now, ChronoUnit.DAYS); //날짜 뺄셈
-
-            if(clickDate.compareTo(now) > 0) { //현재일 이후 선택 시
-                startRouteDialog("현재일 이후 날짜는 선택할 수 없습니다.");
+                if(clickDate.compareTo(now) > 0) { //현재일 이후 선택 시
+                    startRouteDialog("현재일 이후 날짜는 선택할 수 없습니다.");
+                }
+                else if(diff > 30) { //30일 이전 선택 시
+                    startRouteDialog("30일 이전의 기록은 조회할 수 없습니다.");
+                }
+                else {
+                    disabledRoute(year, month, dayOfMonth);
+                }
             }
-            else if(diff > 30) { //30일 이전 선택 시
-                startRouteDialog("30일 이전의 기록은 조회할 수 없습니다.");
-            }
-            else {
-                disabledRoute(year, month, dayOfMonth);
-            }
-        }
-    };
+        }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+    }
 
     //////////////////////////////////////// 다이얼로그 ///////////////////////////////////
     public void startRouteDialog(String text) {
