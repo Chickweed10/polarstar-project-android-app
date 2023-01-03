@@ -264,9 +264,11 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity impl
 
                     if(cSex.equals("여")) {
                         othProflBtGenderFN.setChecked(true);
+                        othProflBtGenderMN.setEnabled(false);
                     }
                     else {
                         othProflBtGenderMN.setChecked(true);
+                        othProflBtGenderFN.setEnabled(false);
                     }
                 }
                 else {
