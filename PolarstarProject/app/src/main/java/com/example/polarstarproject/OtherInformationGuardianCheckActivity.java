@@ -262,9 +262,11 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
 
                     if(cSex.equals("여")) {
                         othProflBtGenderF.setChecked(true);
+                        othProflBtGenderM.setEnabled(false);
                     }
                     else {
                         othProflBtGenderM.setChecked(true);
+                        othProflBtGenderF.setEnabled(false);
                     }
 
                 }

@@ -179,9 +179,11 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
                 if(cSex.equals("여")) {
                     mProflBtGenderF.setChecked(true);
+                    mProflBtGenderM.setEnabled(false);
                 }
                 else {
                     mProflBtGenderM.setChecked(true);
+                    mProflBtGenderF.setEnabled(false);
                 }Log.w(TAG, "선택: "+ mProflBtGenderF.isChecked());
 
 

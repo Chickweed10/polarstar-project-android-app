@@ -175,9 +175,11 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 Log.w(TAG, "성별: "+ cSex);
                 if(cSex.equals("여")) {
                     mProflBtGenderF.setChecked(true);
+                    mProflBtGenderM.setEnabled(false);
                 }
                 else {
                     mProflBtGenderM.setChecked(true);
+                    mProflBtGenderF.setEnabled(false);
                 }Log.w(TAG, "선택: "+ mProflBtGenderF.isChecked());
             }
 
