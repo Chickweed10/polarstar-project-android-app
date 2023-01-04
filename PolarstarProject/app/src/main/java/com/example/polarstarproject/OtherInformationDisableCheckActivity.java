@@ -227,8 +227,8 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity impl
 
     /////////////////////////////////////////상대방 정보 가져오기////////////////////////////////////////
     private void otherInformationCheck(){
-        Query guardianQuery = reference.child("disabled").orderByKey().equalTo(counterpartyUID); //장애인 테이블 조회
-        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query disabledQuery = reference.child("disabled").orderByKey().equalTo(counterpartyUID); //장애인 테이블 조회
+        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Disabled disabled = new Disabled();

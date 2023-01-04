@@ -154,6 +154,7 @@
                 android:ems="10"
                 android:fontFamily="@font/nanumsquare_aab"
                 android:hint="이메일이 표시됩니다."
+                android:focusable="false"
                 android:singleLine="true"
                 android:textSize="16sp" />
         </LinearLayout>
