@@ -44,9 +44,9 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, PhoneNum, Birth, Address, dAddress;
-    TextView mProflPasswordN;
-    Button Bt, mProflBtEmailCkN, mProflBtChnN;
+    EditText Name, Email, PhoneNum, Birth, dAddress;
+    TextView Address;
+    Button Bt, mProflBtEmailCkN, mProflBtChnN, mProflBtPWChageN, mProflFdAddN;
     String sex,  cSex;
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;
@@ -61,6 +61,8 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
     private StorageReference storageRef, riversRef; //firebase DB, Storage 변수
     private Uri imageUri;
     private String pathUri = "profile/default.png"; //프로필 이미지 처리 변수
+
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000; //우편번호 검색d
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +83,10 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         Email = (EditText) findViewById(R.id.mProflEmailN); //이메일
         PhoneNum = (EditText) findViewById(R.id.mProflPhoneNumN); //전화번호
         Birth = (EditText) findViewById(R.id.mProflBirthN); //생년월일
-        Address = (EditText) findViewById(R.id.mProflAddressN); //주소
-        dAddress = (EditText) findViewById(R.id.mProflDetailAddressN); //주소
-        mProflPasswordN = (TextView) findViewById(R.id.mProflPasswordN); //비밀번호
+        
+        Address = (TextView) findViewById(R.id.mProflAddressN); //주소
+        mProflFdAddN = (Button) findViewById(R.id.mProflFdAddN); // 주소 버튼
+        dAddress = (EditText) findViewById(R.id.mProflDetailAddressN); // 상세 주소
         mProflBtGenderF = findViewById( R.id.mProflBtGenderFN);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderMN);
         rdgGroup = findViewById( R.id.mProflBtGenderN );
@@ -129,6 +132,38 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
             });
         }
         readUser(mynUid);
+
+        mProflBtPWChageN = (Button) findViewById(R.id.mProflBtPWChageN); //비밀번호 재설정
+        //재설정 버튼이 눌리면
+        mProflBtPWChageN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = Email.getText().toString().trim();
+                if(email.isEmpty()) {
+                    Toast.makeText(Myinfo_Duser_nActivity.this,
+                            "이메일을 입력해주세요.",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    mAuth.sendPasswordResetEmail(email)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(Myinfo_Duser_nActivity.this,
+                                                "비밀번호 재설정 이메일을 발송했습니다.",
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(Myinfo_Duser_nActivity.this,
+                                                "가입한 이메일을 입력하세요.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+            }
+        });
+        mProflFdAddN = (Button) findViewById(R.id.mProflFdAddN); //우편번호 찾기
+        mProflFdAddN.setOnClickListener(this);
     }
 
 
@@ -304,6 +339,13 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                         .load(intent.getData())
                         .into(Profl); //버튼에 이미지 삽입
             }
+        } else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
+            if (resultCode == RESULT_OK) {
+                String data = intent.getExtras().getString("data");
+                if(data != null) {
+                    Address.setText(data);
+                }
+            }
         }
     }
 
@@ -315,6 +357,10 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 break;
             case R.id.mProflBtChnN: //프로필 이미지 버튼 클릭 시
                 gotoAlbum(); //
+                break;
+            case R.id.mProflFdAddN: //우편번호 검색
+                Intent i = new Intent(Myinfo_Duser_nActivity.this, WebViewActivity.class); //우편번호 검색 화면으로 전환
+                startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                 break;
             case R.id.mProflBtEditN: //수정 버튼 클릭 시 저장
                 mDatabase.child("guardian").child(mynUid).child("name").setValue(Name.getText().toString());

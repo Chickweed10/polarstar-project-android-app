@@ -46,9 +46,9 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, PhoneNum, Birth, Address, mProflDetailAddress;
-    TextView mProflPassword;
-    Button Bt, mProflBtEmailCk, mProflBtChn;
+    EditText Name, Email, PhoneNum, Birth, mProflDetailAddress;
+    TextView Address;
+    Button Bt, mProflBtEmailCk, mProflBtChn, mProflBtPWChage, mProflFdAdd;
     String sex,  cSex;
     //Spinner DrDisG;
     RadioGroup rdgGroup;
@@ -64,6 +64,9 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     private StorageReference storageRef, riversRef; //firebase DB, Storage 변수
     private Uri imageUri;
     private String pathUri = "profile/default.png"; //프로필 이미지 처리 변수
+
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000; //우편번호 검색
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +88,11 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         Email = (EditText) findViewById(R.id.mProflEmail); //이메일
         PhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //전화번호
         Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
-        Address = (EditText) findViewById(R.id.mProflAddress); //주소
-        mProflDetailAddress = (EditText) findViewById(R.id.mProflDetailAddress); //주소
-        mProflPassword = (TextView) findViewById(R.id.mProflPassword); //비밀번호
+
+        Address = (TextView) findViewById(R.id.mProflAddress); //주소 텍스트
+        mProflFdAdd = (Button) findViewById(R.id.mProflFdAdd); // 주소 버튼
+        mProflDetailAddress = (EditText) findViewById(R.id.mProflDetailAddress); //상세 주소
+        
         mProflBtGenderF = findViewById( R.id.mProflBtGenderF);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderM);
         rdgGroup = findViewById( R.id.mProflBtGender );
@@ -136,6 +141,38 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             });
         }
         readUser(myUid);
+
+        mProflBtPWChage = (Button) findViewById(R.id.mProflBtPWChage); //비밀번호 재설정
+        //재설정 버튼이 눌리면
+        mProflBtPWChage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = Email.getText().toString().trim();
+                if(email.isEmpty()) {
+                    Toast.makeText(Myinfo_DuserActivity.this,
+                            "이메일을 입력해주세요.",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    mAuth.sendPasswordResetEmail(email)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(Myinfo_DuserActivity.this,
+                                                "비밀번호 재설정 이메일을 발송했습니다.",
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(Myinfo_DuserActivity.this,
+                                                "가입한 이메일을 입력하세요.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+            }
+        });
+        mProflFdAdd = (Button) findViewById(R.id.mProflFdAdd); //우편번호 찾기
+        mProflFdAdd.setOnClickListener(this);
     }
 
 
@@ -310,6 +347,13 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                         .load(intent.getData())
                         .into(Profl); // 이미지 삽입
             }
+        }else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
+            if (resultCode == RESULT_OK) {
+                String data = intent.getExtras().getString("data");
+                if(data != null) {
+                    Address.setText(data);
+                }
+            }
         }
     }
 
@@ -322,14 +366,21 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
             case R.id.mProflBtChn: //프로필 이미지 버튼 클릭 시
                 gotoAlbum(); //
                 break;
+            case R.id.mProflFdAdd: //우편번호 검색
+                Intent i = new Intent(Myinfo_DuserActivity.this, WebViewActivity.class); //우편번호 검색 화면으로 전환
+                startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
+                break;
             case R.id.mProflBtEdit: //수정 버튼 클릭 시 저장
                 mDatabase.child("disabled").child(myUid).child("name").setValue(Name.getText().toString());
                 mDatabase.child("disabled").child(myUid).child("email").setValue(Email.getText().toString());
                 mDatabase.child("disabled").child(myUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
                 mDatabase.child("disabled").child(myUid).child("address").setValue(Address.getText().toString());
+                mDatabase.child("disabled").child(myUid).child("detailAddress").setValue(mProflDetailAddress.getText().toString());
+
                 mDatabase.child("disabled").child(myUid).child("birth").setValue(Birth.getText().toString());
                 mDatabase.child("disabled").child(myUid).child("sex").setValue(sex);
                 //mDatabase.child("disabled").child(myUid).child("disabilityLevel").setValue(DrDisG.getSelectedItem().toString());
+                //디테일 어드레스
 
                 if(imageUri != null){ //프로필 설정 했을 시
                     pathUri = "profile/"+myUid;

@@ -273,7 +273,7 @@
                     android:textColor="#454545"
                     android:textSize="14sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/mProflAddressN"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
