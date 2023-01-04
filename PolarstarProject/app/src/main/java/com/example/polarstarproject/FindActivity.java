@@ -1,6 +1,7 @@
 package com.example.polarstarproject;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,7 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.example.polarstarproject.Domain.Disabled;
+import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -24,8 +30,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,10 +43,13 @@ public class FindActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     EditText findPhoneNum, findPNCk;
-    Button findPNReq, findPNReqCk;
+    Button findPNReq, findPNReqCk, goLoginEmail;
     TextView tEmail;
+    
     String Id = ((LoginActivity)LoginActivity.context_login).setId;
     String Password = ((LoginActivity)LoginActivity.context_login).setPassword;
+    
+    String findEmail = new String(); //찾은 이메일
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -63,9 +76,9 @@ public class FindActivity extends AppCompatActivity {
         findPNCk = (EditText) findViewById(R.id.findPNCk); //인증번호 요청
         findPNReqCk = (Button) findViewById(R.id.findPNReqCk); //인증번호 확인
         tEmail = (TextView) findViewById(R.id.tEmail);
+        goLoginEmail = (Button) findViewById(R.id.goLoginEmail); //확인
 
         findPNReq.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 verificationCodeFlag = 1;
@@ -74,7 +87,6 @@ public class FindActivity extends AppCompatActivity {
         });
 
         findPNReqCk.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 if(findPNCk.getText().toString().isEmpty()){
@@ -88,6 +100,15 @@ public class FindActivity extends AppCompatActivity {
                 else if(verificationCodeFlag != 0 && !findPNCk.getText().toString().isEmpty()){
                     signInWithPhoneAuthCredential(PhoneAuthProvider.getCredential(VID, findPNCk.getText().toString()));
                 }
+            }
+        });
+
+        goLoginEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -122,11 +143,49 @@ public class FindActivity extends AppCompatActivity {
                             Log.d(TAG, "인증 성공");
                             Toast.makeText(FindActivity.this, "인증 성공",
                                     Toast.LENGTH_SHORT).show();
+
                             //이메일 보이게함
-                            tEmail.setText("이메일: "+Id);
-                            tEmail.setVisibility(View.VISIBLE);
-                            //tPassword.setText("비밀번호: "+Password);
-                            //tPassword.setVisibility(View.VISIBLE);
+                            String phoneNumber = findPhoneNum.getText().toString();
+
+                            Query disabledQuery = reference.child("disabled").orderByChild("phoneNumber").equalTo(phoneNumber); //장애인 테이블 조회
+                            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Disabled disabled = new Disabled();
+                                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                        disabled = ds.getValue(Disabled.class);
+                                    }
+                                    if(disabled.getEmail() != null && !disabled.getEmail().isEmpty()){
+                                        findEmail = disabled.getEmail();
+                                        tEmail.setText(findEmail);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            Query guardianQuery = reference.child("guardian").orderByChild("phoneNumber").equalTo(phoneNumber); //보호자 테이블 조회
+                            guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Guardian guardian = new Guardian();
+                                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                        guardian = ds.getValue(Guardian.class);
+                                    }
+                                    if(guardian.getEmail() != null && !guardian.getEmail().isEmpty()){
+                                        findEmail = guardian.getEmail();
+                                        tEmail.setText(findEmail);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
                             certificationFlag = 1;
                         } else {
                             Toast.makeText(FindActivity.this, "인증 실패",
