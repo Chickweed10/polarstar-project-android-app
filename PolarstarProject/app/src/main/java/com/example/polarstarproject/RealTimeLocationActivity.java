@@ -110,6 +110,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     private static final String TAG = "RealTimeLocation";
 
+    Button itemMyinfo, itemOtherinfo, itemRoute, itemRange, itemSetting, itemManual;
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
@@ -128,18 +130,20 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     Marker myMarker; //내 마커
     Marker counterpartyMarker; //상대방 마커
-    
+
     LatLng counterpartyCurPoint; //상대방 위치
 
     CameraUpdate cameraUpdate; //지도 카메라
     int cameraCnt = 0; //카메라 이동 제어 위한 카운트
     int screenCnt = 0; //연결 화면 넘어가기 위한 카운트
+    int sCount = 0; //보호구역 개수
+    int outCount = 0; //보호구역 이탈 개수
 
     Connect myConnect;
     String counterpartyUID = "";
     public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
     private double routeLatitude, routeLongitude; //장애인 경로 저장
-    
+
     AddressGeocoding addressGeocoding;
     public static double disabledAddressLatitude, disabledAddressLongitude;  //피보호자 집 주소 지오코딩
     public double distance; //거리
@@ -214,6 +218,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         ImageView headerViewImageContent = (ImageView) headerView.findViewById(R.id.iv_image); //네비게이션 바 프로필 사진
         TextView headerViewNameContent = (TextView) headerView.findViewById(R.id.tv_name); //네비게이션 바 프로필 이름
         TextView headerViewEmailContent = (TextView) headerView.findViewById(R.id.Edit_UserEmail); //네비게이션 바 프로필 이메일
+        
+        //네비게이션 콘텐츠
+        itemMyinfo = (Button)headerView.findViewById(R.id.item_myinfo);
+        itemOtherinfo = (Button)headerView.findViewById(R.id.item_otherinfo);
+        itemRoute = (Button)headerView.findViewById(R.id.item_route);
+        itemRange = (Button)headerView.findViewById(R.id.item_range);
+        itemSetting = (Button)headerView.findViewById(R.id.item_setting);
+        itemManual = (Button)headerView.findViewById(R.id.item_manual);
 
         //네비게이션 바 프로필 사진 띄우기
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -281,26 +293,30 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             }
         });
 
-
-        //네비게이션 바
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        //네비게이션 버튼 이동
+        itemMyinfo.setOnClickListener(new View.OnClickListener() { //내 정보
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+            public void onClick(View view) {
+                switch (view.getId()) {
                     case R.id.item_myinfo: //내 정보
-                        if(classificationUserFlag == 1){ //장애인일 경우
+                        if (classificationUserFlag == 1) { //장애인일 경우
                             Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
                             startActivity(myInfoIntent);
                             finish(); //내 정보 화면으로 이동
-                        }
-                        else if(classificationUserFlag == 2){ //보호자일 경우
+                        } else if (classificationUserFlag == 2) { //보호자일 경우
                             Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
                             startActivity(myInfoIntent);
                             finish(); //내 정보 화면으로 이동
                         }
                         break;
-
-                    case R.id.item_otherinfo: //상대 정보
+                }
+            }
+        });
+        itemOtherinfo.setOnClickListener(new View.OnClickListener() { //상대 정보
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_otherinfo: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
                             Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationGuardianCheckActivity.class);
                             startActivity(otherInfoIntent);
@@ -312,8 +328,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             finish(); //상대 정보 화면으로 이동
                         }
                         break;
-
-                    case R.id.item_route: //위치 기록
+                }
+            }
+        });
+        itemRoute.setOnClickListener(new View.OnClickListener() { //경로
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_route: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog(); //커스텀 Dialog
                         }
@@ -324,8 +346,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         }
 
                         break;
-
-                    case R.id.item_range: //보호구역
+                }
+            }
+        });
+        itemRange.setOnClickListener(new View.OnClickListener() { //보호구역
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_range: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
                             startAuthorityDialog();
                         }
@@ -334,18 +362,32 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             startActivity(otherInfoIntent);
                             finish(); //보호구역 화면으로 이동
                         }
-
                         break;
-
-                    case R.id.item_setting: //설정
+                }
+            }
+        });
+        itemSetting.setOnClickListener(new View.OnClickListener() { //설정
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_setting: //내 정보
                         Intent settingIntent = new Intent(getApplicationContext(), MenuSettingActivity.class);
                         startActivity(settingIntent);
                         finish(); //설정 화면으로 이동
                         break;
                 }
-
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
+            }
+        });
+        itemManual.setOnClickListener(new View.OnClickListener() { //메뉴얼
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.item_manual: //내 정보
+                        Intent settingIntent = new Intent(getApplicationContext(), ManualActivity.class);
+                        startActivity(settingIntent);
+                        finish(); //메뉴얼 화면으로 이동
+                        break;
+                }
             }
         });
 
@@ -380,7 +422,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                         //절전모드
-                        && isPowersaveMode == false) 
+                        && isPowersaveMode == false)
         {
 
         }
@@ -495,7 +537,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
 
-   @Override
+    @Override
     protected void onStart(){ //Activity가 사용자에게 보여지면
         super.onStart();
         onCheckPermission(); //권한 체크
@@ -941,15 +983,15 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기
-    private void alertNotification2(){
+    private void alertNotification(){
+        sCount=0; //보호구역 개수
+        outCount=0; // 이탈 횟수
+
         if(reference.child("range").child(user.getUid()).orderByKey() != null){
             reference.child("range").child(user.getUid()).orderByKey(). //장애인 집 주소 가져오기
                     addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int sCount=0; //보호구역 개수
-                    int outCount=0; // 이탈 횟수
-
                     Range myRangeP = new Range();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         sCount++;
@@ -958,7 +1000,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         if (!snapshot.exists()) {
                             Log.w(TAG, "보호구역 가져오기 오류");
                         }
-                        else { //장애인 집 주소 받아오면
+                        else {
                             double sDis = myRangeP.distance;
                             //경도(longitude)가 X, 위도(latitude)가 Y
                             //double nDis = Math.sqrt(((counterpartyCurPoint.longitude-myRangeP.longitude)*(counterpartyCurPoint.longitude-myRangeP.longitude))+((counterpartyCurPoint.latitude-myRangeP.latitude)*(counterpartyCurPoint.latitude-myRangeP.latitude)));
@@ -966,82 +1008,31 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             Log.w(TAG, "현재거리: " + nDis + "세팅거리: "+sDis);
 
                             if(myRangeP.latitude != 0.0 && myRangeP.longitude != 0.0){
-                                if(!outFlag) { //아직 이탈 안했을 경우
-                                    if (nDis > sDis) { //1000곱하면 단위가 미터임
-                                        outCount++;
-                                    }
+                                if (nDis > sDis) { //1000곱하면 단위가 미터임
+                                    outCount++;
                                 }
                             }
                         }
                     }
 
-                    if(!outFlag) { //아직 이탈 안했을 경우
+                    if(outFlag==false) { //아직 이탈 안했을 경우
                         if (outCount == sCount) { //
-                            outNotification(DEFAULT, 3);//이탈 알림 울리기
+                            outNotification(DEFAULT, 5);//이탈 알림 울리기
+
                             InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
                             reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
-                            outCount = 0;
                         }
                     }
-                    if(outFlag){ //아직 안 돌아간 경우
-                        if(outCount != sCount) {
-                            inNotification(DEFAULT, 4); //도착 알림 울리기
-                            InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
-                            reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
-                        }
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-    }
-
-    ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기
-    private void alertNotification(){
-        if(reference.child("range").child(user.getUid()).orderByKey() != null){
-            reference.child("range").child(user.getUid()).orderByKey(). //장애인 집 주소 가져오기
-                    addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Range myRangeP = new Range();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        myRangeP = ds.getValue(Range.class);
-                    }
-                    if (!snapshot.exists()) {
-                        Log.w(TAG, "보호구역 가져오기 오류");
-                    }
-                    else { //장애인 집 주소 받아오면
-                        double sDis = myRangeP.distance;
-                        //경도(longitude)가 X, 위도(latitude)가 Y
-                        //double nDis = Math.sqrt(((counterpartyCurPoint.longitude-myRangeP.longitude)*(counterpartyCurPoint.longitude-myRangeP.longitude))+((counterpartyCurPoint.latitude-myRangeP.latitude)*(counterpartyCurPoint.latitude-myRangeP.latitude)));
-                        double nDis = cDistance(counterpartyCurPoint.latitude, counterpartyCurPoint.longitude, myRangeP.latitude, myRangeP.longitude);
-                        Log.w(TAG, "현재거리: " + nDis + "세팅거리: "+sDis);
-
-                        if(myRangeP.latitude != 0.0 && myRangeP.longitude != 0.0){
-                            if(!outFlag) { //아직 이탈 안했을 경우
-                                if (nDis > sDis) { //1000곱하면 단위가 미터임
-                                    outNotification(DEFAULT, 3);//이탈 알림 울리기
-                                    InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
-                                    reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
-                                }
-                            }
-                            if(outFlag){ //아직 안 돌아간 경우
-                                if(outFlag){ //출발함
-                                    if(nDis < sDis) {
-                                        inNotification(DEFAULT, 4); //도착 알림 울리기
-                                        InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
-                                        reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
-                                    }
-                                }
+                    if(inFlag==false){
+                        if (outFlag==true) { //아직 안 돌아간 경우
+                            if (outCount != sCount) {
+                                inNotification(DEFAULT, 6); //도착 알림 울리기
+                                InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
+                                reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
                             }
                         }
                     }
+
                 }
 
                 @Override

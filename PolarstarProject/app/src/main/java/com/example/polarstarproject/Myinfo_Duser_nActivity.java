@@ -83,10 +83,10 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         Email = (EditText) findViewById(R.id.mProflEmailN); //이메일
         PhoneNum = (EditText) findViewById(R.id.mProflPhoneNumN); //전화번호
         Birth = (EditText) findViewById(R.id.mProflBirthN); //생년월일
+        
         Address = (TextView) findViewById(R.id.mProflAddressN); //주소
         mProflFdAddN = (Button) findViewById(R.id.mProflFdAddN); // 주소 버튼
         dAddress = (EditText) findViewById(R.id.mProflDetailAddressN); // 상세 주소
-
         mProflBtGenderF = findViewById( R.id.mProflBtGenderFN);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderMN);
         rdgGroup = findViewById( R.id.mProflBtGenderN );
@@ -199,6 +199,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 //Profl.setImageURI(uri);
                 Name.setText(user.name);
                 Email.setText(user.email);
+                mProflPasswordN.setText(user.password);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
                 Address.setText(user.address);
@@ -209,9 +210,11 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 Log.w(TAG, "성별: "+ cSex);
                 if(cSex.equals("여")) {
                     mProflBtGenderF.setChecked(true);
+                    mProflBtGenderM.setEnabled(false);
                 }
                 else {
                     mProflBtGenderM.setChecked(true);
+                    mProflBtGenderF.setEnabled(false);
                 }Log.w(TAG, "선택: "+ mProflBtGenderF.isChecked());
             }
 

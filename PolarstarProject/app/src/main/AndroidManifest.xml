@@ -64,7 +64,9 @@
         <activity android:name=".ManualActivity" />
         <activity
             android:name=".DatePickerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/MySpinnerDatePickerStyle"
+            />
 
         <service android:name=".LocationService"
             android:enabled="true"

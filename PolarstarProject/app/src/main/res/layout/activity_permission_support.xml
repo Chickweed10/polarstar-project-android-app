@@ -209,12 +209,12 @@
         <Button
             android:id="@+id/rqBtAllPermission"
             android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#240070"
+            android:layout_height="40dp"
             android:fontFamily="@font/nanumsquare_aac"
             android:layout_weight="1"
+            android:background="@drawable/ok_button"
+            android:textColor="@drawable/ok_button_text_color"
             android:text="모든 권한 설정하기"
-            android:textColor="@color/white"
             android:textSize="14sp" />
     </LinearLayout>
 

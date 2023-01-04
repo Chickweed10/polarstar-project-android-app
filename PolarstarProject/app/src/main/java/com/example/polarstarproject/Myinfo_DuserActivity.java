@@ -92,7 +92,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         Address = (TextView) findViewById(R.id.mProflAddress); //주소 텍스트
         mProflFdAdd = (Button) findViewById(R.id.mProflFdAdd); // 주소 버튼
         mProflDetailAddress = (EditText) findViewById(R.id.mProflDetailAddress); //상세 주소
-
+        
         mProflBtGenderF = findViewById( R.id.mProflBtGenderF);
         mProflBtGenderM = findViewById( R.id.mProflBtGenderM);
         rdgGroup = findViewById( R.id.mProflBtGender );
@@ -205,6 +205,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 Disabled user = snapshot.getValue(Disabled.class);
                 Name.setText(user.name);
                 Email.setText(user.email);
+                mProflPassword.setText(user.password);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
                 Address.setText(user.address);
@@ -215,9 +216,11 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
                 if(cSex.equals("여")) {
                     mProflBtGenderF.setChecked(true);
+                    mProflBtGenderM.setEnabled(false);
                 }
                 else {
                     mProflBtGenderM.setChecked(true);
+                    mProflBtGenderF.setEnabled(false);
                 }Log.w(TAG, "선택: "+ mProflBtGenderF.isChecked());
 
 
