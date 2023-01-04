@@ -146,7 +146,7 @@
                 android:background="#00ff0000"
                 android:fontFamily="@font/nanumsquare_aab"
                 android:gravity="center"
-                android:text="비밀번호 찾기"
+                android:text="비밀번호 재설정"
                 android:textAlignment="center"
                 android:textColor="#515151"
                 android:textSize="14sp" />
