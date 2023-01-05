@@ -205,7 +205,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 Disabled user = snapshot.getValue(Disabled.class);
                 Name.setText(user.name);
                 Email.setText(user.email);
-                mProflPassword.setText(user.password);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
                 Address.setText(user.address);

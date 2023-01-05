@@ -3,7 +3,6 @@ package com.example.polarstarproject.Domain;
 public class Disabled { //장애인
     public String profileImage;
     public String email;
-    public String password;
     public String name;
     public String phoneNumber;
     public String birth;
@@ -16,12 +15,11 @@ public class Disabled { //장애인
 
     }
 
-    public Disabled(String profileImage, String email, String password, String name,
+    public Disabled(String profileImage, String email, String name,
                     String phoneNumber, String birth, String sex,
                     String address, String detailAddress) {
         this.profileImage = profileImage;
         this.email = email;
-        this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birth = birth;
@@ -44,14 +42,6 @@ public class Disabled { //장애인
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {
