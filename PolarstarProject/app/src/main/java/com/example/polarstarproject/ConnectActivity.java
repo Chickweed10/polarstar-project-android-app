@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -153,7 +154,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     private void matchingUser(String counterpartyCode){
         if(classificationUserFlag == 1) { //내가 장애인이고, 상대방이 보호자일 경우
             Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(counterpartyCode);
-            query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 테이블에서 counterpartyCode 존재 검사
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 테이블에서 myCode 존재 검사
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String counterpartyUID = null;
@@ -162,17 +163,43 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                     }
 
                     if(counterpartyUID != null){ //상대 보호자 코드가 올바를 경우
-                        Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
-                        reference.child("connect").child("disabled").child(user.getUid()).setValue(myConnect);
+                        //이미 상대방과 연결되어 있는지 확인
+                        String finalCounterpartyUID = counterpartyUID;
+                        reference.child("connect").child("guardian").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String value = null;
+                                int flag = 0; //이미 연결된 사용자 토스트 안뜨게 하기 위한 플래그
+                                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                    value = ds.child("counterpartyCode").getValue(String.class);
+                                }
 
-                        Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
-                        reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
+                                if(value == null){ //이미 연결되지 않은 경우
+                                    flag = 1;
+                                    Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
+                                    reference.child("connect").child("disabled").child(user.getUid()).setValue(myConnect);
 
-                        //매칭 성공시 메인 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
-                        startActivity(intent);
-                        finish();
-                        Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
+                                    Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
+                                    reference.child("connect").child("guardian").child(finalCounterpartyUID).setValue(counterpartyConnect);
+
+                                    //매칭 성공시 메인 화면으로 이동
+                                    Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    if(flag == 0){
+                                        Toast.makeText(ConnectActivity.this, "다른 피보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                     }
                     else { //상대 보호자 코드가 올바르지 않을 경우
                         Toast.makeText(ConnectActivity.this, "잘못된 코드를 입력하셨습니다.", Toast.LENGTH_SHORT).show();
@@ -187,7 +214,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
             Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(counterpartyCode);
-            query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 테이블에서 counterpartyCode 존재 검사
+            query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 테이블에서 myCode 존재 검사
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String counterpartyUID = null;
@@ -196,17 +223,43 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                     }
 
                     if(counterpartyUID != null){ //상대 장애인 코드가 올바를 경우
-                        Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
-                        reference.child("connect").child("guardian").child(user.getUid()).setValue(myConnect);
+                        //이미 상대방과 연결되어 있는지 확인
+                        String finalCounterpartyUID = counterpartyUID;
+                        reference.child("connect").child("disabled").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String value = null;
+                                int flag = 0; //이미 연결된 사용자 토스트 안뜨게 하기 위한 플래그
+                                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                    value = ds.child("counterpartyCode").getValue(String.class);
+                                }
 
-                        Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
-                        reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
+                                if(value == null){ //이미 연결되지 않은 경우
+                                    flag = 1;
+                                    Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
+                                    reference.child("connect").child("guardian").child(user.getUid()).setValue(myConnect);
 
-                        //매칭 성공시 메인 화면으로 이동
-                        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
-                        startActivity(intent);
-                        finish();
-                        Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
+                                    Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
+                                    reference.child("connect").child("disabled").child(finalCounterpartyUID).setValue(counterpartyConnect);
+
+                                    //매칭 성공시 메인 화면으로 이동
+                                    Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    if(flag == 0){
+                                        Toast.makeText(ConnectActivity.this, "다른 보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                     }
                     else { //상대 장애인 코드가 올바르지 않을 경우
                         Toast.makeText(ConnectActivity.this, "잘못된 코드를 입력하셨습니다.", Toast.LENGTH_SHORT).show();

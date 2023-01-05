@@ -1,5 +1,7 @@
 package com.example.polarstarproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -204,6 +206,9 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 Address.setText(user.address);
                 dAddress.setText(user.detailAddress);
 
+                Email.setFocusable(false);
+                Birth.setFocusable(false);
+
                 //스피너 라디오 버튼 세팅 가져오기
                 cSex = user.sex;
                 Log.w(TAG, "성별: "+ cSex);
@@ -304,10 +309,50 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
     /////////////////////////////////////////프로필 사진 등록////////////////////////////////////////
     private void gotoAlbum() { //갤러리 이동
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 0);
+        final CharSequence[] oItems = {"앨범에서 사진 선택", "기본 이미지로 변경"};
+
+        AlertDialog.Builder oDialog = new AlertDialog.Builder(this,
+                android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+
+        oDialog.setTitle("프로필 사진").setItems(oItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0: //앨범
+                                Intent albumIntent = new Intent();
+                                albumIntent.setType("image/*");
+                                albumIntent.setAction(Intent.ACTION_GET_CONTENT);
+                                startActivityForResult(albumIntent, 0);
+                                break;
+                            case 1: //기본 프로필
+                                //firebase Storage 삭제
+                                FirebaseStorage storage = FirebaseStorage.getInstance();
+                                StorageReference storageRef = storage.getReference();
+                                StorageReference myPro = storageRef.child("profile").child(user.getUid());
+                                if (myPro != null) { //프로필 삭제
+                                    myPro.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "firebase Storage delete");
+                                            }
+                                        }
+                                    });
+                                    //기본 프로필 띄우기
+                                    StorageReference defaultPro = storageRef.child("profile").child("default.png");
+                                    defaultPro.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            //이미지 로드 성공시
+                                            Glide.with(Myinfo_Duser_nActivity.this).load(uri).into(Profl);
+                                        }
+                                    });
+                                }
+                        }
+                    }
+                })
+                //.setCancelable(false)
+                .show();
     }
 
     private void firebaseImageUpload(String pathUri) { //파이어베이스 이미지 등록
@@ -337,6 +382,11 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 Glide.with(getApplicationContext())
                         .load(intent.getData())
                         .into(Profl); //버튼에 이미지 삽입
+
+                if(imageUri != null){ //프로필 수정 했을 시
+                    pathUri = "profile/"+mynUid;
+                    firebaseImageUpload(pathUri); //이미지 등록
+                }
             }
         } else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
             if (resultCode == RESULT_OK) {
@@ -370,10 +420,6 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 mDatabase.child("guardian").child(mynUid).child("birth").setValue(Birth.getText().toString());
                 mDatabase.child("guardian").child(mynUid).child("sex").setValue(sex);
 
-                if(imageUri != null){ //프로필 수정 했을 시
-                    pathUri = "profile/"+mynUid;
-                    firebaseImageUpload(pathUri); //이미지 등록
-                }
                 break;
         }
     }

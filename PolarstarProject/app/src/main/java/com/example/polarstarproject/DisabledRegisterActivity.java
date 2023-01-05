@@ -109,7 +109,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         joinName = (EditText) findViewById(R.id.joinName); //이름
         joinPhoneNum = (EditText) findViewById(R.id.joinPhoneNum); //전화번호
         joinPNReq = (Button) findViewById(R.id.joinPNReq); //전화번호 인증
-        joinPNCk = (EditText) findViewById(R.id.joinPNCk); //인증번호 요청
+        joinPNCk = (EditText) findViewById(R.id.joinPNCk); //인증번호
         joinPNReqCk = (Button) findViewById(R.id.joinPNReqCk); //인증번호 확인
         joinBirth = (EditText) findViewById(R.id.joinBirth); //생년월일
         joinBtGender = findViewById(R.id.joinBtGender); //성별
@@ -118,6 +118,8 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         //joinDrDisG = (Spinner)findViewById(R.id.joinDrDisG); //장애등급
         joinFdAdd = (Button) findViewById(R.id.joinFdAdd); //우편번호 찾기
         joinBt = (Button) findViewById(R.id.joinBt); //회원가입
+
+        joinPNCk.setEnabled(false); //초기 인증번호란 비활성화
 
         joinBtProfl.setOnClickListener(this);
         joinBtEmailCk.setOnClickListener(this);
@@ -317,7 +319,9 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
         PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
-                Toast.makeText(DisabledRegisterActivity.this, "인증번호가 전송되었습니다. 60초 이내에 입력해주세요.",
+                joinPhoneNum.setEnabled(false); //전화번호란 비활성화
+                joinPNCk.setEnabled(true); //인증번호란 활성화
+                Toast.makeText(DisabledRegisterActivity.this, "인증번호가 전송되었습니다." + '\n' + "60초 이내에 입력해주세요.",
                         Toast.LENGTH_LONG).show();
                 Log.d(TAG, "인증번호 전송 성공");
             }
@@ -332,8 +336,11 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
             @Override
             public void onCodeSent(@NonNull String verificationId,
                                    @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                joinPhoneNum.setEnabled(false); //전화번호란 비활성화
+                joinPNCk.setEnabled(true); //인증번호란 활성화
+                Toast.makeText(DisabledRegisterActivity.this, "인증번호가 전송되었습니다." + '\n' + "60초 이내에 입력해주세요.",
+                        Toast.LENGTH_LONG).show();
                 Log.d(TAG, "onCodeSent:" + verificationId);
-
                 VID = verificationId;
             }
         };
@@ -363,6 +370,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                             Log.d(TAG, "인증 성공");
                             Toast.makeText(DisabledRegisterActivity.this, "인증 성공",
                                     Toast.LENGTH_SHORT).show();
+                            joinPNCk.setEnabled(false); //초기 인증번호란 비활성화
                             certificationFlag = 1; //인증번호 flag 값 1로 변경
                         } else { //인증번호 불일치
                             Toast.makeText(DisabledRegisterActivity.this, "인증 실패",
