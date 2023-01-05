@@ -624,17 +624,17 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
-    public void counterpartyLocationScheduler(){ //2초마다 상대방 DB 검사 후, 위치 띄우기
+    public void counterpartyLocationScheduler(){ //20초마다 상대방 DB 검사 후, 위치 띄우기
         Timer timer = new Timer();
 
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                //2초마다 실행
+                //20초마다 실행
                 classificationUser(user.getUid());
             }
         };
-        timer.schedule(timerTask,0,2000);
+        timer.schedule(timerTask,0,20000);
     }
 
     private void startDisconnectDialog(){

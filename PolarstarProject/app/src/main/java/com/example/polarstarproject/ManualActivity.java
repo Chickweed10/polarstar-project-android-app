@@ -71,7 +71,7 @@ public class ManualActivity extends AppCompatActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ManualActivity.this, MainActivity.class));
+                startActivity(new Intent(ManualActivity.this, RealTimeLocationActivity.class));
                 finish();
             }
         });
@@ -87,7 +87,7 @@ public class ManualActivity extends AppCompatActivity {
                 }
                 else {
                     // 마지막 페이지라면 메인페이지로 이동
-                    startActivity(new Intent(ManualActivity.this, MainActivity.class));
+                    startActivity(new Intent(ManualActivity.this, RealTimeLocationActivity.class));
                     finish();
                 }
             }
