@@ -418,7 +418,7 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                                 firebaseImageUpload(pathUri); //이미지 등록
                             }
 
-                            Disabled disabled = new Disabled(pathUri, email, password, name,
+                            Disabled disabled = new Disabled(pathUri, email, name,
                                     phoneNumber, birth, sex, address, detailAddress); //장애인 객체 생성
                             reference.child("disabled").child(uid).setValue(disabled); //DB에 장애인 정보 삽입
 
