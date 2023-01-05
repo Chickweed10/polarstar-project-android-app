@@ -20,14 +20,17 @@
         <EditText
             android:id="@+id/Date"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
+            android:background="@null"
             android:clickable="true"
             android:focusable="false"
             android:gravity="center"
             android:text="Date"
+            android:fontFamily="@font/nanumsquare_aac"
             android:textSize="30sp" />
 
         <!--지도 띄우기 위한 fragment-->
