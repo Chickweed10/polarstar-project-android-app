@@ -166,7 +166,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         //다이얼로그 초기 설정
@@ -197,7 +196,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         // 위치를 반환하는 구현체인 FusedLocationSource 생성
         mLocationSource = new FusedLocationSource(this, PERMISSION_REQUEST_CODE);
 
-        counterpartyLocationScheduler(); //스케쥴러 실행
+        classificationUser(user.getUid()); //상대방 위치 띄우기
 
         ///////////////////////////////툴바 & 네비게이션 바////////////////////////////////
         toolbar = findViewById(R.id.toolbar);
@@ -469,8 +468,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             @Override
             public void onClick(View view) {
                 // 원하는 기능 구현
-                terminationDialog.dismiss(); // 다이얼로그 닫기
-                finish();
+                terminationDialog.dismiss(); //다이얼로그 닫기
+                moveTaskToBack(true); //태스크를 백그라운드로 이동
+                finishAffinity(); //스택 비우기
+                finish(); //액티비티 종료
             }
         });
     }
@@ -512,7 +513,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     mNaverMap.moveCamera(cameraUpdate);
                 }
                 firebaseUpdateLocation(user, location.getLatitude(), location.getLongitude());
-
             }
         });
 
@@ -646,6 +646,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Log.w(TAG, "함수 실행1");
         Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
         disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -730,6 +731,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
+        Log.w(TAG, "함수 실행2");
         if(classificationUserFlag == 1) { //내가 피보호자고, 상대방이 보호자일 경우
             Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
@@ -797,6 +799,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////실시간 위치 마커////////////////////////////////////////
     private void counterpartyMarker() {
+        Log.w(TAG, "함수 실행3");
         reference.child("realtimelocation").orderByKey().equalTo(counterpartyUID). //상대방 실시간 위치 검색
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -810,6 +813,57 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
                 else {
                     counterpartyCurPoint = new LatLng(realTimeLocation.latitude, realTimeLocation.longitude);
+
+                    if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
+                        if(counterpartyMarker == null){//마커가 없었을 경우
+                            Log.w(TAG, "마커 실행");
+                            counterpartyMarker = new Marker();
+                            counterpartyMarker.setPosition(counterpartyCurPoint);
+                            counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
+                            counterpartyMarker.setZIndex(0); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
+                            counterpartyMarker.setHideCollidedMarkers(true); //마커 겹치면 숨기기
+                            counterpartyMarker.setMap(mNaverMap);
+                            counterpartyLocationScheduler(); //상대 위치 스케쥴러 실행
+                        }
+                        else if(counterpartyMarker != null) { //마커가 존재했던 경우
+                            Log.w(TAG, "마커 실행");
+                            counterpartyMarker.setMap(null); //마커삭제
+                            counterpartyMarker.setPosition(counterpartyCurPoint);
+                            counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
+                            counterpartyMarker.setZIndex(0); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
+                            counterpartyMarker.setHideCollidedMarkers(true); //마커 겹치면 숨기기
+                            counterpartyMarker.setMap(mNaverMap);
+                        }
+
+                        if(classificationUserFlag == 2){ //보호자일 경우 //////////////////////////////장애인 위치 실시간으로 가져오는데
+                            reference.child("disabled").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
+                                    addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    Disabled disabled = new Disabled();
+                                    for(DataSnapshot ds : snapshot.getChildren()){
+                                        disabled = ds.getValue(Disabled.class);
+                                    }
+                                    if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
+                                        counterpartyName = disabled.getName();
+                                        departureArrivalNotification(); //출도착 알림
+                                        trackingStatusCheck(); //추적불가 알림
+                                        inOutCheck(); // 복귀이탈 알림
+                                    }
+                                    else {
+                                        Log.w(TAG, "상대방 이름 불러오기 오류");
+                                        return;
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                        }
+                    }
+
                     return;
                 }
             }
@@ -819,53 +873,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
-
-        if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
-            if(counterpartyMarker == null){//마커가 없었을 경우
-                counterpartyMarker = new Marker();
-                counterpartyMarker.setPosition(counterpartyCurPoint);
-                counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
-                counterpartyMarker.setZIndex(0); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
-                counterpartyMarker.setHideCollidedMarkers(true); //마커 겹치면 숨기기
-                counterpartyMarker.setMap(mNaverMap);
-            }
-            else if(counterpartyMarker != null) { //마커가 존재했던 경우
-                counterpartyMarker.setMap(null); //마커삭제
-                counterpartyMarker.setPosition(counterpartyCurPoint);
-                counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
-                counterpartyMarker.setZIndex(0); //Z 인덱스 설정해서 마커끼리 겹칠때 오류 방지
-                counterpartyMarker.setHideCollidedMarkers(true); //마커 겹치면 숨기기
-                counterpartyMarker.setMap(mNaverMap);
-            }
-
-            if(classificationUserFlag == 2){ //보호자일 경우 //////////////////////////////장애인 위치 실시간으로 가져오는데
-                reference.child("disabled").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
-                        addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Disabled disabled = new Disabled();
-                        for(DataSnapshot ds : snapshot.getChildren()){
-                            disabled = ds.getValue(Disabled.class);
-                        }
-                        if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
-                            counterpartyName = disabled.getName();
-                            departureArrivalNotification(); //출도착 알림
-                            trackingStatusCheck(); //추적불가 알림
-                            inOutCheck(); // 복귀이탈 알림
-                        }
-                        else {
-                            Log.w(TAG, "상대방 이름 불러오기 오류");
-                            return;
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-            }
-        }
     }
 
     public void departureArrivalNotification(){ //출도착 알림

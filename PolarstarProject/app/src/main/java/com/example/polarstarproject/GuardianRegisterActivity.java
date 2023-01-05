@@ -110,6 +110,8 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         joinFdAddN = (Button) findViewById(R.id.joinFdAddN); //우편번호 찾기
         joinBtN = (Button) findViewById(R.id.joinBtN); //회원가입
 
+        joinPNCkN.setEnabled(false); //초기 인증번호란 비활성화
+
         joinBtProflN.setOnClickListener(this);
         joinBtEmailCkN.setOnClickListener(this);
         joinPNReqN.setOnClickListener(this);
@@ -292,7 +294,9 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
-                Toast.makeText(GuardianRegisterActivity.this, "인증번호가 전송되었습니다. 60초 이내에 입력해주세요.",
+                joinPhoneNumN.setEnabled(false); //전화번호란 비활성화
+                joinPNCkN.setEnabled(true); //인증번호란 활성화
+                Toast.makeText(GuardianRegisterActivity.this, "인증번호가 전송되었습니다." + '\n' + "60초 이내에 입력해주세요.",
                         Toast.LENGTH_LONG).show();
                 Log.d(TAG, "인증번호 전송 성공");
             }
@@ -307,8 +311,11 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             @Override
             public void onCodeSent(@NonNull String verificationId,
                                    @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                joinPhoneNumN.setEnabled(false); //전화번호란 비활성화
+                joinPNCkN.setEnabled(true); //인증번호란 활성화
+                Toast.makeText(GuardianRegisterActivity.this, "인증번호가 전송되었습니다." + '\n' + "60초 이내에 입력해주세요.",
+                        Toast.LENGTH_LONG).show();
                 Log.d(TAG, "onCodeSent:" + verificationId);
-
                 VID = verificationId;
             }
         };
@@ -338,6 +345,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                             Log.d(TAG, "인증 성공");
                             Toast.makeText(GuardianRegisterActivity.this, "인증 성공",
                                     Toast.LENGTH_SHORT).show();
+                            joinPNCkN.setEnabled(false); //초기 인증번호란 비활성화
                             certificationFlag = 1; //인증번호 flag 값 1로 변경
                         } else { //인증번호 불일치
                             Toast.makeText(GuardianRegisterActivity.this, "인증 실패",
