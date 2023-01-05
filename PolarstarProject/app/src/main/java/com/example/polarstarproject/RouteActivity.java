@@ -127,7 +127,12 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         /////////////////////////////////////////달력///////////////////////////////////
         EditText et_Date = (EditText) findViewById(R.id.Date);
         Calendar cal = Calendar.getInstance();
-        et_Date.setText(cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.get(Calendar.DATE));
+
+        String calYear = String.format("%02d", cal.get(Calendar.YEAR));
+        String calMONTH = String.format("%02d", cal.get(Calendar.MONTH) + 1);
+        String calDATE = String.format("%02d", cal.get(Calendar.DATE));
+
+        et_Date.setText(calYear + "-" + calMONTH + "-" + calDATE);
         // Calendar cal~ et_Date.setText, 날짜를 출력하는 EditText에 오늘 날짜 설정.
         et_Date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -365,7 +370,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void updateLabel() {
-        String myFormat = "yyyy/MM/dd";    // 출력형식   1900/12/31
+        String myFormat = "yyyy-MM-dd";    // 출력형식   1900/12/31
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.KOREA);
 
         EditText et_date = (EditText) findViewById(R.id.Date);
