@@ -199,7 +199,6 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 //Profl.setImageURI(uri);
                 Name.setText(user.name);
                 Email.setText(user.email);
-                mProflPasswordN.setText(user.password);
                 PhoneNum.setText(user.phoneNumber);
                 Birth.setText(user.birth);
                 Address.setText(user.address);
