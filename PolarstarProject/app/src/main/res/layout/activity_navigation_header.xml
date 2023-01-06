@@ -69,7 +69,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1">
 
 
@@ -78,70 +78,150 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/item_myinfo"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00FF0000"
-                android:drawableLeft="@drawable/ic_baseline_account_circle_24"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:gravity="center|left"
-                android:paddingStart="20dp"
-                android:text="      내 정보"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/item_otherinfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00FF0000"
-                android:drawableLeft="@drawable/ic_baseline_person_search_24"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:text="      상대 정보"
-                android:gravity="center|left"
-                android:paddingStart="20dp"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                <Button
+                    android:id="@+id/item_myinfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FF0000"
+                    android:drawableLeft="@drawable/ic_baseline_account_circle_24"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:gravity="center|left"
+                    android:paddingStart="20dp"
+                    android:text="      내 정보"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
 
-            <Button
-                android:id="@+id/item_route"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00FF0000"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:text="      위치 기록"
-                android:drawableLeft="@drawable/ic_baseline_insert_invitation_24"
-                android:gravity="center|left"
-                android:paddingStart="20dp"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="사용자의 정보를 확인할 수 있습니다."
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp"
+                    android:textColorHint="@color/dot_light_manual"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/item_range"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00FF0000"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:text="      보호구역"
-                android:drawableLeft="@drawable/ic_baseline_edit_location_24"
-                android:gravity="center|left"
-                android:paddingStart="20dp"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/item_setting"
+                <Button
+                    android:id="@+id/item_otherinfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FF0000"
+                    android:drawableLeft="@drawable/ic_baseline_person_search_24"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:gravity="center|left"
+                    android:paddingStart="20dp"
+                    android:text="      상대 정보"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="연결된 상대정보를 확인할 수 있습니다."
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp"
+                    android:textColorHint="@color/dot_light_manual"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00FF0000"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:text="      설정"
-                android:drawableLeft="@drawable/ic_baseline_settings_24"
-                android:gravity="center|left"
-                android:paddingStart="20dp"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/item_route"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FF0000"
+                    android:drawableLeft="@drawable/ic_baseline_insert_invitation_24"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:gravity="center|left"
+                    android:paddingStart="20dp"
+                    android:text="      위치 기록"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="피보호자의 기록된 위치를 조회할 수 있습니다."
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp"
+                    android:textColorHint="@color/dot_light_manual"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/item_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FF0000"
+                    android:drawableLeft="@drawable/ic_baseline_edit_location_24"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:gravity="center|left"
+                    android:paddingStart="20dp"
+                    android:text="      보호구역"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="피보호자의 보호구역을 설정할 수 있습니다."
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp"
+                    android:textColorHint="@color/dot_light_manual"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/item_setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FF0000"
+                    android:drawableLeft="@drawable/ic_baseline_settings_24"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:gravity="center|left"
+                    android:paddingStart="20dp"
+                    android:text="      설정"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="상대와 연결끊기, 로그아웃, 회원탈퇴를 할 수 있습니다."
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp"
+                    android:textColorHint="@color/dot_light_manual"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
 
         </LinearLayout>

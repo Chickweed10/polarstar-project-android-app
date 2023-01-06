@@ -100,7 +100,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:text="(2) 상대 정보를 확인"
                     android:textSize="16sp" />
@@ -108,33 +108,28 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:text="(3) 경로를 기록하여 위치 기록 내역 확인"
                     android:textSize="16sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="(4) 보호구역 설정  "
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:text="(4) 보호구역 설정  "
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:text="※(4) - 보호자만 가능"
-                        android:textColor="#2748FF"
-                        android:textStyle="bold"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:text="※(4) - 보호자만 가능"
+                    android:textColor="#2748FF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </LinearLayout>
