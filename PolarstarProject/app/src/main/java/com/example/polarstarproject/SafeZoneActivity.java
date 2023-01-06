@@ -167,6 +167,22 @@ public class SafeZoneActivity extends AppCompatActivity {
                 });
             }
 
+            //뷰 아이템 클릭 이벤트
+            @Override
+            public void onItemClick(View v, int position) {
+                String name = mArrayList.get(position).getName();
+                String address = mArrayList.get(position).getAddress();
+                int dis = mArrayList.get(position).getDis();
+
+                Intent intent = new Intent(getApplicationContext(), SafeZoneConfirmActivity.class);
+                intent.putExtra("rName",name); // 보호구역이름 넘기기
+                intent.putExtra("rAddress",address);
+                intent.putExtra("rDis",dis);
+
+                startActivity(intent);
+                finish(); //화면 이동
+            }
+
         });
 
     }

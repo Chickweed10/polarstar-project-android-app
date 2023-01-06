@@ -1,20 +1,13 @@
 package com.example.polarstarproject;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,19 +17,12 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.Disabled;
+import com.example.polarstarproject.Domain.Guardian;
 import com.example.polarstarproject.Domain.Range;
-import com.example.polarstarproject.Domain.RealTimeLocation;
-import com.example.polarstarproject.Domain.SafeZone;
-import com.example.polarstarproject.Domain.TrackingStatus;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -54,7 +40,6 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.CircleOverlay;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.util.FusedLocationSource;
-import com.naver.maps.map.util.MarkerIcons;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,11 +51,10 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class RangeSettingActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
+public class SafeZoneConfirmActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     Toolbar toolbar;
-    EditText rName;
-    TextView rangeAddress;
-    Button btnSet, btnAdd;
+    TextView rNameTextview, rangeAddress;
+    Button btnSet;
     SeekBar seekBar;
     TextView tvDis;
 
@@ -94,7 +78,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     CameraUpdate cameraUpdate; //지도 카메라
 
     AddressGeocoding addressGeocoding; //상대 집 위치
-            
+
     Marker counterpartyMarker; //상대방 마커
     LatLng counterpartyCurPoint; //상대방 위치
 
@@ -113,29 +97,40 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
     CircleOverlay circle; //서클 오버레이
     public int rad = 0; //반경
 
+    public String rName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rangesetting);
+        setContentView(R.layout.activity_safezoneconfirm);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
         getSupportActionBar().setTitle("보호구역");
 
-        rName = findViewById(R.id.rName);
-        //rName.setText("보호구역");
+        rNameTextview = findViewById(R.id.rNameTextview);
         seekBar = findViewById(R.id.seekBar);
         tvDis = findViewById(R.id.tvDis);
         rangeAddress = findViewById(R.id.rangeAddress);
         btnSet = findViewById(R.id.btnSet);
-        btnAdd = findViewById(R.id.btnAdd);
 
         btnSet.setOnClickListener(this);
-        btnAdd.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        //보호구역 받아와서 넣기
+        //보호구역 받기
+        Intent i = getIntent();
+        rName = i.getStringExtra("rName");
+        String rAddress = i.getStringExtra("rAddress");
+        int rDis = i.getIntExtra("rDis",0);
+        Log.w(TAG, "rDis: "+ rDis);
+
+        rNameTextview.setText(rName);
+        rangeAddress.setText(rAddress);
+        tvDis.setText(rDis+" m");
 
         //네이버 지도 객체 생성
         FragmentManager fm = getSupportFragmentManager();
@@ -154,37 +149,6 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
         classificationUser(user.getUid());
 
-        // 반경 거리 설정하기
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                rad = seekBar.getProgress();
-                tvDis.setText(String.format("%d M", rad));
-
-                if (circle != null) { //이미 존재했던 경우
-                    circle.setMap(null);
-                }
-                //반경 원
-                circle = new CircleOverlay();
-                circle.setCenter(counterpartyCurPoint);
-                circle.setRadius(rad); //반경
-                circle.setColor(Color.parseColor("#880000ff")); //원 내부 색
-                circle.setOutlineWidth(5); //원 테두리
-                circle.setOutlineColor(Color.BLUE); //원 테두리 색
-                circle.setMap(mNaverMap);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                //reference.child("range").child(user.getUid()).child(rName.getText().toString()).child("distance").setValue(rad);
-
-            }
-        });
     }
 
     /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
@@ -259,10 +223,10 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                 }
 
                 if(counterpartyUID != null  && !counterpartyUID.isEmpty()){
-                    counterpartyMarker();
+                    mapMarker();
                 }
                 else {
-                    Toast.makeText(RangeSettingActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SafeZoneConfirmActivity.this, "오류", Toast.LENGTH_SHORT).show();
                     Log.w(TAG, "상대방 인적사항 확인 오류");
                 }
             }
@@ -274,54 +238,10 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         });
     }
 
-    /////////////////////////////////////////상대방 주소 기준 위치 마커////////////////////////////////////////
-    private void counterpartyMarker() {
-        Query query = reference.child("addressgeocoding").orderByKey().equalTo(counterpartyUID); //장애인 테이블 조회
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                addressGeocoding = new AddressGeocoding();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    addressGeocoding = ds.getValue(AddressGeocoding.class);
-                }
-                if (!dataSnapshot.exists()) {
-                    Log.w(TAG, "상대방 집 위치 오류");
-                }
-                else {
-                    counterpartyCurPoint = new LatLng(addressGeocoding.getAddressLatitude(), addressGeocoding.getAddressLongitude()); //상대 집 주소
-                    cameraUpdate = CameraUpdate.scrollTo(counterpartyCurPoint)
-                            .animate(CameraAnimation.Linear); //카메라 애니메이션
-                    mNaverMap.moveCamera(cameraUpdate); //카메라 이동
-
-                    if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
-                        if (counterpartyMarker == null) {//마커가 없었을 경우
-                            counterpartyMarker = new Marker();
-                            counterpartyMarker.setPosition(counterpartyCurPoint);
-                            counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
-                            counterpartyMarker.setMap(mNaverMap);
-                        }
-                        else if (counterpartyMarker != null) { //마커가 존재했던 경우
-                            counterpartyMarker.setMap(null); //마커삭제
-                            counterpartyMarker.setPosition(counterpartyCurPoint);
-                            counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
-                            counterpartyMarker.setMap(mNaverMap);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
-    ////////////////////////////////////임시 저장된 주소지로 이동한 마커/////////////////////////////////////////////
+    ////////////////////////////////////보호구역 주소지로 이동한 마커/////////////////////////////////////////////
     private void mapMarker() {
-        if(reference.child("tempRange").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()) != null){
-            reference.child("tempRange").child(user.getUid()).orderByKey().equalTo(rName.getText().toString()). //저장명으로 접근
+        if(reference.child("range").child(user.getUid()).orderByKey().equalTo(rName) != null){
+            reference.child("range").child(user.getUid()).orderByKey().equalTo(rName). //저장명으로 접근
                     addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -349,20 +269,22 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                                 counterpartyMarker.setMap(null); //마커삭제
                                 counterpartyMarker.setPosition(counterpartyCurPoint);
                                 counterpartyMarker.setMap(mNaverMap);
-
-                                //cir.radius(0);
-                                if (circle != null) { //이미 존재했던 경우
-                                    circle.setMap(null);
-                                }
-                                //반경 원
-                                circle = new CircleOverlay();
-                                circle.setCenter(counterpartyCurPoint);
-                                circle.setRadius(myRangeP.getDis()); //반경
-                                circle.setColor(Color.parseColor("#880000ff")); //원 내부 색
-                                circle.setOutlineWidth(5); //원 테두리
-                                circle.setOutlineColor(Color.BLUE); //원 테두리 색
-                                circle.setMap(mNaverMap);
                             }
+                            //cir.radius(0);
+                            if (circle != null) { //이미 존재했던 경우
+                                circle.setMap(null);
+                            }
+                            //반경 원
+                            circle = new CircleOverlay();
+                            circle.setCenter(counterpartyCurPoint);
+                            circle.setRadius(myRangeP.getDis()); //반경
+
+                            Log.w(TAG, "반경: "+ myRangeP.getDis());
+
+                            circle.setColor(Color.parseColor("#880000ff")); //원 내부 색
+                            circle.setOutlineWidth(5); //원 테두리
+                            circle.setOutlineColor(Color.BLUE); //원 테두리 색
+                            circle.setMap(mNaverMap);
                         }
                         return;
                     }
@@ -376,27 +298,6 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호
-            if (resultCode == RESULT_OK) {
-                String data = intent.getExtras().getString("data");
-                if(data != null) {
-                    rangeAddress.setText(data);
-                    new Thread(() -> {
-                        geoC(data.substring(7));
-                        //여기서 파이어베이스에 저장하고
-                        Range tempRange = new Range(searchAddressLat, searchAddressLng, rad);
-                        Log.w(TAG, "로그: "+ searchAddressLat+searchAddressLng+rad);
-                        reference.child("tempRange").child(user.getUid()).child(rName.getText().toString()).setValue(tempRange);
-                        mapMarker();
-                    }).start();
-                }
-            }
-        }
-    }
 
     public void geoC(String address) { //주소를 위도 경도로 바꿔줌
         try {
@@ -452,81 +353,19 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
             e.printStackTrace();
         }
     }
-    public void Save(){
-        Range myRange = new Range(searchAddressLat, searchAddressLng, rad);
-        if (searchAddressLat != 0 && searchAddressLng != 0) { // 주소 검색 안하면 저장 안 되게
-            reference.child("range").child(user.getUid()).child(rName.getText().toString()).setValue(myRange)
-                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) { //보호구역 설정 성공
-                                Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
-                            } else { //보호구역 설정 실패
-                                Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-            SafeZone sZone = new SafeZone(rName.getText().toString(), rangeAddress.getText().toString(), rad);
-            reference.child("safezone").child(user.getUid()).child(rName.getText().toString()).setValue(sZone)
-                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) { //보호구역 설정 성공
-                                Toast.makeText(getApplicationContext(), "보호구역 설정 완료", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
-                                startActivity(intent);
-                            } else { //보호구역 설정 실패
-                                Toast.makeText(getApplicationContext(), "보호구역 설정 실패", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-            reference.child("tempRange").child(user.getUid()).setValue(null);
-
-        } else { //보호구역 설정 실패
-            Toast.makeText(getApplicationContext(), "주소를 검색해주세요.", Toast.LENGTH_SHORT).show();
-        }
-
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnAdd: //우편번호 검색
-                if(rName.getText() != null && !rName.getText().toString().isEmpty()){ // 보호구역 이름 없으면 못 누름
-                    Log.w(TAG, "rName: "+ rName.getText());
-                    Intent i = new Intent(RangeSettingActivity.this, WebViewActivity.class);
-                    startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
-                    break;
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "보호구역 이름이 없습니다.", Toast.LENGTH_SHORT).show();//토스메세지 출력
-                }
 
             case R.id.btnSet:
-                reference.child("safezone").child(user.getUid()).child(rName.getText().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        SafeZone value = snapshot.getValue(SafeZone.class);
-
-                        if(value!=null){
-                            Toast.makeText(getApplicationContext(),"저장명은 중복될 수 없습니다.",Toast.LENGTH_SHORT).show();//토스메세지 출력
-                        }
-                        else{
-                            Save();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // 디비를 가져오던중 에러 발생 시
-                        //Log.e("MainActivity", String.valueOf(databaseError.toException())); // 에러문 출력
-                    }
-                });
+                Intent intent = new Intent(getApplicationContext(), SafeZoneActivity.class);
+                startActivity(intent);
+                finish(); //화면 이동
                 break;
 
 
         }
     }
 }
+
