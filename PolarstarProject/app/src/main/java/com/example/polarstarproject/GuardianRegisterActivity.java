@@ -405,10 +405,6 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                                     phoneNumber, birth, sex, address, detailAddress); //보호자 객체 생성
                             reference.child("guardian").child(uid).setValue(guardian); //DB에 보호자 정보 삽입
 
-                            //DB에 저장되어있는 플래그 초기화
-                            EmailVerified emailVerified = new EmailVerified(false);
-                            reference.child("emailverified").child(uid).setValue(emailVerified); //이메일 유효성 초기화
-
                             //연결 코드 생성
                             createConnectionCode(uid);
 

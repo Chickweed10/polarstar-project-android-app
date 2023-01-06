@@ -87,6 +87,6 @@
             android:layout_marginHorizontal="20dp"
             android:fontFamily="@font/nanumsquare_aab"
             android:hint=" * [이어진 사람과 연결 끊기] 시 끊어지는 데에 일정 시간 소요될 수 있습니다."
-            android:textSize="12ps"/>
+            android:textSize="12sp"/>
 
 </LinearLayout>
