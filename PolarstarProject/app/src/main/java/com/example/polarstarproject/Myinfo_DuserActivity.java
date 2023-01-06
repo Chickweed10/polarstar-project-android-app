@@ -48,9 +48,9 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, PhoneNum, Birth, mProflDetailAddress;
-    TextView Address;
-    Button Bt, mProflBtEmailCk, mProflBtChn, mProflBtPWChage, mProflFdAdd;
+    EditText Name, Email, Birth, mProflDetailAddress;
+    TextView PhoneNum, Address;
+    Button Bt, mProflBtChn, mProflBtPWChage, mProflFdAdd;
     String sex,  cSex;
     //Spinner DrDisG;
     RadioGroup rdgGroup;
@@ -88,7 +88,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
         Name = (EditText) findViewById(R.id.mProflName); //이름
         Email = (EditText) findViewById(R.id.mProflEmail); //이메일
-        PhoneNum = (EditText) findViewById(R.id.mProflPhoneNum); //전화번호
+        PhoneNum = (TextView) findViewById(R.id.mProflPhoneNum); //전화번호
         Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
 
         Address = (TextView) findViewById(R.id.mProflAddress); //주소 텍스트
@@ -115,11 +115,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
         mProflBtChn = (Button) findViewById(R.id.mProflBtChn); //프로필 사진
         mProflBtChn.setOnClickListener(this);
-
-        mProflBtEmailCk = (Button) findViewById(R.id.mProflBtEmailCk); //이메일 인증
-        mProflBtEmailCk.setOnClickListener(this);
-
-        emailVerifiedButton(); //이메일 인증 버튼 활성화 유무
 
         user = FirebaseAuth.getInstance().getCurrentUser(); //현재 로그인한 유저
         myUid = user.getUid(); // 이 유저 uid 가져오기
@@ -238,84 +233,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
         });
     }
 
-    /////////////////////////////////////////이메일 인증////////////////////////////////////////
-    @Override
-    protected void onStart(){
-        super.onStart();
-
-        if(user.isEmailVerified()) {
-            EmailVerified emailVerified = new EmailVerified(true);
-            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
-
-            mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
-
-            Log.d(TAG, "메일 인증 성공");
-        }
-        else{
-            EmailVerified emailVerified = new EmailVerified(false);
-            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
-
-            mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
-
-            Log.d(TAG, "메일 인증 실패");
-        }
-    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-
-        if(user.isEmailVerified()) {
-            EmailVerified emailVerified = new EmailVerified(true);
-            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
-
-            mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
-
-            Log.d(TAG, "메일 인증 성공");
-        }
-        else{
-            EmailVerified emailVerified = new EmailVerified(false);
-            mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
-
-            mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
-
-            Log.d(TAG, "메일 인증 실패");
-        }
-    }
-
-
-    private void emailVerifiedButton(){
-        if(user.isEmailVerified()){
-            mProflBtEmailCk.setEnabled(false);
-        }
-        else{
-            mProflBtEmailCk.setEnabled(true);
-        }
-    }
-
-    private void emailAuthentication(){
-        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()) {
-                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일을 전송하였습니다.", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "인증 메일 전송 성공");
-
-                    mProflBtEmailCk.setEnabled(false); //이메일 인증 버튼 비활성화
-                }
-                else {
-                    EmailVerified emailVerified = new EmailVerified(false);
-                    mDatabase.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
-
-                    mProflBtEmailCk.setEnabled(true); //이메일 인증 버튼 활성화
-
-                    Toast.makeText(Myinfo_DuserActivity.this, "인증 메일을 전송하지 못했습니다.", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "인증 메일 전송 실패");
-                }
-            }
-        });
-    }
-
     /////////////////////////////////////////프로필 사진 등록////////////////////////////////////////
     private void gotoAlbum() { //갤러리 이동
         final CharSequence[] oItems = {"앨범에서 사진 선택", "기본 이미지로 변경"};
@@ -414,9 +331,6 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.mProflBtEmailCk: //이메일 인증 버튼 클릭 시
-                emailAuthentication(); //이메일 인증 함수 호출
-                break;
             case R.id.mProflBtChn: //프로필 이미지 버튼 클릭 시
                 gotoAlbum(); //
                 break;

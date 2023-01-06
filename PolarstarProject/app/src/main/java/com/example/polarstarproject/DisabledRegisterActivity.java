@@ -439,9 +439,6 @@ public class DisabledRegisterActivity extends AppCompatActivity implements View.
                             }).start();
 
                             //DB에 저장되어있는 플래그들 초기화
-                            EmailVerified emailVerified = new EmailVerified(false);
-                            reference.child("emailverified").child(uid).setValue(emailVerified); //이메일 유효성 초기화
-
                             DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, false);
                             reference.child("departurearrivalstatus").child(uid).setValue(departureArrivalStatus); //출도착 플래그 초기화
 
