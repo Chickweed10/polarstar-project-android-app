@@ -79,4 +79,14 @@
             android:layout_height="2px"
             android:background="#B3B3B3" />
 
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginHorizontal="20dp"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:hint=" * [이어진 사람과 연결 끊기] 시 끊어지는 데에 일정 시간 소요될 수 있습니다."
+            android:textSize="12ps"/>
+
 </LinearLayout>

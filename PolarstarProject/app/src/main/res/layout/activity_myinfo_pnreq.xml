@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/background_color"
+    tools:context=".Myinfo_Duser_nActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nanumsquare_aac"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <TextView
+        android:id="@+id/textView38"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:text="본인확인이 필요한 상황에 사용할 전화번호 입니다."
+        android:textSize="14sp" />
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/editTextNumberPassword2"
+                        android:layout_width="200dp"
+                        android:layout_height="50dp"
+                        android:ems="10"
+                        android:hint="전화번호 (숫자만 입력)"
+                        android:inputType="numberPassword"
+                        android:textSize="14sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <Button
+                        android:id="@+id/button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_gravity="center|left"
+                        android:background="@drawable/ok_button"
+                        android:fontFamily="@font/nanumsquare_aac"
+                        android:text="인증 요청"
+                        android:textAllCaps="false"
+                        android:textColor="@drawable/ok_button_text_color"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView39"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="(ex. 01012347890 )"
+                    android:textSize="12sp" />
+
+
+        </LinearLayout>
+
+            <EditText
+                android:id="@+id/editTextNumberPassword"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:inputType="numberPassword"
+                android:hint="인증번호 입력"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/ok_button"
+            android:fontFamily="@font/nanumsquare_aac"
+            android:text="확인"
+            android:textAllCaps="false"
+            android:textColor="@drawable/ok_button_text_color"
+            android:textSize="14sp"  />
+    </LinearLayout>
+
+
+</LinearLayout>
