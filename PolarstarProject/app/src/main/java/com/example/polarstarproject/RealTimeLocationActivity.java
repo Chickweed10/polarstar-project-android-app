@@ -158,6 +158,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
 
+    Timer timer; //상대방 위치 검색을 위한 타이머
+    TimerTask timerTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -610,9 +613,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////상대방 위치////////////////////////////////////////
     public void counterpartyLocationScheduler(){ //20초마다 상대방 DB 검사 후, 위치 띄우기
-        Timer timer = new Timer();
+        timer = new Timer();
 
-        TimerTask timerTask = new TimerTask() {
+        timerTask = new TimerTask() {
             @Override
             public void run() {
                 //20초마다 실행
@@ -624,6 +627,9 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     private void startDisconnectDialog(){
         RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+        timer.cancel();
+        timerTask.cancel(); //타이머 종료
+        
         disconnectDialog = new DisconnectDialog(this);
         disconnectDialog.setCancelable(false);
         disconnectDialog.show();

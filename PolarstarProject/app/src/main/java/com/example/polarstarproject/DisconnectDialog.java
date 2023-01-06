@@ -11,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 public class DisconnectDialog extends Dialog implements View.OnClickListener{
+    DisconnectDialog disconnectDialog;
+    RealTimeLocationActivity realTimeLocationActivity;
+    
     private Context mContext;
 
     private TextView dialogTextView;
@@ -37,7 +40,7 @@ public class DisconnectDialog extends Dialog implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_ok:
-                dismiss();
+                dismiss(); //다이얼로그 닫기
                 Intent intent = new Intent(mContext, ConnectActivity.class); //연결 화면 넘어가기
                 mContext.startActivity(intent);
                 break;
