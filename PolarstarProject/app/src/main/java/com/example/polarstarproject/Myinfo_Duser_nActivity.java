@@ -379,11 +379,12 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
         if (requestCode == 0) { //프로필 사진
             if (resultCode == RESULT_OK) {
                 imageUri = intent.getData();
-                Glide.with(getApplicationContext())
-                        .load(intent.getData())
-                        .into(Profl); //버튼에 이미지 삽입
 
                 if(imageUri != null){ //프로필 수정 했을 시
+                    Glide.with(getApplicationContext())
+                            .load(intent.getData())
+                            .into(Profl); //버튼에 이미지 삽입
+
                     pathUri = "profile/"+mynUid;
                     firebaseImageUpload(pathUri); //이미지 등록
                 }

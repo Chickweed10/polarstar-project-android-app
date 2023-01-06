@@ -401,7 +401,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                                 pathUri = "profile/"+uid;
                                 firebaseImageUpload(pathUri); //이미지 등록
                             }
-                            Guardian guardian = new Guardian(pathUri, email, name,
+                            Guardian guardian = new Guardian(pathUri, email, password, name,
                                     phoneNumber, birth, sex, address, detailAddress); //보호자 객체 생성
                             reference.child("guardian").child(uid).setValue(guardian); //DB에 보호자 정보 삽입
 

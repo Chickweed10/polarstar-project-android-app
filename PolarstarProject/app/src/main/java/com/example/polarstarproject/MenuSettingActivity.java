@@ -339,7 +339,7 @@ public class MenuSettingActivity extends AppCompatActivity {
 
     /////////////////////////////////////////연결 해제////////////////////////////////////////
     private void disConnectUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        if(classificationUserFlag == 1 ){ //내가 피보호자일 경우
+        if(classificationUserFlag == 1){ //내가 피보호자일 경우
             Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
             disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -359,8 +359,9 @@ public class MenuSettingActivity extends AppCompatActivity {
                         InOutStatus inOutStatus = new InOutStatus(false, false);
                         reference.child("inoutstatus").child(uid).setValue(inOutStatus); //복귀이탈 플래그 초기화
                         reference.child("range").child(counterpartyUID).setValue(null); //상대 보호자 보호구역 초기화
-                        reference.child("connect").child("disabled").child(uid).child("counterpartyCode").setValue(null); //내 상대코드 초기화
-                        reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").setValue(null); //상대 상대코드 초기화
+                        reference.child("safezone").child(counterpartyUID).setValue(null); //상대 보호자 safeZone 초기화
+                        reference.child("connect").child("disabled").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
+                        reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
                         startActivity(intent);
                         finish();
@@ -393,8 +394,9 @@ public class MenuSettingActivity extends AppCompatActivity {
                         InOutStatus inOutStatus = new InOutStatus(false, false);
                         reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //상대 피보호자 복귀이탈 플래그 초기화
                         reference.child("range").child(uid).setValue(null); //보호구역 초기화
-                        reference.child("connect").child("guardian").child(uid).child("counterpartyCode").setValue(null); //내 상대코드 초기화
-                        reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").setValue(null); //상대 상대코드 초기화
+                        reference.child("safezone").child(uid).setValue(null); //safezone 초기화
+                        reference.child("connect").child("guardian").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
+                        reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
                         startActivity(intent);
                         finish();
@@ -580,6 +582,15 @@ public class MenuSettingActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "firebase range delete");
+                            }
+                        }
+                    });
+            reference.child("safezone").child(uid).removeValue() //safezone 삭제
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "firebase safezone delete");
                             }
                         }
                     });
