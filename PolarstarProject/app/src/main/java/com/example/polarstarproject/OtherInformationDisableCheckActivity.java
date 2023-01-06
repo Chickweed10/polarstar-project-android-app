@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,7 +40,7 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity impl
     Toolbar toolbar;
 
     ImageView othProflN;
-    EditText othProflNameN, othProflPhoneNumN, othProflAddressN, othProflDetailAddN, othProflBirthN;
+    TextView othProflNameN, othProflPhoneNumN, othProflAddressN, othProflDetailAddN, othProflBirthN;
     RadioGroup othProflBtGenderN;
     RadioButton othProflBtGenderMN, othProflBtGenderFN;
     Button othProflBtEditN;
@@ -75,11 +76,11 @@ public class OtherInformationDisableCheckActivity extends AppCompatActivity impl
 
         othProflN = (ImageView) findViewById(R.id.othProflN); //프로필 사진
 
-        othProflNameN = (EditText) findViewById(R.id.othProflNameN); //이름
-        othProflPhoneNumN = (EditText) findViewById(R.id.othProflPhoneNumN); //핸드폰번호
-        othProflAddressN = (EditText) findViewById(R.id.othProflAddressN); //주소
-        othProflDetailAddN = (EditText) findViewById(R.id.othProflDetailAddN); //상세 주소
-        othProflBirthN = (EditText) findViewById(R.id.othProflBirthN); //생년월일
+        othProflNameN = (TextView) findViewById(R.id.othProflNameN); //이름
+        othProflPhoneNumN = (TextView) findViewById(R.id.othProflPhoneNumN); //핸드폰번호
+        othProflAddressN = (TextView) findViewById(R.id.othProflAddressN); //주소
+        othProflDetailAddN = (TextView) findViewById(R.id.othProflDetailAddN); //상세 주소
+        othProflBirthN = (TextView) findViewById(R.id.othProflBirthN); //생년월일
 
         othProflBtGenderN = findViewById(R.id.othProflBtGenderN); //성별
         othProflBtGenderMN = findViewById( R.id.othProflBtGenderMN);
