@@ -343,6 +343,7 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
+                                                Toast.makeText(Myinfo_DuserActivity.this, "프로필 삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
                                                 Log.d(TAG, "firebase Storage delete");
                                             }
                                         }
@@ -396,6 +397,8 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
 
                     pathUri = "profile/"+myUid;
                     firebaseImageUpload(pathUri); //이미지 등록
+
+                    Toast.makeText(Myinfo_DuserActivity.this, "프로필 변경이 완료되었습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         }else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
@@ -422,14 +425,20 @@ public class Myinfo_DuserActivity extends AppCompatActivity implements View.OnCl
                 startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                 break;
             case R.id.mProflBtEdit: //수정 버튼 클릭 시 저장
-                mDatabase.child("disabled").child(myUid).child("name").setValue(Name.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("email").setValue(Email.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("address").setValue(Address.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("detailAddress").setValue(mProflDetailAddress.getText().toString());
+                try{
+                    mDatabase.child("disabled").child(myUid).child("name").setValue(Name.getText().toString());
+                    mDatabase.child("disabled").child(myUid).child("email").setValue(Email.getText().toString());
+                    mDatabase.child("disabled").child(myUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
+                    mDatabase.child("disabled").child(myUid).child("address").setValue(Address.getText().toString());
+                    mDatabase.child("disabled").child(myUid).child("detailAddress").setValue(mProflDetailAddress.getText().toString());
 
-                mDatabase.child("disabled").child(myUid).child("birth").setValue(Birth.getText().toString());
-                mDatabase.child("disabled").child(myUid).child("sex").setValue(sex);
+                    mDatabase.child("disabled").child(myUid).child("birth").setValue(Birth.getText().toString());
+                    mDatabase.child("disabled").child(myUid).child("sex").setValue(sex);
+                }catch (@NonNull Exception e){
+                    return;
+                }
+
+                Toast.makeText(Myinfo_DuserActivity.this, "프로필 수정이 완료되었습니다.", Toast.LENGTH_SHORT).show();
                 //mDatabase.child("disabled").child(myUid).child("disabilityLevel").setValue(DrDisG.getSelectedItem().toString());
                 //디테일 어드레스
 
