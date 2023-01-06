@@ -4,6 +4,7 @@ public class SafeZone {
 
     String name;
     String address;
+    int dis;
     //int image_path;
 
     public String getName() {
@@ -21,6 +22,14 @@ public class SafeZone {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    public int getDis() {
+        return dis;
+    }
+
+    public void setDis(int name) {
+        this.dis = name;
+    }
 /*
     public int getImage_path() {
         return image_path;
@@ -31,9 +40,10 @@ public class SafeZone {
     }
 
  */
-    public SafeZone(String name, String address) {
+    public SafeZone(String name, String address, int dis) {
         this.name = name;
         this.address = address;
+        this.dis = dis;
         //this.image_path = image_path;
     }
 

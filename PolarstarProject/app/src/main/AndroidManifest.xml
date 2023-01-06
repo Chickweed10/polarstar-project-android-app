@@ -62,6 +62,8 @@
         <activity android:name=".MenuSettingActivity" />
         <activity android:name=".SafeZoneActivity" />
         <activity android:name=".ManualActivity" />
+        <activity android:name=".SafeZoneConfirmActivity" />
+
         <activity
             android:name=".DatePickerActivity"
             android:exported="false"

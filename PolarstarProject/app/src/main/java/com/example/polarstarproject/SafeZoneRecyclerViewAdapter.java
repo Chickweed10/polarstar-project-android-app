@@ -24,6 +24,8 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
 
     //아이템 클릭 리스너 인터페이스
     public interface OnItemClickListener{
+        //뷰 아이템 클릭 이벤트 + 뷰와 포지션값
+        void onItemClick(View v, int position);
         //void onEditClick(View v, int position); //수정
         void onDeleteClick(View v, int position);//삭제
     }
@@ -54,9 +56,10 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
     }
 
     @Override
-    public void onBindViewHolder(@NonNull sViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull sViewHolder holder, int position) { //아이템에 값 넣기
         holder.sfzUsrEntPl.setText(RangeArrayList.get(position).getName());
         holder.sfzUsrSrchPl.setText(RangeArrayList.get(position).getAddress());
+        holder.dis.setText(String.valueOf(RangeArrayList.get(position).getDis())+ " m");
     }
 
     @Override
@@ -66,7 +69,7 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
     }
 
     public class sViewHolder extends RecyclerView.ViewHolder {
-        TextView sfzUsrEntPl, sfzUsrSrchPl;
+        TextView sfzUsrEntPl, sfzUsrSrchPl, dis;
         //ImageView sfzImg;
         //ImageButton sfzEditBtn;
         ImageButton sfzDeleteBtn;
@@ -75,6 +78,7 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
             super(itemView);
             sfzUsrEntPl =  itemView.findViewById(R.id.sfzUsrEntPl);
             sfzUsrSrchPl =  itemView.findViewById(R.id.sfzUsrSrchPl);
+            dis =  itemView.findViewById(R.id.dis);
 
             //sfzImg = itemView.findViewById(R.id.sfzImg);
             //sfzEditBtn = itemView.findViewById(R.id.sfzEditBtn);
@@ -102,6 +106,19 @@ public class SafeZoneRecyclerViewAdapter extends RecyclerView.Adapter<SafeZoneRe
                     if (position!=RecyclerView.NO_POSITION){
                         if (mListener!=null){
                             mListener.onDeleteClick(view,position);
+                        }
+                    }
+                }
+            });
+
+            //뷰 아이템 클릭 이벤트
+            itemView.setOnClickListener (new View.OnClickListener () {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition ();
+                    if (position!=RecyclerView.NO_POSITION){
+                        if (mListener!=null){
+                            mListener.onItemClick (view,position);
                         }
                     }
                 }

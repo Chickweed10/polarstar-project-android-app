@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:text="사용자가 입력한 장소 이름"
+                android:text="보호구역 이름"
                 android:textSize="16sp" />
 
             <TextView
@@ -48,9 +48,20 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="6dp"
                 android:fontFamily="@font/nanumsquare_aab"
-                android:hint="사용자가 검색한 장소"
+                android:hint="주소"
                 android:text=""
                 android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/dis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/nanumsquare_aab"
+                android:hint="0 m"
+                android:text=""
+                android:textSize="14sp" />
+
         </LinearLayout>
 
         <View
