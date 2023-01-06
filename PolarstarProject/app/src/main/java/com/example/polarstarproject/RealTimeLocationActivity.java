@@ -22,6 +22,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.MenuItem;
@@ -135,14 +136,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     CameraUpdate cameraUpdate; //지도 카메라
     int cameraCnt = 0; //카메라 이동 제어 위한 카운트
-    int screenCnt = 0; //연결 화면 넘어가기 위한 카운트
     int sCount = 0; //보호구역 개수
     int outCount = 0; //보호구역 이탈 개수
 
     Connect myConnect;
     String counterpartyUID = "";
     public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
-    private double routeLatitude, routeLongitude; //장애인 경로 저장
 
     AddressGeocoding addressGeocoding;
     public static double disabledAddressLatitude, disabledAddressLongitude;  //피보호자 집 주소 지오코딩
@@ -299,13 +298,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 switch (view.getId()) {
                     case R.id.item_myinfo: //내 정보
                         if (classificationUserFlag == 1) { //장애인일 경우
-                            Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_DuserActivity.class);
-                            startActivity(myInfoIntent);
-                            finish(); //내 정보 화면으로 이동
+                            connectionCheck(Myinfo_DuserActivity.class);
+
                         } else if (classificationUserFlag == 2) { //보호자일 경우
-                            Intent myInfoIntent = new Intent(getApplicationContext(), Myinfo_Duser_nActivity.class);
-                            startActivity(myInfoIntent);
-                            finish(); //내 정보 화면으로 이동
+                            connectionCheck(Myinfo_Duser_nActivity.class);
                         }
                         break;
                 }
@@ -317,14 +313,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 switch (view.getId()) {
                     case R.id.item_otherinfo: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
-                            Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationGuardianCheckActivity.class);
-                            startActivity(otherInfoIntent);
-                            finish(); //상대 정보 화면으로 이동
+                            connectionCheck(OtherInformationGuardianCheckActivity.class);
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
-                            Intent otherInfoIntent = new Intent(getApplicationContext(), OtherInformationDisableCheckActivity.class);
-                            startActivity(otherInfoIntent);
-                            finish(); //상대 정보 화면으로 이동
+                            connectionCheck(OtherInformationDisableCheckActivity.class);
                         }
                         break;
                 }
@@ -336,12 +328,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 switch (view.getId()) {
                     case R.id.item_route: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
-                            startAuthorityDialog(); //커스텀 Dialog
+                            connectionCheck(null);
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
-                            Intent otherInfoIntent = new Intent(getApplicationContext(), RouteActivity.class);
-                            startActivity(otherInfoIntent);
-                            finish(); //위치 기록 화면으로 이동
+                            connectionCheck(RouteActivity.class);
                         }
 
                         break;
@@ -354,12 +344,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 switch (view.getId()) {
                     case R.id.item_range: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
-                            startAuthorityDialog();
+                            connectionCheck(null);
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
-                            Intent otherInfoIntent = new Intent(getApplicationContext(), SafeZoneActivity.class);
-                            startActivity(otherInfoIntent);
-                            finish(); //보호구역 화면으로 이동
+                            connectionCheck(SafeZoneActivity.class);
                         }
                         break;
                 }
@@ -566,9 +554,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void firebaseUpdateLocation(FirebaseUser user, double latitude, double longitude) { //firebase에 실시간 위치 저장
-        routeLatitude = latitude;
-        routeLongitude = longitude;
-
         RealTimeLocation realTimeLocation = new RealTimeLocation(latitude,longitude);
 
         Log.w(TAG, "firebaseUpdate " + user.getUid()+ " : " + latitude + ", " + longitude);
@@ -638,6 +623,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     private void startDisconnectDialog(){
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
         disconnectDialog = new DisconnectDialog(this);
         disconnectDialog.setCancelable(false);
         disconnectDialog.show();
@@ -645,8 +631,75 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
+    private void connectionCheck(Class skipClass){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 연결 끊었을 경우
+                        if(! RealTimeLocationActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
+                        }
+                        Log.w(TAG, "상대 보호자 없음");
+                    }
+                    else {
+                        if(skipClass == null){
+                            startAuthorityDialog();
+                        }
+                        else{
+                            Intent otherInfoIntent = new Intent(getApplicationContext(), skipClass);
+                            startActivity(otherInfoIntent);
+                            finish(); //보호구역 화면으로 이동
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 연결 끊었을 경우
+                        if(! RealTimeLocationActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
+                        }
+                        Log.w(TAG, "상대 피보호자 없음");
+                    }
+                    else {
+                        Intent otherInfoIntent = new Intent(getApplicationContext(), skipClass);
+                        startActivity(otherInfoIntent);
+                        finish(); //보호구역 화면으로 이동
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Log.w(TAG, "함수 실행1");
         Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
         disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -660,13 +713,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     classificationUserFlag = 1;
 
                     if(myConnect.getCounterpartyCode() == null){ //상대방이 탈퇴할 경우
-                        if(screenCnt == 0){
-                            if(! RealTimeLocationActivity.this.isFinishing()){
-                                startDisconnectDialog();
-                            }
-                            Log.w(TAG, "상대 보호자 없음");
-                            screenCnt++;
+                        if(! RealTimeLocationActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
                         }
+                        Log.w(TAG, "상대 보호자 없음");
                     }
 
                     if(count == 0){
@@ -706,13 +756,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     classificationUserFlag = 2;
 
                     if(myConnect.getCounterpartyCode() == null){ //상대방이 탈퇴할 경우
-                        if(screenCnt == 0){
-                            if(! RealTimeLocationActivity.this.isFinishing()){
-                                startDisconnectDialog();
-                            }
-                            Log.w(TAG, "상대 피보호자 없음");
-                            screenCnt++;
+                        if(! RealTimeLocationActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
                         }
+                        Log.w(TAG, "상대 피보호자 없음");
                     }
 
                     getOtherUID();
@@ -731,7 +778,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
-        Log.w(TAG, "함수 실행2");
         if(classificationUserFlag == 1) { //내가 피보호자고, 상대방이 보호자일 경우
             Query query = reference.child("connect").child("guardian").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자 코드로 보호자 uid 가져오기
@@ -799,7 +845,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////실시간 위치 마커////////////////////////////////////////
     private void counterpartyMarker() {
-        Log.w(TAG, "함수 실행3");
         reference.child("realtimelocation").orderByKey().equalTo(counterpartyUID). //상대방 실시간 위치 검색
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -816,7 +861,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                     if(counterpartyCurPoint != null) { //상대방 위치가 존재하면
                         if(counterpartyMarker == null){//마커가 없었을 경우
-                            Log.w(TAG, "마커 실행");
                             counterpartyMarker = new Marker();
                             counterpartyMarker.setPosition(counterpartyCurPoint);
                             counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
@@ -826,7 +870,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                             counterpartyLocationScheduler(); //상대 위치 스케쥴러 실행
                         }
                         else if(counterpartyMarker != null) { //마커가 존재했던 경우
-                            Log.w(TAG, "마커 실행");
                             counterpartyMarker.setMap(null); //마커삭제
                             counterpartyMarker.setPosition(counterpartyCurPoint);
                             counterpartyMarker.setIcon(MarkerIcons.LIGHTBLUE);
