@@ -357,11 +357,11 @@ public class MenuSettingActivity extends AppCompatActivity {
                     }
                     else {
                         InOutStatus inOutStatus = new InOutStatus(false, false);
-                        reference.child("inoutstatus").child(uid).setValue(inOutStatus); //복귀이탈 플래그 초기화
                         reference.child("range").child(counterpartyUID).setValue(null); //상대 보호자 보호구역 초기화
                         reference.child("safezone").child(counterpartyUID).setValue(null); //상대 보호자 safeZone 초기화
-                        reference.child("connect").child("disabled").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
                         reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
+                        reference.child("inoutstatus").child(uid).setValue(inOutStatus); //복귀이탈 플래그 초기화
+                        reference.child("connect").child("disabled").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
                         Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
                         startActivity(intent);
                         finish();
@@ -393,10 +393,10 @@ public class MenuSettingActivity extends AppCompatActivity {
                     else{
                         InOutStatus inOutStatus = new InOutStatus(false, false);
                         reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //상대 피보호자 복귀이탈 플래그 초기화
+                        reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         reference.child("range").child(uid).setValue(null); //보호구역 초기화
                         reference.child("safezone").child(uid).setValue(null); //safezone 초기화
                         reference.child("connect").child("guardian").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
-                        reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
                         startActivity(intent);
                         finish();
