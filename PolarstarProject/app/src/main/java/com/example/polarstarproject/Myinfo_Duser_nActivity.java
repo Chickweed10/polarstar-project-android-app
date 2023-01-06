@@ -334,6 +334,7 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
+                                                Toast.makeText(Myinfo_Duser_nActivity.this, "프로필 삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
                                                 Log.d(TAG, "firebase Storage delete");
                                             }
                                         }
@@ -387,6 +388,8 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
 
                     pathUri = "profile/"+mynUid;
                     firebaseImageUpload(pathUri); //이미지 등록
+
+                    Toast.makeText(Myinfo_Duser_nActivity.this, "프로필 변경이 완료되었습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         } else if(requestCode == SEARCH_ADDRESS_ACTIVITY) { //우편번호 등록
@@ -413,13 +416,19 @@ public class Myinfo_Duser_nActivity extends AppCompatActivity implements View.On
                 startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                 break;
             case R.id.mProflBtEditN: //수정 버튼 클릭 시 저장
-                mDatabase.child("guardian").child(mynUid).child("name").setValue(Name.getText().toString());
-                mDatabase.child("guardian").child(mynUid).child("email").setValue(Email.getText().toString());
-                mDatabase.child("guardian").child(mynUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
-                mDatabase.child("guardian").child(mynUid).child("address").setValue(Address.getText().toString());
-                mDatabase.child("guardian").child(mynUid).child("detailAddress").setValue(dAddress.getText().toString());
-                mDatabase.child("guardian").child(mynUid).child("birth").setValue(Birth.getText().toString());
-                mDatabase.child("guardian").child(mynUid).child("sex").setValue(sex);
+                try{
+                    mDatabase.child("guardian").child(mynUid).child("name").setValue(Name.getText().toString());
+                    mDatabase.child("guardian").child(mynUid).child("email").setValue(Email.getText().toString());
+                    mDatabase.child("guardian").child(mynUid).child("phoneNumber").setValue(PhoneNum.getText().toString());
+                    mDatabase.child("guardian").child(mynUid).child("address").setValue(Address.getText().toString());
+                    mDatabase.child("guardian").child(mynUid).child("detailAddress").setValue(dAddress.getText().toString());
+                    mDatabase.child("guardian").child(mynUid).child("birth").setValue(Birth.getText().toString());
+                    mDatabase.child("guardian").child(mynUid).child("sex").setValue(sex);
+                }catch (@NonNull Exception e){
+                    return;
+                }
+
+                Toast.makeText(Myinfo_Duser_nActivity.this, "프로필 수정이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                 break;
         }
