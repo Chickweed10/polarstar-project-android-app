@@ -2,11 +2,14 @@ package com.example.polarstarproject;
 
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -34,6 +37,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class GuardianOtherInformationCheckActivity extends AppCompatActivity implements View.OnClickListener{ //보호자 정보 (본인이 장애인)
     Toolbar toolbar;
 
@@ -43,6 +49,8 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
     RadioButton othProflBtGenderM, othProflBtGenderF;
     String sex,  cSex;
     Button othProflBtEdit;
+
+    private DisconnectDialog disconnectDialog; //연결끊기 다이얼로그 팝업
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -58,6 +66,9 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
     StorageReference storageRef;
     StorageReference otherstorageRef;
 
+    Timer timer; //상대방과 매칭 검사를 위한 타이머
+    TimerTask timerTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +81,9 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
 
         othProfl = (ImageView) findViewById(R.id.othProfl); //프로필 사진
 
@@ -90,7 +104,7 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
         storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
         storageRef = storage.getReference();
 
-        classificationUser(user.getUid());
+        skipScreen();
     }
 
     /////////////////////////////////////////액티비티 뒤로가기 설정////////////////////////////////////////
@@ -98,7 +112,12 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home: { //toolbar의 back키를 눌렀을 때 동작
-                skipScreen(); //사용자 구별 후 실시간 위치 화면으로 돌아감
+                //메인 화면으로 돌아감
+                Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+                startActivity(intent);
+                finish();
+                timer.cancel();
+                timerTask.cancel(); //타이머 종료
 
                 return true;
             }
@@ -107,14 +126,68 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
     }
     @Override
     public void onBackPressed() { //뒤로가기 했을 때
-        skipScreen(); //사용자 구별 후 실시간 위치 화면으로 돌아감
-    }
-
-    /////////////////////////////////////////화면 넘어가기////////////////////////////////////////
-    public void skipScreen(){
+        //메인 화면으로 돌아감
         Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
         finish();
+        timer.cancel();
+        timerTask.cancel(); //타이머 종료
+    }
+
+    /////////////////////////////////////////연결 체크////////////////////////////////////////
+    private void startDisconnectDialog(){
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.setCancelable(false);
+        disconnectDialog.show();
+        disconnectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+    }
+
+    /////////////////////////////////////////연결 여부 확인 후 화면 넘어가기////////////////////////////////////////
+    private void skipScreen(){
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //3초마다 실행
+                connectionCheck(); //상대방과 매칭 여부 확인
+                Log.w(TAG, "돌아감");
+            }
+        };
+        timer.schedule(timerTask,0,3000);
+
+        classificationUser(user.getUid()); //사용자 구별
+    }
+
+    /////////////////////////////////////////연결 여부 확인////////////////////////////////////////
+    private void connectionCheck(){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 연결 끊었을 경우
+                        if(! GuardianOtherInformationCheckActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
+                            timer.cancel();
+                            timerTask.cancel(); //타이머 종료
+                        }
+                        Log.w(TAG, "상대 보호자 없음");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
@@ -286,7 +359,13 @@ public class GuardianOtherInformationCheckActivity extends AppCompatActivity imp
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.othProflBtEdit: //확인 버튼 클릭 시
-                skipScreen(); //메인화면으로 이동
+                //메인 화면으로 돌아감
+                Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
+                startActivity(intent);
+                finish();
+                timer.cancel();
+                timerTask.cancel(); //타이머 종료
+
                 break;
         }
     }

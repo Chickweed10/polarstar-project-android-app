@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.DepartureArrivalStatus;
 import com.example.polarstarproject.Domain.InOutStatus;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -65,6 +66,8 @@ public class MenuSettingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기
         getSupportActionBar().setTitle("설정");
+
+        autoM = ((MainActivity)MainActivity.context_main).auto;
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -347,18 +350,20 @@ public class MenuSettingActivity extends AppCompatActivity {
 
                     if(myConnect.getCounterpartyCode() == null || myConnect.getCounterpartyCode().isEmpty()){ //상대가 먼저 연결 해제했을 경우
                         Toast.makeText(getApplicationContext(),"이미 상대방과의 연결이 해제되었습니다." , Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     else {
                         InOutStatus inOutStatus = new InOutStatus(false, false);
+                        DepartureArrivalStatus departurearrivalstatus = new DepartureArrivalStatus(false, false);
                         reference.child("range").child(counterpartyUID).setValue(null); //상대 보호자 보호구역 초기화
                         reference.child("safezone").child(counterpartyUID).setValue(null); //상대 보호자 safeZone 초기화
                         reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         reference.child("inoutstatus").child(uid).setValue(inOutStatus); //복귀이탈 플래그 초기화
+                        reference.child("departurearrivalstatus").child(uid).setValue(departurearrivalstatus); //집 출도착 플래그 초기화
                         reference.child("connect").child("clientage").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
-                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -382,18 +387,20 @@ public class MenuSettingActivity extends AppCompatActivity {
 
                     if(myConnect.getCounterpartyCode() == null || myConnect.getCounterpartyCode().isEmpty()){ //상대가 먼저 연결 해제했을 경우
                         Toast.makeText(getApplicationContext(),"이미 상대방과의 연결이 해제되었습니다." , Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     else{
                         InOutStatus inOutStatus = new InOutStatus(false, false);
+                        DepartureArrivalStatus departurearrivalstatus = new DepartureArrivalStatus(false, false);
                         reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //상대 피보호자 복귀이탈 플래그 초기화
+                        reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departurearrivalstatus); //상대 피보호자 집 출도착 플래그 초기화
                         reference.child("connect").child("clientage").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         reference.child("range").child(uid).setValue(null); //보호구역 초기화
                         reference.child("safezone").child(uid).setValue(null); //safezone 초기화
                         reference.child("connect").child("guardian").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
-                        Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         finish();
                     }

@@ -3,11 +3,14 @@ package com.example.polarstarproject;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +25,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Clientage;
+import com.example.polarstarproject.Domain.Connect;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,10 +36,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class ClientageMyInfoActivity extends AppCompatActivity implements View.OnClickListener{
@@ -52,6 +60,8 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
     RadioGroup rdgGroup;
     RadioButton rdoButton, mProflBtGenderF, mProflBtGenderM;
 
+    private DisconnectDialog disconnectDialog; //연결끊기 다이얼로그 팝업
+
     private FirebaseAuth mAuth;
     private FirebaseUser user; //firebase 변수
     String myUid;
@@ -65,6 +75,8 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
 
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000; //우편번호 검색
 
+    Timer timer; //상대방과 매칭 검사를 위한 타이머
+    TimerTask timerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +91,9 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
         mDatabase = FirebaseDatabase.getInstance().getReference(); //DatabaseReference의 인스턴스
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
 
         Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
 
@@ -166,6 +181,8 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
         });
         mProflFdAdd = (Button) findViewById(R.id.mProflFdAdd); //우편번호 찾기
         mProflFdAdd.setOnClickListener(this);
+
+        skipScreen();
     }
 
 
@@ -177,6 +194,8 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
                 Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish(); //화면 이동
+                timer.cancel();
+                timerTask.cancel(); //타이머 종료
 
                 return true;
             }
@@ -188,6 +207,64 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
         Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
         finish(); //화면 이동
+        timer.cancel();
+        timerTask.cancel(); //타이머 종료
+    }
+
+    /////////////////////////////////////////연결 체크////////////////////////////////////////
+    private void startDisconnectDialog(){
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+        timer.cancel();
+        timerTask.cancel(); //타이머 종료
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.setCancelable(false);
+        disconnectDialog.show();
+        disconnectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+    }
+
+    /////////////////////////////////////////연결 여부 확인 후 화면 넘어가기////////////////////////////////////////
+    private void skipScreen(){
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //3초마다 실행
+                connectionCheck(); //상대방과 매칭 여부 확인
+                Log.w(TAG, "돌아감");
+            }
+        };
+        timer.schedule(timerTask,0,3000);
+    }
+
+    /////////////////////////////////////////연결 여부 확인////////////////////////////////////////
+    private void connectionCheck(){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query clientageQuery = mDatabase.child("connect").child("clientage").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 연결 끊었을 경우
+                        if(! ClientageMyInfoActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
+                            timer.cancel();
+                            timerTask.cancel(); //타이머 종료
+                        }
+                        Log.w(TAG, "상대 보호자 없음");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void readUser(String uid) {
