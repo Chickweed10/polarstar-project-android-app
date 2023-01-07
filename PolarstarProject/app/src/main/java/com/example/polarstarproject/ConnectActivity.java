@@ -159,7 +159,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
         startActivity(intent);
         finish();
-        finishAffinity(); //스택 비우기
     }
 
     /////////////////////////////////////////1:1 매칭////////////////////////////////////////
@@ -238,7 +237,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                                 }
                                 Log.w(TAG, "연결 코드: " + value);
 
-                                if((value == null || value.isEmpty() || value.equals(" ") || value.equals("")) && cnt == 0){ //이미 연결되지 않은 경우
+                                if((value == null || value.equals(" ") || value.equals("")) && cnt == 0){ //이미 연결되지 않은 경우
                                     Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
                                     reference.child("connect").child("guardian").child(user.getUid()).setValue(myConnect);
 
@@ -250,7 +249,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
                                     cnt++;
                                 }
-                                else if(value != null || !value.isEmpty() || !value.equals(" ") || !value.equals("")){
+                                else if(value != null || !value.equals(" ") || !value.equals("")){
                                     Toast.makeText(ConnectActivity.this, "다른 보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -376,7 +375,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.btnConnect: //보호자, 장애인 연결
                 cnt = 0;
                 matchingUser(editOtherCode.getText().toString());
-                editOtherCode.setText(null);
         }
     }
 }

@@ -142,7 +142,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
 
-    Timer timer; //상대방 위치 검색을 위한 타이머
+    Timer timer; //상대방과 매칭 검사를 위한 타이머
     TimerTask timerTask;
 
     @Override
@@ -347,7 +347,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     case R.id.item_setting: //내 정보
                         Intent settingIntent = new Intent(getApplicationContext(), MenuSettingActivity.class);
                         startActivity(settingIntent);
-                        finish(); //설정 화면으로 이동
+                        finish(); //메뉴얼 화면으로 이동
                         break;
                 }
             }
@@ -445,6 +445,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 // 원하는 기능 구현
                 terminationDialog.dismiss(); //다이얼로그 닫기
                 moveTaskToBack(true); //태스크를 백그라운드로 이동
+                timer.cancel();
+                timerTask.cancel(); //타이머 종료
                 finishAffinity(); //스택 비우기
                 finish(); //액티비티 종료
             }
@@ -587,6 +589,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             @Override
             public void run() {
                 //20초마다 실행
+                Log.w(TAG, "돌아감");
                 classificationUser(user.getUid());
             }
         };
@@ -597,14 +600,13 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
         timer.cancel();
         timerTask.cancel(); //타이머 종료
-        
         disconnectDialog = new DisconnectDialog(this);
         disconnectDialog.setCancelable(false);
         disconnectDialog.show();
         disconnectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
     }
 
-    /////////////////////////////////////////사용자 구별////////////////////////////////////////
+    /////////////////////////////////////////연결 여부 확인////////////////////////////////////////
     private void connectionCheck(Class skipClass){ //firebase select 조회 함수, 내 connect 테이블 조회
         Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
         clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -805,7 +807,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Intent intent = new Intent(getApplicationContext(), ConnectActivity.class); //연결 화면 넘어가기
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class); //연결 화면 넘어가기
                     startActivity(intent);
                     finish();
                     Log.w(TAG, "상대 피보호자 없음");

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.SafeZone;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,10 +27,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SafeZoneActivity extends AppCompatActivity {
     private ArrayList<SafeZone> mArrayList;
@@ -38,9 +42,13 @@ public class SafeZoneActivity extends AppCompatActivity {
     private LinearLayoutManager mLinearLayoutManager;
 
     private WarningDialog deleteDialog; //보호구역 삭제 다이얼로그 팝업
+    private AuthorityDialog safeZoneDialog; //권한 다이얼로그 팝업
+    private DisconnectDialog disconnectDialog; //연결끊기 다이얼로그 팝업
 
-    private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
+    private static final String TAG = "SafeZone";
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference databaseReference = database.getReference();
 
     private FirebaseAuth mAuth;
     private FirebaseUser user; //firebase 변수
@@ -49,7 +57,8 @@ public class SafeZoneActivity extends AppCompatActivity {
     Toolbar toolbar;
     Button btn_Set;
 
-    private AuthorityDialog safeZoneDialog; //권한 다이얼로그 팝업
+    Timer timer; //상대방과 매칭 검사를 위한 타이머
+    TimerTask timerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +78,14 @@ public class SafeZoneActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
 
         //다이얼로그 초기 설정
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
+
+        //다이얼로그 초기 설정
         safeZoneDialog = new AuthorityDialog(this, null);
         safeZoneDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
+
+        skipScreen();
 
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -79,8 +94,6 @@ public class SafeZoneActivity extends AppCompatActivity {
         mAdapter = new SafeZoneRecyclerViewAdapter(mArrayList, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        database = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
-        databaseReference = database.getReference(); // DB 테이블 연결
         databaseReference.child("safezone").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -99,7 +112,6 @@ public class SafeZoneActivity extends AppCompatActivity {
                 Log.e("Fraglike", String.valueOf(databaseError.toException())); // 에러문 출력
             }
         });
-
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
                 mLinearLayoutManager.getOrientation());
@@ -194,6 +206,8 @@ public class SafeZoneActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
                 startActivity(intent);
                 finish(); //화면 이동
+                timer.cancel();
+                timerTask.cancel(); //타이머 종료
 
                 return true;
             }
@@ -205,6 +219,62 @@ public class SafeZoneActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), RealTimeLocationActivity.class);
         startActivity(intent);
         finish(); //화면 이동
+        timer.cancel();
+        timerTask.cancel(); //타이머 종료
+    }
+
+    /////////////////////////////////////////연결 체크////////////////////////////////////////
+    private void startDisconnectDialog(){
+        RefactoringForegroundService.stopLocationService(this); //포그라운드 서비스 종료
+        disconnectDialog = new DisconnectDialog(this);
+        disconnectDialog.setCancelable(false);
+        disconnectDialog.show();
+        disconnectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //모서리 둥글게
+    }
+
+    /////////////////////////////////////////연결 여부 확인 후 화면 넘어가기////////////////////////////////////////
+    private void skipScreen(){
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //1초마다 실행
+                connectionCheck(); //상대방과 매칭 여부 확인
+                Log.w(TAG, "돌아감");
+            }
+        };
+        timer.schedule(timerTask,0,1000);
+    }
+
+    /////////////////////////////////////////연결 여부 확인////////////////////////////////////////
+    private void connectionCheck(){ //firebase select 조회 함수, 내 connect 테이블 조회
+        Query guardianQuery = databaseReference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
+        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Connect myConnect = new Connect();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    myConnect = ds.getValue(Connect.class);
+                }
+
+                if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
+                    if(myConnect.getCounterpartyCode() == null){ //상대방이 연결 끊었을 경우
+                        if(! SafeZoneActivity.this.isFinishing()){ //finish 오류 방지
+                            startDisconnectDialog();
+                            timer.cancel();
+                            timerTask.cancel(); //타이머 종료
+                        }
+                        Log.w(TAG, "상대 피보호자 없음");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void ItemDelete(String name){

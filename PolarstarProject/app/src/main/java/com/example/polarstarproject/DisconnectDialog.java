@@ -41,7 +41,7 @@ public class DisconnectDialog extends Dialog implements View.OnClickListener{
         switch (v.getId()) {
             case R.id.btn_ok:
                 dismiss(); //다이얼로그 닫기
-                Intent intent = new Intent(mContext, ConnectActivity.class); //연결 화면 넘어가기
+                Intent intent = new Intent(mContext, MainActivity.class); //연결 화면 넘어가기
                 mContext.startActivity(intent);
                 break;
         }
