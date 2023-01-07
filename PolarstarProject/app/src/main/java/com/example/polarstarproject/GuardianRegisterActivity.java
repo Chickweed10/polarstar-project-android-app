@@ -447,7 +447,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    Connect connect = new Connect(myCode, ""); //connect에 내 코드 생성
+                    Connect connect = new Connect(myCode, null); //connect에 내 코드 생성
                     reference.child("connect").child("guardian").child(uid).setValue(connect);
                 } else { //연결 코드 중복시
                     createConnectionCode(uid); //연결 코드 재생성

@@ -550,7 +550,7 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    Connect connect = new Connect(myCode, ""); //connect에 내 코드 생성
+                    Connect connect = new Connect(myCode, null); //connect에 내 코드 생성
                     reference.child("connect").child("clientage").child(uid).setValue(connect); //DB에 코드 저장
                 } else { //연결 코드 중복시
                     createConnectionCode(uid); //연결 코드 재생성

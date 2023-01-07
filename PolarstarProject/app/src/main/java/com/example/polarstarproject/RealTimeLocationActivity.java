@@ -691,6 +691,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     if(myConnect.getCounterpartyCode() == null){ //상대방이 탈퇴할 경우
                         if(! RealTimeLocationActivity.this.isFinishing()){ //finish 오류 방지
                             startDisconnectDialog();
+                            timer.cancel();
+                            timerTask.cancel(); //타이머 종료
                         }
                         Log.w(TAG, "상대 보호자 없음");
                     }
@@ -734,6 +736,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     if(myConnect.getCounterpartyCode() == null){ //상대방이 탈퇴할 경우
                         if(! RealTimeLocationActivity.this.isFinishing()){ //finish 오류 방지
                             startDisconnectDialog();
+                            timer.cancel();
+                            timerTask.cancel(); //타이머 종료
                         }
                         Log.w(TAG, "상대 피보호자 없음");
                     }

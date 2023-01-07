@@ -153,14 +153,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         skipScreen(); //화면 넘어가기
     }
 
-    private void matchingskipScreen(){
-        //매칭 성공시 메인 화면으로 이동
-        Toast.makeText(ConnectActivity.this, "연결 성공", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(ConnectActivity.this, RealTimeLocationActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     /////////////////////////////////////////1:1 매칭////////////////////////////////////////
     private void matchingUser(String counterpartyCode){
         if(classificationUserFlag == 1) { //내가 장애인이고, 상대방이 보호자일 경우
@@ -182,21 +174,18 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                                     value = ds.child("counterpartyCode").getValue(String.class);
                                 }
 
-                                if((value == null || value.isEmpty() || value.equals(" ") || value.equals("")) && cnt == 0){ //이미 연결되지 않은 경우
+                                if(value != null && cnt == 0){ //이미 연결된 경우
+                                    Toast.makeText(ConnectActivity.this, "다른 피보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
+                                }
+
+                                else if(value == null && cnt == 0){ //이미 연결되지 않은 경우
                                     Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
                                     reference.child("connect").child("clientage").child(user.getUid()).setValue(myConnect);
 
                                     Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                                     reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
-
-                                    //매칭 성공시 메인 화면으로 이동
-                                    matchingskipScreen();
                                     
                                     cnt++;
-                                }
-
-                                else if(value != null || !value.isEmpty() || !value.equals(" ") || !value.equals("")){ //이미 연결된 경우
-                                    Toast.makeText(ConnectActivity.this, "다른 피보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -235,22 +224,19 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                                     value = ds.child("counterpartyCode").getValue(String.class);
                                 }
-                                Log.w(TAG, "연결 코드: " + value);
 
-                                if((value == null || value.equals(" ") || value.equals("")) && cnt == 0){ //이미 연결되지 않은 경우
+                                if(value != null && cnt == 0){
+                                    Toast.makeText(ConnectActivity.this, "다른 보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
+                                }
+
+                                else if(value == null && cnt == 0){ //이미 연결되지 않은 경우
                                     Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
                                     reference.child("connect").child("guardian").child(user.getUid()).setValue(myConnect);
 
                                     Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                                     reference.child("connect").child("clientage").child(counterpartyUID).setValue(counterpartyConnect);
 
-                                    //매칭 성공시 메인 화면으로 이동
-                                    matchingskipScreen();
-
                                     cnt++;
-                                }
-                                else if(value != null || !value.equals(" ") || !value.equals("")){
-                                    Toast.makeText(ConnectActivity.this, "다른 보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
