@@ -132,7 +132,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
-    public boolean inFlag, outFlag = false; //복귀, 이탈 플래그
+    public boolean inFlag = false, outFlag = false; //복귀, 이탈 플래그
     DepartureArrivalStatus departureArrivalStatus; //출도착 플래그 변수
 
     public LocationManager manager; //GPS 위치 권한
@@ -995,6 +995,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     inFlag = inOutStatus.inStatus; //값 집어넣기
                     alertNotification();
 
+
                 }
                 else { //추적 가능
 
@@ -1041,20 +1042,22 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         }
                     }
 
-                    if(outFlag==false) { //아직 이탈 안했을 경우
-                        if (outCount == sCount) { //
-                            outNotification(DEFAULT, 5);//이탈 알림 울리기
+                    if(sCount != 0){
+                        if (outFlag == false) { //아직 이탈 안했을 경우
+                            if (outCount == sCount) { //
+                                outNotification(DEFAULT, 5);//이탈 알림 울리기
 
-                            InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
-                            reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
-                        }
-                    }
-                    if(inFlag==false){
-                        if (outFlag==true) { //아직 안 돌아간 경우
-                            if (outCount != sCount) {
-                                inNotification(DEFAULT, 6); //도착 알림 울리기
-                                InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
+                                InOutStatus inOutStatus = new InOutStatus(true, false); //이탈 true, 복귀 플래그 초기화
                                 reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
+                            }
+                        }
+                        if (inFlag == false) {
+                            if (outFlag == true) { //아직 안 돌아간 경우
+                                if (outCount != sCount) {
+                                    inNotification(DEFAULT, 6); //도착 알림 울리기
+                                    InOutStatus inOutStatus = new InOutStatus(false, true); //복귀 true, 이탈 플래그 초기화
+                                    reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //이탈복귀 플래그 초기화
+                                }
                             }
                         }
                     }
