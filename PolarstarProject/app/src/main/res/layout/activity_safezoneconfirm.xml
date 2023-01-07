@@ -57,9 +57,11 @@
             android:fontFamily="@font/nanumsquare_aab"
             android:layout_gravity="left"
             android:text="보호구역 이름"
+            android:textStyle="bold"
             android:textAlignment="center"
+
             android:textColorHint="#7E7E7E"
-            android:textSize="15sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/rangeAddress"
