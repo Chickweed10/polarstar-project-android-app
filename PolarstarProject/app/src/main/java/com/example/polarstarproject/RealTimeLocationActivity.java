@@ -1022,8 +1022,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
 
                 if(inOutStatus != null){
+                    //여기에 함수 불러오기 함수는 보호구역 유무확인임 그리고 연결자 있는지 그러고 alertNotification(); 부르기
                     outFlag = inOutStatus.outStatus;
                     inFlag = inOutStatus.inStatus; //값 집어넣기
+                    alertNotification();
+
                 }
                 else { //추적 가능
 
@@ -1035,7 +1038,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
-        alertNotification();
     }
 
     ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기
