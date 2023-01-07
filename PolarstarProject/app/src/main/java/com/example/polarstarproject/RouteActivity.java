@@ -187,7 +187,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
 
                 if (myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()) {
-                    Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+                    Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
                     query.addListenerForSingleValueEvent(new ValueEventListener() { //보호자와 매칭된 장애인 uid 가져오기
                         @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
@@ -205,8 +205,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                                 int year = Integer.parseInt(arrayDate[0]); //년도
                                 int month = Integer.parseInt(arrayDate[1]); //월
                                 int day = Integer.parseInt(arrayDate[2]); //일
-                                
-                                disabledRoute(year, month-1, day);
+
+                                clientageRoute(year, month-1, day);
                                 Log.w(TAG, "날짜: " + year + " " + month + " " + day);
                             } else {
                                 Toast.makeText(RouteActivity.this, "오류", Toast.LENGTH_SHORT).show();
@@ -232,7 +232,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     /////////////////////////////////////////경로 그리기////////////////////////////////////////
-    private void disabledRoute(int year, int month, int day) {
+    private void clientageRoute(int year, int month, int day) {
         Date date = null;
 
         String dateString = String.format("%d-%d-%d", year, month + 1, day);
@@ -350,7 +350,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     startRouteDialog("30일 이전의 기록은 조회할 수 없습니다.");
                 }
                 else {
-                    disabledRoute(year, month, dayOfMonth);
+                    clientageRoute(year, month, dayOfMonth);
                 }
             }
         }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -21,7 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.Guardian;
+import com.example.polarstarproject.Domain.Clientage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,15 +34,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class OtherInformationGuardianCheckActivity  extends AppCompatActivity implements View.OnClickListener{ //보호자 정보 (본인이 장애인)
+public class ClientageOtherInformationCheckActivity extends AppCompatActivity implements View.OnClickListener{ //장애인 정보 (본인이 보호자)
     Toolbar toolbar;
 
-    ImageView othProfl;
-    TextView othProflName, othProflPhoneNum, othProflAddress, othProflDetailAdd, othProflBirth;
-    RadioGroup othProflBtGender;
-    RadioButton othProflBtGenderM, othProflBtGenderF;
-    String sex,  cSex;
-    Button othProflBtEdit;
+    ImageView othProflN;
+    TextView othProflNameN, othProflPhoneNumN, othProflAddressN, othProflDetailAddN, othProflBirthN;
+    RadioGroup othProflBtGenderN;
+    RadioButton othProflBtGenderMN, othProflBtGenderFN;
+    Button othProflBtEditN;
+
+    String sex, cSex, cDrDisG;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -62,7 +62,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_otherinfo_duser);
+        setContentView(R.layout.activity_otherinfo_duser_n);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,21 +72,21 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        othProfl = (ImageView) findViewById(R.id.othProfl); //프로필 사진
+        othProflN = (ImageView) findViewById(R.id.othProflN); //프로필 사진
 
-        othProflName = (TextView) findViewById(R.id.othProflName); //이름
-        othProflPhoneNum = (TextView) findViewById(R.id.othProflPhoneNum); //핸드폰번호
-        othProflAddress = (TextView) findViewById(R.id.othProflAddress); //주소
-        othProflDetailAdd = (TextView) findViewById(R.id.othProflDetailAdd); //상세 주소
-        othProflBirth = (TextView) findViewById(R.id.othProflBirth); //생년월일
+        othProflNameN = (TextView) findViewById(R.id.othProflNameN); //이름
+        othProflPhoneNumN = (TextView) findViewById(R.id.othProflPhoneNumN); //핸드폰번호
+        othProflAddressN = (TextView) findViewById(R.id.othProflAddressN); //주소
+        othProflDetailAddN = (TextView) findViewById(R.id.othProflDetailAddN); //상세 주소
+        othProflBirthN = (TextView) findViewById(R.id.othProflBirthN); //생년월일
 
-        othProflBtGender = findViewById(R.id.othProflBtGender); //성별
-        othProflBtGenderM = findViewById( R.id.othProflBtGenderM);
-        othProflBtGenderF = findViewById( R.id.othProflBtGenderF);
+        othProflBtGenderN = findViewById(R.id.othProflBtGenderN); //성별
+        othProflBtGenderMN = findViewById( R.id.othProflBtGenderMN);
+        othProflBtGenderFN = findViewById( R.id.othProflBtGenderFN);
 
-        othProflBtEdit = (Button) findViewById( R.id.othProflBtEdit); //확인 버튼
+        othProflBtEditN = (Button) findViewById( R.id.othProflBtEditN); //확인 버튼
 
-        othProflBtEdit.setOnClickListener(this);
+        othProflBtEditN.setOnClickListener(this);
 
         storage = FirebaseStorage.getInstance(); //프로필 사진 가져오기
         storageRef = storage.getReference();
@@ -120,8 +120,8 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 myConnect = new Connect();
@@ -184,7 +184,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
                         otherInformationCheck(); //상대방 정보 가져오기
                     }
                     else {
-                        Toast.makeText(OtherInformationGuardianCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ClientageOtherInformationCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -196,7 +196,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
             });
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
-            Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -208,7 +208,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
                         otherInformationCheck(); //상대방 정보 가져오기
                     }
                     else {
-                        Toast.makeText(OtherInformationGuardianCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ClientageOtherInformationCheckActivity.this, "오류", Toast.LENGTH_SHORT).show();
                         Log.w(TAG, "상대방 인적사항 확인 오류");
                     }
                 }
@@ -226,23 +226,23 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
 
     /////////////////////////////////////////상대방 정보 가져오기////////////////////////////////////////
     private void otherInformationCheck(){
-        Query guardianQuery = reference.child("guardian").orderByKey().equalTo(counterpartyUID); //보호자 테이블 조회
-        guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("clientage").orderByKey().equalTo(counterpartyUID); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Guardian guardian = new Guardian();
+                Clientage clientage = new Clientage();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    guardian = ds.getValue(Guardian.class);
+                    clientage = ds.getValue(Clientage.class);
                 }
 
-                if(guardian != null){
+                if(clientage != null){
                     otherstorageRef = storageRef.child("profile").child(counterpartyUID);
                     if (otherstorageRef != null) {
                         otherstorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 //이미지 로드 성공시
-                                Glide.with(OtherInformationGuardianCheckActivity.this).load(uri).into(othProfl);
+                                Glide.with(ClientageOtherInformationCheckActivity.this).load(uri).into(othProflN);
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -254,25 +254,24 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
                         });
                     }
 
-                    othProflName.setText(guardian.getName());
-                    othProflPhoneNum.setText(guardian.getPhoneNumber());
-                    othProflAddress.setText(guardian.getAddress());
-                    othProflDetailAdd.setText(guardian.getDetailAddress());
-                    othProflBirth.setText(guardian.getBirth());
-                    cSex = guardian.getSex();
+                    othProflNameN.setText(clientage.getName());
+                    othProflPhoneNumN.setText(clientage.getPhoneNumber());
+                    othProflAddressN.setText(clientage.getAddress());
+                    othProflDetailAddN.setText(clientage.getDetailAddress());
+                    othProflBirthN.setText(clientage.getBirth());
+                    cSex = clientage.getSex();
 
                     if(cSex.equals("여")) {
-                        othProflBtGenderF.setChecked(true);
-                        othProflBtGenderM.setEnabled(false);
+                        othProflBtGenderFN.setChecked(true);
+                        othProflBtGenderMN.setEnabled(false);
                     }
                     else {
-                        othProflBtGenderM.setChecked(true);
-                        othProflBtGenderF.setEnabled(false);
+                        othProflBtGenderMN.setChecked(true);
+                        othProflBtGenderFN.setEnabled(false);
                     }
-
                 }
                 else {
-                    Toast.makeText(OtherInformationGuardianCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ClientageOtherInformationCheckActivity.this, "상대방 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -286,7 +285,7 @@ public class OtherInformationGuardianCheckActivity  extends AppCompatActivity im
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.othProflBtEdit: //확인 버튼 클릭 시
+            case R.id.othProflBtEditN: //확인 버튼 클릭 시
                 skipScreen(); //메인화면으로 이동
                 break;
         }

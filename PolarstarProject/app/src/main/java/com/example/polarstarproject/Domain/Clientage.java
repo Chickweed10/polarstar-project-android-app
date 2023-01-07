@@ -1,6 +1,6 @@
 package com.example.polarstarproject.Domain;
 
-public class Disabled { //장애인
+public class Clientage { //장애인
     public String profileImage;
     public String email;
     public String password;
@@ -12,13 +12,13 @@ public class Disabled { //장애인
     public String detailAddress;
 
 
-    public Disabled(){
+    public Clientage(){
 
     }
 
-    public Disabled(String profileImage, String email, String password, String name,
-                    String phoneNumber, String birth, String sex,
-                    String address, String detailAddress) {
+    public Clientage(String profileImage, String email, String password, String name,
+                     String phoneNumber, String birth, String sex,
+                     String address, String detailAddress) {
         this.profileImage = profileImage;
         this.email = email;
         this.password = password;

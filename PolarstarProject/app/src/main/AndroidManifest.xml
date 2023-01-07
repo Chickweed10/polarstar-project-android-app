@@ -46,7 +46,7 @@
 
         <activity android:name=".PermissionActivity" />
         <activity android:name=".UserSelectActivity" />
-        <activity android:name=".DisabledRegisterActivity" />
+        <activity android:name=".ClientageRegisterActivity" />
         <activity android:name=".GuardianRegisterActivity"  />
         <activity android:name=".WebViewActivity" />
         <activity android:name=".FindActivity" />
@@ -54,10 +54,11 @@
         <activity android:name=".RealTimeLocationActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RouteActivity" />
-        <activity android:name=".Myinfo_DuserActivity" />
-        <activity android:name=".Myinfo_Duser_nActivity" />
-        <activity android:name=".OtherInformationDisableCheckActivity" />
-        <activity android:name=".OtherInformationGuardianCheckActivity" />
+        <activity android:name=".ClientageMyInfoActivity" />
+        <activity android:name=".GuardianMyInfoActivity" />
+        <activity android:name=".MyInfoPhoneNumberVerificationActivity" />
+        <activity android:name=".ClientageOtherInformationCheckActivity" />
+        <activity android:name=".GuardianOtherInformationCheckActivity" />
         <activity android:name=".RangeSettingActivity" />
         <activity android:name=".MenuSettingActivity" />
         <activity android:name=".SafeZoneActivity" />

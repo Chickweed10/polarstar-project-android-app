@@ -2,15 +2,11 @@ package com.example.polarstarproject;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -22,7 +18,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.MenuItem;
@@ -49,8 +44,7 @@ import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
 import com.example.polarstarproject.Domain.DepartureArrivalStatus;
-import com.example.polarstarproject.Domain.Disabled;
-import com.example.polarstarproject.Domain.EmailVerified;
+import com.example.polarstarproject.Domain.Clientage;
 import com.example.polarstarproject.Domain.Guardian;
 import com.example.polarstarproject.Domain.InOutStatus;
 import com.example.polarstarproject.Domain.Range;
@@ -79,19 +73,9 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -141,10 +125,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     Connect myConnect;
     String counterpartyUID = "";
-    public int classificationUserFlag = 0, count;//장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
+    public int classificationUserFlag = 0, count; //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 스케줄러 호출용 카운트
 
     AddressGeocoding addressGeocoding;
-    public static double disabledAddressLatitude, disabledAddressLongitude;  //피보호자 집 주소 지오코딩
+    public static double clientageAddressLatitude, clientageAddressLongitude;  //피보호자 집 주소 지오코딩
     public double distance; //거리
     private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
@@ -261,11 +245,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         }
 
         //네비게이션 바 이름, 이메일 띄우기
-        reference.child("disabled").child(user.getUid()).addValueEventListener(new ValueEventListener() { //장애인 테이블 조회
+        reference.child("clientage").child(user.getUid()).addValueEventListener(new ValueEventListener() { //장애인 테이블 조회
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Disabled disabled = snapshot.getValue(Disabled.class);
-                if(disabled == null){ //보호자일 경우
+                Clientage clientage = snapshot.getValue(Clientage.class);
+                if(clientage == null){ //보호자일 경우
                     reference.child("guardian").child(user.getUid()).addValueEventListener(new ValueEventListener() { //보호자 테이블 조회
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -283,8 +267,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                     });
                 }
                 else{
-                    headerViewNameContent.setText(disabled.getName());
-                    headerViewEmailContent.setText(disabled.getEmail());
+                    headerViewNameContent.setText(clientage.getName());
+                    headerViewEmailContent.setText(clientage.getEmail());
                 }
             }
 
@@ -301,10 +285,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 switch (view.getId()) {
                     case R.id.item_myinfo: //내 정보
                         if (classificationUserFlag == 1) { //장애인일 경우
-                            connectionCheck(Myinfo_DuserActivity.class);
+                            connectionCheck(ClientageMyInfoActivity.class);
 
                         } else if (classificationUserFlag == 2) { //보호자일 경우
-                            connectionCheck(Myinfo_Duser_nActivity.class);
+                            connectionCheck(GuardianMyInfoActivity.class);
                         }
                         break;
                 }
@@ -316,10 +300,10 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 switch (view.getId()) {
                     case R.id.item_otherinfo: //내 정보
                         if(classificationUserFlag == 1){ //장애인일 경우
-                            connectionCheck(OtherInformationGuardianCheckActivity.class);
+                            connectionCheck(GuardianOtherInformationCheckActivity.class);
                         }
                         else if(classificationUserFlag == 2){ //보호자일 경우
-                            connectionCheck(OtherInformationDisableCheckActivity.class);
+                            connectionCheck(ClientageOtherInformationCheckActivity.class);
                         }
                         break;
                 }
@@ -532,22 +516,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     protected void onStart(){ //Activity가 사용자에게 보여지면
         super.onStart();
         onCheckPermission(); //권한 체크
-
-        //이메일 유효성 검사
-        if(user.isEmailVerified()) {
-            EmailVerified emailVerified = new EmailVerified(true);
-            reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 true
-
-            Log.d(TAG, "메일 인증 성공");
-        }
-        else{
-            EmailVerified emailVerified = new EmailVerified(false);
-            reference.child("emailverified").child(user.getUid()).setValue(emailVerified); //이메일 유효성 false
-
-            //Toast.makeText(DisabledRealTimeLocationActivity.this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show(); //이메일 인증 요구 토스트 알림
-
-            Log.d(TAG, "메일 인증 실패");
-        }
     }
 
 
@@ -638,8 +606,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void connectionCheck(Class skipClass){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 myConnect = new Connect();
@@ -706,8 +674,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 myConnect = new Connect();
@@ -806,7 +774,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
             });
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 피보호자일 경우
-            Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //피보호자 코드로 장애인 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -885,16 +853,16 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                         }
 
                         if(classificationUserFlag == 2){ //보호자일 경우 //////////////////////////////장애인 위치 실시간으로 가져오는데
-                            reference.child("disabled").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
+                            reference.child("clientage").orderByKey().equalTo(counterpartyUID). //상대방 이름 가져오기
                                     addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    Disabled disabled = new Disabled();
+                                    Clientage clientage = new Clientage();
                                     for(DataSnapshot ds : snapshot.getChildren()){
-                                        disabled = ds.getValue(Disabled.class);
+                                        clientage = ds.getValue(Clientage.class);
                                     }
-                                    if (disabled.getName()!= null && !disabled.getName().isEmpty()) {
-                                        counterpartyName = disabled.getName();
+                                    if (clientage.getName()!= null && !clientage.getName().isEmpty()) {
+                                        counterpartyName = clientage.getName();
                                         departureArrivalNotification(); //출도착 알림
                                         trackingStatusCheck(); //추적불가 알림
                                         inOutCheck(); // 복귀이탈 알림
@@ -950,12 +918,12 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
     public void departureArrivalCheck() { //출발 도착 판단 후 알림
         //경도(longitude)가 X, 위도(latitude)가 Y
-        disabledAddressLatitude = addressGeocoding.getAddressLatitude();
-        disabledAddressLongitude = addressGeocoding.getAddressLongitude();
+        clientageAddressLatitude = addressGeocoding.getAddressLatitude();
+        clientageAddressLongitude = addressGeocoding.getAddressLongitude();
 
-        distance = Math.sqrt(((counterpartyCurPoint.longitude-disabledAddressLongitude)*(counterpartyCurPoint.longitude-disabledAddressLongitude))+((counterpartyCurPoint.latitude-disabledAddressLatitude)*(counterpartyCurPoint.latitude-disabledAddressLatitude)));
+        distance = Math.sqrt(((counterpartyCurPoint.longitude-clientageAddressLongitude)*(counterpartyCurPoint.longitude-clientageAddressLongitude))+((counterpartyCurPoint.latitude-clientageAddressLatitude)*(counterpartyCurPoint.latitude-clientageAddressLatitude)));
 
-        if(disabledAddressLatitude != 0.0 && disabledAddressLongitude != 0.0){
+        if(clientageAddressLatitude != 0.0 && clientageAddressLongitude != 0.0){
             if(!departureArrivalStatus.departureStatus){ //아직 출발 안했을 경우 (집 출발 알림)
                 if(distance*1000 > DEFAULTDISTANCE) { //1000곱하면 단위가 미터임
                     if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
@@ -981,8 +949,8 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     }
     /////////////////////////////////////////장애인 추적불가 알림////////////////////////////////////////
     private void trackingStatusCheck() {
-        Query disabledQuery = reference.child("trackingstatus").orderByKey().equalTo(counterpartyUID); //추적불가 상태 검사
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("trackingstatus").orderByKey().equalTo(counterpartyUID); //추적불가 상태 검사
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 TrackingStatus trackingStatus = new TrackingStatus();
@@ -1022,8 +990,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
                 }
 
                 if(inOutStatus != null){
+                    //여기에 함수 불러오기 함수는 보호구역 유무확인임 그리고 연결자 있는지 그러고 alertNotification(); 부르기
                     outFlag = inOutStatus.outStatus;
                     inFlag = inOutStatus.inStatus; //값 집어넣기
+                    alertNotification();
+
                 }
                 else { //추적 가능
 
@@ -1035,7 +1006,6 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             }
         });
-        alertNotification();
     }
 
     ////거리계산해서 보호구역 벗어나면 알림 항수 호출하는 메소드 만들기

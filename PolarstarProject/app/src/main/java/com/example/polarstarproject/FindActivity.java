@@ -1,7 +1,6 @@
 package com.example.polarstarproject;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,12 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.bumptech.glide.Glide;
-import com.example.polarstarproject.Domain.Disabled;
+import com.example.polarstarproject.Domain.Clientage;
 import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -147,16 +142,16 @@ public class FindActivity extends AppCompatActivity {
                             //이메일 보이게함
                             String phoneNumber = findPhoneNum.getText().toString();
 
-                            Query disabledQuery = reference.child("disabled").orderByChild("phoneNumber").equalTo(phoneNumber); //장애인 테이블 조회
-                            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            Query clientageQuery = reference.child("clientage").orderByChild("phoneNumber").equalTo(phoneNumber); //장애인 테이블 조회
+                            clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Disabled disabled = new Disabled();
+                                    Clientage clientage = new Clientage();
                                     for(DataSnapshot ds : dataSnapshot.getChildren()){
-                                        disabled = ds.getValue(Disabled.class);
+                                        clientage = ds.getValue(Clientage.class);
                                     }
-                                    if(disabled.getEmail() != null && !disabled.getEmail().isEmpty()){
-                                        findEmail = disabled.getEmail();
+                                    if(clientage.getEmail() != null && !clientage.getEmail().isEmpty()){
+                                        findEmail = clientage.getEmail();
                                         tEmail.setText(findEmail);
                                     }
                                 }

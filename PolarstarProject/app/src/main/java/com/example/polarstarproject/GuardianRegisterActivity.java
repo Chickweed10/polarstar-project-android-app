@@ -1,30 +1,23 @@
 package com.example.polarstarproject;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.Disabled;
-import com.example.polarstarproject.Domain.EmailVerified;
 import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -45,7 +38,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -184,7 +176,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
     /////////////////////////////////////////이메일 중복 검사////////////////////////////////////////
     private void emailDuplicateCheck(String email){
         emailDuplicateCheckFlag = 0; //이메일 중복 flag 값 초기화
-        reference.child("disabled").orderByChild("email").equalTo(email). //장애인 user 검사
+        reference.child("clientage").orderByChild("email").equalTo(email). //장애인 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -250,7 +242,7 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        reference.child("disabled").orderByChild("phoneNumber").equalTo(phoneNumber). //장애인 user 검사
+        reference.child("clientage").orderByChild("phoneNumber").equalTo(phoneNumber). //장애인 user 검사
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

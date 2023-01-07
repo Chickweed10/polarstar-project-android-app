@@ -1,7 +1,6 @@
 package com.example.polarstarproject.Domain;
 
 public class SafeZone {
-
     String name;
     String address;
     int dis;

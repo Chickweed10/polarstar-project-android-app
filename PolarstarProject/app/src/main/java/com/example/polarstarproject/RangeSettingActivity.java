@@ -1,13 +1,7 @@
 package com.example.polarstarproject;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,17 +18,12 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.Range;
-import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.SafeZone;
-import com.example.polarstarproject.Domain.TrackingStatus;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -250,7 +239,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
-        Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+        Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
         query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -350,19 +339,19 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                                 counterpartyMarker.setPosition(counterpartyCurPoint);
                                 counterpartyMarker.setMap(mNaverMap);
 
-                                //cir.radius(0);
-                                if (circle != null) { //이미 존재했던 경우
-                                    circle.setMap(null);
-                                }
-                                //반경 원
-                                circle = new CircleOverlay();
-                                circle.setCenter(counterpartyCurPoint);
-                                circle.setRadius(myRangeP.getDis()); //반경
-                                circle.setColor(Color.parseColor("#880000ff")); //원 내부 색
-                                circle.setOutlineWidth(5); //원 테두리
-                                circle.setOutlineColor(Color.BLUE); //원 테두리 색
-                                circle.setMap(mNaverMap);
                             }
+                            //cir.radius(0);
+                            if (circle != null) { //이미 존재했던 경우
+                                circle.setMap(null);
+                            }
+                            //반경 원
+                            circle = new CircleOverlay();
+                            circle.setCenter(counterpartyCurPoint);
+                            circle.setRadius(myRangeP.getDis()); //반경
+                            circle.setColor(Color.parseColor("#880000ff")); //원 내부 색
+                            circle.setOutlineWidth(5); //원 테두리
+                            circle.setOutlineColor(Color.BLUE); //원 테두리 색
+                            circle.setMap(mNaverMap);
                         }
                         return;
                     }
@@ -387,11 +376,6 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                     rangeAddress.setText(data);
                     new Thread(() -> {
                         geoC(data.substring(7));
-                        //여기서 파이어베이스에 저장하고
-                        Range tempRange = new Range(searchAddressLat, searchAddressLng, rad);
-                        Log.w(TAG, "로그: "+ searchAddressLat+searchAddressLng+rad);
-                        reference.child("tempRange").child(user.getUid()).child(rName.getText().toString()).setValue(tempRange);
-                        mapMarker();
                     }).start();
                 }
             }
@@ -438,6 +422,12 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
                 indexFirst = stringBuilder.indexOf("\"y\":\"");
                 indexLast = stringBuilder.indexOf("\",\"distance\":");
                 searchAddressLat = Double.parseDouble(stringBuilder.substring(indexFirst + 5, indexLast));
+
+                //여기서 파이어베이스에 저장하고
+                Range tempRange = new Range(searchAddressLat, searchAddressLng, rad);
+                Log.w(TAG, "로그: "+ searchAddressLat+searchAddressLng+rad);
+                reference.child("tempRange").child(user.getUid()).child(rName.getText().toString()).setValue(tempRange);
+                mapMarker();
 
                 bufferedReader.close();
                 conn.disconnect();
