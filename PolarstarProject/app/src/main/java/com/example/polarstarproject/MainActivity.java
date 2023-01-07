@@ -91,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Connect myConnect = new Connect();
@@ -143,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
     /////////////////////////////////////////연결 여부 확인////////////////////////////////////////
     private void connectCheck(FirebaseUser user, int classificationUserFlag){
         if(classificationUserFlag == 1) { //장애인 테이블 검사
-            Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
-            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+            clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Connect myConnect = new Connect();
@@ -168,8 +168,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
         else if(classificationUserFlag == 2){ //보호자 테이블 검사
-            Query disabledQuery = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
-            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query guardianQuery = reference.child("connect").child("guardian").orderByKey().equalTo(user.getUid()); //보호자 테이블 조회
+            guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Connect myConnect = new Connect();

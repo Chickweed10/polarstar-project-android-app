@@ -1,7 +1,5 @@
 package com.example.polarstarproject;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,9 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.InOutStatus;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -223,8 +219,8 @@ public class MenuSettingActivity extends AppCompatActivity {
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 myConnect = new Connect();
@@ -316,7 +312,7 @@ public class MenuSettingActivity extends AppCompatActivity {
             });
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 피보호자일 경우
-            Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+            Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //피보호자 코드로 장애인 uid 가져오기
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -340,8 +336,8 @@ public class MenuSettingActivity extends AppCompatActivity {
     /////////////////////////////////////////연결 해제////////////////////////////////////////
     private void disConnectUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
         if(classificationUserFlag == 1){ //내가 피보호자일 경우
-            Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //장애인 테이블 조회
+            clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     myConnect = new Connect();
@@ -361,7 +357,7 @@ public class MenuSettingActivity extends AppCompatActivity {
                         reference.child("safezone").child(counterpartyUID).setValue(null); //상대 보호자 safeZone 초기화
                         reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         reference.child("inoutstatus").child(uid).setValue(inOutStatus); //복귀이탈 플래그 초기화
-                        reference.child("connect").child("disabled").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
+                        reference.child("connect").child("clientage").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
                         Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
                         startActivity(intent);
                         finish();
@@ -393,7 +389,7 @@ public class MenuSettingActivity extends AppCompatActivity {
                     else{
                         InOutStatus inOutStatus = new InOutStatus(false, false);
                         reference.child("inoutstatus").child(counterpartyUID).setValue(inOutStatus); //상대 피보호자 복귀이탈 플래그 초기화
-                        reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
+                        reference.child("connect").child("clientage").child(counterpartyUID).child("counterpartyCode").removeValue(); //상대 상대코드 초기화
                         reference.child("range").child(uid).setValue(null); //보호구역 초기화
                         reference.child("safezone").child(uid).setValue(null); //safezone 초기화
                         reference.child("connect").child("guardian").child(uid).child("counterpartyCode").removeValue(); //내 상대코드 초기화
@@ -419,14 +415,14 @@ public class MenuSettingActivity extends AppCompatActivity {
     /////////////////////////////////////////탈퇴 연결 해제////////////////////////////////////////
     private void secessionDisConnectUser(String uid){ //firebase select 조회 함수, 내 connect 테이블 조회
         if(classificationUserFlag == 1 ){ //내가 피보호자일 경우
-            Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //장애인 테이블 조회
-            disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //장애인 테이블 조회
+            clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(counterpartyUID != null){
                         reference.child("connect").child("guardian").child(counterpartyUID).child("counterpartyCode").setValue(null); //보호자 상대 코드 지우기
                     }
-                    reference.child("connect").child("disabled").child(uid).removeValue(); //내 연결 코드 지우기
+                    reference.child("connect").child("clientage").child(uid).removeValue(); //내 연결 코드 지우기
                     deleteUserDB(uid); //DB 삭제
                 }
 
@@ -442,7 +438,7 @@ public class MenuSettingActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(counterpartyUID != null){
-                        reference.child("connect").child("disabled").child(counterpartyUID).child("counterpartyCode").setValue(null); //피보호자 상대 코드 지우기
+                        reference.child("connect").child("clientage").child(counterpartyUID).child("counterpartyCode").setValue(null); //피보호자 상대 코드 지우기
                     }
                     reference.child("connect").child("guardian").child(cUid).removeValue(); //내 연결 코드 지우기
                     deleteUserDB(cUid); //DB 삭제
@@ -562,12 +558,12 @@ public class MenuSettingActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    reference.child("disabled").child(uid).removeValue() //disabled 삭제
+                    reference.child("clientage").child(uid).removeValue() //clientage 삭제
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Log.d(TAG, "firebase disabled delete");
+                                        Log.d(TAG, "firebase clientage delete");
                                     }
                                 }
                             });

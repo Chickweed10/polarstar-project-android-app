@@ -2,7 +2,6 @@ package com.example.polarstarproject;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,9 +21,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.DepartureArrivalStatus;
-import com.example.polarstarproject.Domain.Disabled;
-import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.Route;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -38,17 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.naver.maps.geometry.LatLng;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -111,8 +97,8 @@ public class LocationService extends Service {
 
     /////////////////////////////////////////사용자 구별////////////////////////////////////////
     private void classificationUserBackground(){
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(user.getUid()); //장애인 테이블 조회
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) { 
                 myConnect = new Connect();

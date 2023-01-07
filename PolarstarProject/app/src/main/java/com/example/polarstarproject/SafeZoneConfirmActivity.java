@@ -214,7 +214,7 @@ public class SafeZoneConfirmActivity extends AppCompatActivity implements OnMapR
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
-        Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+        Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
         query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

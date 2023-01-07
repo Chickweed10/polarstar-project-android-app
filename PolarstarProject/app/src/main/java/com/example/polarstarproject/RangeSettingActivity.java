@@ -1,13 +1,7 @@
 package com.example.polarstarproject;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,17 +18,12 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.polarstarproject.Domain.AddressGeocoding;
 import com.example.polarstarproject.Domain.Connect;
-import com.example.polarstarproject.Domain.Disabled;
 import com.example.polarstarproject.Domain.Range;
-import com.example.polarstarproject.Domain.RealTimeLocation;
 import com.example.polarstarproject.Domain.SafeZone;
-import com.example.polarstarproject.Domain.TrackingStatus;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -250,7 +239,7 @@ public class RangeSettingActivity extends AppCompatActivity implements OnMapRead
 
     /////////////////////////////////////////상대방 UID 가져오기////////////////////////////////////////
     private void getOtherUID(){
-        Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
+        Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(myConnect.getCounterpartyCode());
         query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 코드로 장애인 uid 가져오기
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

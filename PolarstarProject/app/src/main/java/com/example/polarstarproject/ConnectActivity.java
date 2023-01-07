@@ -100,8 +100,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
     /////////////////////////////////////////사용자 구별, 내 코드값 가져오기////////////////////////////////////////
     private void classificationUser(String uid){ //firebase select 조회 함수, 내 코드값 저장
-        Query disabledQuery = reference.child("connect").child("disabled").orderByKey().equalTo(uid); //내가 장애인일 경우
-        disabledQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query clientageQuery = reference.child("connect").child("clientage").orderByKey().equalTo(uid); //내가 장애인일 경우
+        clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Connect connectUser = new Connect();
@@ -183,9 +183,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                                     value = ds.child("counterpartyCode").getValue(String.class);
                                 }
 
-                                if(value == null && cnt == 0){ //이미 연결되지 않은 경우
+                                if((value == null || value.isEmpty() || value.equals(" ") || value.equals("")) && cnt == 0){ //이미 연결되지 않은 경우
                                     Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
-                                    reference.child("connect").child("disabled").child(user.getUid()).setValue(myConnect);
+                                    reference.child("connect").child("clientage").child(user.getUid()).setValue(myConnect);
 
                                     Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
                                     reference.child("connect").child("guardian").child(counterpartyUID).setValue(counterpartyConnect);
@@ -195,7 +195,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                                     
                                     cnt++;
                                 }
-                                else if(value != null){ //이미 연결된 경우
+
+                                else if(value != null || !value.isEmpty() || !value.equals(" ") || !value.equals("")){ //이미 연결된 경우
                                     Toast.makeText(ConnectActivity.this, "다른 피보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -218,7 +219,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             });
         }
         else if(classificationUserFlag == 2) { //내가 보호자고, 상대방이 장애인일 경우
-            Query query = reference.child("connect").child("disabled").orderByChild("myCode").equalTo(counterpartyCode);
+            Query query = reference.child("connect").child("clientage").orderByChild("myCode").equalTo(counterpartyCode);
             query.addListenerForSingleValueEvent(new ValueEventListener() { //장애인 테이블에서 counterpartyCode 존재 검사
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -228,27 +229,28 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
                     if(counterpartyUID != null){ //상대 장애인 코드가 올바를 경우
                         //이미 상대방과 연결되어 있는지 확인
-                        reference.child("connect").child("disabled").addValueEventListener(new ValueEventListener() {
+                        reference.child("connect").child("clientage").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 String value = null;
                                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                                     value = ds.child("counterpartyCode").getValue(String.class);
                                 }
+                                Log.w(TAG, "연결 코드: " + value);
 
-                                if(value == null && cnt == 0){ //이미 연결되지 않은 경우
+                                if((value == null || value.isEmpty() || value.equals(" ") || value.equals("")) && cnt == 0){ //이미 연결되지 않은 경우
                                     Connect myConnect = new Connect(findMyCode, counterpartyCode); //내 코드에 상대 코드 연결
                                     reference.child("connect").child("guardian").child(user.getUid()).setValue(myConnect);
 
                                     Connect counterpartyConnect = new Connect(counterpartyCode, findMyCode); //상대 코드에 내 코드 연결
-                                    reference.child("connect").child("disabled").child(counterpartyUID).setValue(counterpartyConnect);
+                                    reference.child("connect").child("clientage").child(counterpartyUID).setValue(counterpartyConnect);
 
                                     //매칭 성공시 메인 화면으로 이동
                                     matchingskipScreen();
 
                                     cnt++;
                                 }
-                                else if(value != null){
+                                else if(value != null || !value.isEmpty() || !value.equals(" ") || !value.equals("")){
                                     Toast.makeText(ConnectActivity.this, "다른 보호자와 연결된 사용자입니다.", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -291,7 +293,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
     private void connectCheck(){ //상대방과 매칭 여부 확인
         if(classificationUserFlag == 1) { //내가 장애인인 경우
-            Query query = reference.child("connect").child("disabled").orderByKey().equalTo(user.getUid());
+            Query query = reference.child("connect").child("clientage").orderByKey().equalTo(user.getUid());
             query.addListenerForSingleValueEvent(new ValueEventListener() { //내 테이블에서 counterpartyCode 존재 검사
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
