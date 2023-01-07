@@ -48,7 +48,7 @@ public class MenuSettingActivity extends AppCompatActivity {
     private String counterpartyUID;
     Connect myConnect;
 
-    SharedPreferences autoM = ((MainActivity)MainActivity.context_main).auto;
+    SharedPreferences autoM;
     SharedPreferences.Editor autoEdit;
     Button userBtLinkDisConnect, btLogout, btWithdrawal;
 

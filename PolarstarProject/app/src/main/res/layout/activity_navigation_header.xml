@@ -89,7 +89,6 @@
                     android:layout_height="wrap_content"
                     android:background="#00FF0000"
                     android:drawableLeft="@drawable/ic_baseline_account_circle_24"
-                    android:drawableb="@drawable/ic_baseline_account_circle_24"
                     android:fontFamily="@font/nanumsquare_aac"
                     android:gravity="center|left"
                     android:paddingStart="20dp"

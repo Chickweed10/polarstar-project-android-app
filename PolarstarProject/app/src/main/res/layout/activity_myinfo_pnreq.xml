@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/background_color"
-    tools:context=".Myinfo_Duser_nActivity">
+    tools:context=".MyInfoPhoneNumberVerificationActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -40,10 +40,29 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/editPNReq"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:ems="10"
+                    android:hint="전화번호 (숫자만 입력)"
+                    android:inputType="numberPassword"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/editBtnPNReq"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
-                    android:layout_gravity="center|left"
                     android:layout_marginStart="10dp"
+                    android:layout_gravity="center|left"
                     android:background="@drawable/ok_button"
                     android:fontFamily="@font/nanumsquare_aac"
                     android:text="인증 요청"
@@ -63,7 +82,16 @@
 
         </LinearLayout>
 
-
+        <EditText
+            android:id="@+id/editPNReqEnt"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="numberPassword"
+            android:hint="인증번호 입력"
+            android:textSize="14sp"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
