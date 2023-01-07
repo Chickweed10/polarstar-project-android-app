@@ -57,12 +57,12 @@ public class UserSelectActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btNonDisU: //보호자 버튼 클릭 시
-                Intent GuardianIntent = new Intent(this, GuardianRegisterActivity.class);
-                startActivity(GuardianIntent);
+                Intent guardianIntent = new Intent(this, GuardianRegisterActivity.class);
+                startActivity(guardianIntent);
                 break;
             case R.id.btDisU: //장애인 버튼 클릭 시
-                Intent DisabledIntent = new Intent(this, DisabledRegisterActivity.class);
-                startActivity(DisabledIntent);
+                Intent clientageIntent = new Intent(this, ClientageRegisterActivity.class);
+                startActivity(clientageIntent);
         }
     }
 }

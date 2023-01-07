@@ -28,70 +28,70 @@
 
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="vertical">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/editPNReq"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:ems="10"
+                    android:hint="전화번호 (숫자만 입력)"
+                    android:inputType="numberPassword"
+                    android:textSize="14sp" />
 
-                    <EditText
-                        android:id="@+id/editTextNumberPassword2"
-                        android:layout_width="200dp"
-                        android:layout_height="50dp"
-                        android:ems="10"
-                        android:hint="전화번호 (숫자만 입력)"
-                        android:inputType="numberPassword"
-                        android:textSize="14sp" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <Button
-                        android:id="@+id/button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_gravity="center|left"
-                        android:background="@drawable/ok_button"
-                        android:fontFamily="@font/nanumsquare_aac"
-                        android:text="인증 요청"
-                        android:textAllCaps="false"
-                        android:textColor="@drawable/ok_button_text_color"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView39"
+                <Button
+                    android:id="@+id/editBtnPNReq"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="(ex. 01012347890 )"
-                    android:textSize="12sp" />
+                    android:layout_height="35dp"
+                    android:layout_gravity="center|left"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/ok_button"
+                    android:fontFamily="@font/nanumsquare_aac"
+                    android:text="인증 요청"
+                    android:textAllCaps="false"
+                    android:textColor="@drawable/ok_button_text_color"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
-
-        </LinearLayout>
-
-            <EditText
-                android:id="@+id/editTextNumberPassword"
-                android:layout_width="200dp"
+            <TextView
+                android:id="@+id/textView39"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:ems="10"
-                android:inputType="numberPassword"
-                android:hint="인증번호 입력"
-                android:textSize="14sp"/>
+                android:layout_weight="1"
+                android:text="(ex. 01012347890 )"
+                android:textSize="12sp" />
+
+
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/editPNReqEnt"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="numberPassword"
+            android:hint="인증번호 입력"
+            android:textSize="14sp"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -101,7 +101,7 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/editBtPNOk"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@drawable/ok_button"
