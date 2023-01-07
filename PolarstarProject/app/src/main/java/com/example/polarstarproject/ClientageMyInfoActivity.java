@@ -54,7 +54,7 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
     ImageView Profl;
     EditText Name, Email, Birth, mProflDetailAddress;
     TextView PhoneNum, Address;
-    Button Bt, mProflBtChn, mProflBtPWChage, mProflFdAdd;
+    Button Bt, mProflBtChn, mProflBtPWChage, mProflFdAdd, mProflPNReq;
     String sex,  cSex;
     //Spinner DrDisG;
     RadioGroup rdgGroup;
@@ -100,6 +100,7 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
         Name = (EditText) findViewById(R.id.mProflName); //이름
         Email = (EditText) findViewById(R.id.mProflEmail); //이메일
         PhoneNum = (TextView) findViewById(R.id.mProflPhoneNum); //전화번호
+        mProflPNReq = (Button) findViewById(R.id.mProflPNReq); // 전화번호 인증 버튼
         Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
 
         Address = (TextView) findViewById(R.id.mProflAddress); //주소 텍스트
@@ -181,6 +182,15 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
         });
         mProflFdAdd = (Button) findViewById(R.id.mProflFdAdd); //우편번호 찾기
         mProflFdAdd.setOnClickListener(this);
+
+        mProflPNReq.setOnClickListener(new View.OnClickListener() { //인증버튼 눌리면
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MyInfoPhoneNumberVerificationActivity.class);
+                startActivity(intent);
+                finish(); //화면 이동
+            }
+        });
 
         skipScreen();
     }
