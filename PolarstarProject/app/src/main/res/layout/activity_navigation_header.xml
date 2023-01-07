@@ -69,13 +69,13 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1">
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
@@ -89,17 +89,18 @@
                     android:layout_height="wrap_content"
                     android:background="#00FF0000"
                     android:drawableLeft="@drawable/ic_baseline_account_circle_24"
+                    android:drawableb="@drawable/ic_baseline_account_circle_24"
                     android:fontFamily="@font/nanumsquare_aac"
                     android:gravity="center|left"
                     android:paddingStart="20dp"
-                    android:text="      내 정보"
+                    android:text="     내 정보"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:paddingBottom="5dp"
                     android:hint="사용자의 정보를 확인할 수 있습니다."
                     android:paddingStart="25dp"
                     android:paddingEnd="25dp"
@@ -121,14 +122,14 @@
                     android:fontFamily="@font/nanumsquare_aac"
                     android:gravity="center|left"
                     android:paddingStart="20dp"
-                    android:text="      상대 정보"
+                    android:text="     상대 정보"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:paddingBottom="5dp"
                     android:hint="연결된 상대정보를 확인할 수 있습니다."
                     android:paddingStart="25dp"
                     android:paddingEnd="25dp"
@@ -150,14 +151,14 @@
                     android:fontFamily="@font/nanumsquare_aac"
                     android:gravity="center|left"
                     android:paddingStart="20dp"
-                    android:text="      위치 기록"
+                    android:text="     위치 기록"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:paddingBottom="5dp"
                     android:hint="피보호자의 기록된 위치를 조회할 수 있습니다."
                     android:paddingStart="25dp"
                     android:paddingEnd="25dp"
@@ -179,14 +180,14 @@
                     android:fontFamily="@font/nanumsquare_aac"
                     android:gravity="center|left"
                     android:paddingStart="20dp"
-                    android:text="      보호구역"
+                    android:text="     보호구역"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:paddingBottom="5dp"
                     android:hint="피보호자의 보호구역을 설정할 수 있습니다."
                     android:paddingStart="25dp"
                     android:paddingEnd="25dp"
@@ -208,14 +209,14 @@
                     android:fontFamily="@font/nanumsquare_aac"
                     android:gravity="center|left"
                     android:paddingStart="20dp"
-                    android:text="      설정"
+                    android:text="     설정"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:paddingBottom="5dp"
                     android:hint="상대와 연결끊기, 로그아웃, 회원탈퇴를 할 수 있습니다."
                     android:paddingStart="25dp"
                     android:paddingEnd="25dp"

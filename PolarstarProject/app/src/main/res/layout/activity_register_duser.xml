@@ -67,8 +67,9 @@
 
                     <EditText
                         android:id="@+id/joinEmail"
-                        android:layout_width="220dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:fontFamily="@font/nanumsquare_aab"
                         android:hint="이메일 입력"
@@ -79,7 +80,7 @@
 
                     <Button
                         android:id="@+id/joinBtEmailCk"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80dp"
                         android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
@@ -138,8 +139,9 @@
 
                     <EditText
                         android:id="@+id/joinPhoneNum"
-                        android:layout_width="220dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:fontFamily="@font/nanumsquare_aab"
                         android:hint="전화번호 입력"
@@ -150,7 +152,7 @@
 
                     <Button
                         android:id="@+id/joinPNReq"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80dp"
                         android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
@@ -171,8 +173,9 @@
 
                     <EditText
                         android:id="@+id/joinPNCk"
-                        android:layout_width="220dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:fontFamily="@font/nanumsquare_aab"
                         android:hint="인증번호 입력"
@@ -183,7 +186,7 @@
 
                     <Button
                         android:id="@+id/joinPNReqCk"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80dp"
                         android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
@@ -204,8 +207,9 @@
 
                     <EditText
                         android:id="@+id/joinBirth"
-                        android:layout_width="220dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:fontFamily="@font/nanumsquare_aab"
                         android:hint="생년월일 (ex. 19001231)"
@@ -218,6 +222,7 @@
                         android:id="@+id/joinBtGender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_gravity="center"
                         android:layout_marginStart="10dp"
                         android:orientation="horizontal">
@@ -250,8 +255,9 @@
 
                     <EditText
                         android:id="@+id/joinRoadAddress"
-                        android:layout_width="220dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:clickable="true"
                         android:ems="10"
                         android:focusable="false"
@@ -264,7 +270,7 @@
 
                     <Button
                         android:id="@+id/joinFdAdd"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80dp"
                         android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
