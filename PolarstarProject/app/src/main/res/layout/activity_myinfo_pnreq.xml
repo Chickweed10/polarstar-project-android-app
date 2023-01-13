@@ -49,7 +49,6 @@
                     android:layout_height="50dp"
                     android:ems="10"
                     android:hint="전화번호 (숫자만 입력)"
-                    android:inputType="numberPassword"
                     android:textSize="14sp" />
 
                 <View

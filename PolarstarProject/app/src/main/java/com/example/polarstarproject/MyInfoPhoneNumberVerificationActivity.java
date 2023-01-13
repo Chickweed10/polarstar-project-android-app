@@ -15,7 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.polarstarproject.Domain.Clientage;
 import com.example.polarstarproject.Domain.Connect;
+import com.example.polarstarproject.Domain.Guardian;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -45,12 +47,14 @@ public class MyInfoPhoneNumberVerificationActivity extends AppCompatActivity imp
     private DatabaseReference reference = database.getReference();
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    String defaultUserUID;
 
     Connect myConnect;
     public int classificationUserFlag = 0, verificationCodeFlag = 0, phoneNumberDuplicateCheckFlag = 0;
     //장애인 보호자 구별 (0: 기본값, 1: 장애인, 2: 보호자), 인증번호 요청 예외 처리, 전화번호 중복 여부 판단 (0: 기본값, 1: 중복)
     String VID = "";
 
+    @SuppressLint("LongLogTag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +62,8 @@ public class MyInfoPhoneNumberVerificationActivity extends AppCompatActivity imp
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        defaultUserUID = user.getUid();
 
         editPNReq = (EditText) findViewById(R.id.editPNReq); //전화번호 입력
         editPNReqEnt = (EditText) findViewById(R.id.editPNReqEnt); //인증번호 입력
@@ -251,31 +257,88 @@ public class MyInfoPhoneNumberVerificationActivity extends AppCompatActivity imp
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { //인증번호 일치
-                            Log.d(TAG, "인증 성공");
-                            Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "인증 성공",
-                                    Toast.LENGTH_SHORT).show();
-                            
                             //firebase에 전화번호 변경
                             if(classificationUserFlag == 1){ //피보호자일 경우
-                                reference.child("clientage").child(user.getUid()).child("phoneNumber").setValue(editPNReq.getText().toString());
+                                try{
+                                    reference.child("clientage").child(defaultUserUID).child("phoneNumber").setValue(editPNReq.getText().toString());
+                                    Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "전화번호가 변경되었습니다.",
+                                            Toast.LENGTH_SHORT).show();
+
+                                    //firebase 인증 다시 전환
+                                    authenticationTransition();
+                                } catch (Exception e){
+                                    Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "전화번호 변경 실패",
+                                            Toast.LENGTH_SHORT).show();
+                                }
                             }
                             else if(classificationUserFlag == 2) { //보호자일 경우
-                                reference.child("guardian").child(user.getUid()).child("phoneNumber").setValue(editPNReq.getText().toString());
+                                try{
+                                    reference.child("guardian").child(defaultUserUID).child("phoneNumber").setValue(editPNReq.getText().toString());
+                                    Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "전화번호가 변경되었습니다.",
+                                            Toast.LENGTH_SHORT).show();
+
+                                    //firebase 인증 다시 전환
+                                    authenticationTransition();
+                                } catch (Exception e){
+                                    Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "전화번호 변경 실패",
+                                            Toast.LENGTH_SHORT).show();
+                                }
                             }
-                            
-                            Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "전화번호가 변경되었습니다.",
-                                    Toast.LENGTH_SHORT).show();
-                            
-                            //화면 넘어가기
-                            skipScreen();
-                            
-                        } else { //인증번호 불일치
+                        }
+                        else { //인증번호 불일치
                             Toast.makeText(MyInfoPhoneNumberVerificationActivity.this, "인증번호가 일치하지 않습니다.",
                                     Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "인증 실패", task.getException());
                         }
                     }
                 });
+    }
+
+    public void authenticationTransition() { //firebase auth 전환하기 위한 함수
+        if(classificationUserFlag == 1){
+            reference.child("clientage").child(defaultUserUID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Clientage clientage = snapshot.getValue(Clientage.class);
+                    mAuth.signInWithEmailAndPassword(clientage.getEmail(), clientage.getPassword())
+                            .addOnCompleteListener(MyInfoPhoneNumberVerificationActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        //화면 넘어가기
+                                        skipScreen();
+                                    }
+                                }
+                            });
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+        else if(classificationUserFlag == 2){
+            reference.child("guardian").child(defaultUserUID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Guardian guardian = snapshot.getValue(Guardian.class);
+                    mAuth.signInWithEmailAndPassword(guardian.getEmail(), guardian.getPassword())
+                            .addOnCompleteListener(MyInfoPhoneNumberVerificationActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        //화면 넘어가기
+                                        skipScreen();
+                                    }
+                                }
+                            });
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     @Override
