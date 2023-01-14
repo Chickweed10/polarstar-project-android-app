@@ -3,6 +3,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.firebase.appdistribution'
+    id 'com.google.firebase.crashlytics'
 }
 
 //선언 및 키 값 불러오기
@@ -79,4 +80,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+
+    //오류 로그
+    implementation 'com.google.firebase:firebase-crashlytics-ndk'
 }
