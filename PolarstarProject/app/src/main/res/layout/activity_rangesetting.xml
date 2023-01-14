@@ -105,8 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/nanumsquare_aab"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
             android:textSize="20sp"
             android:hint="주소" />
@@ -115,10 +114,8 @@
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="10dp"
             android:max="1000"
             android:progress="0" />
 
@@ -126,9 +123,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginHorizontal="20dp"
+            >
 
             <TextView
                 android:id="@+id/textView31"
@@ -144,7 +140,6 @@
                 android:layout_marginRight="30dp"
                 android:fontFamily="@font/nanumsquare_aac"
                 android:text="0m"
-
                 app:layout_constraintBottom_toTopOf="@+id/seekBar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -154,6 +149,8 @@
             android:id="@+id/btnSet"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="10dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/ok_button"
             android:textColor="@drawable/ok_button_text_color"
