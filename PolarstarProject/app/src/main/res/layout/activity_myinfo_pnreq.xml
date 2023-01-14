@@ -47,14 +47,11 @@
                     android:id="@+id/editPNReq"
                     android:layout_width="200dp"
                     android:layout_height="50dp"
+                    android:layout_weight="1"
                     android:ems="10"
                     android:hint="전화번호 (숫자만 입력)"
+                    android:singleLine="true"
                     android:textSize="14sp" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/editBtnPNReq"
@@ -83,33 +80,26 @@
 
         <EditText
             android:id="@+id/editPNReqEnt"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:ems="10"
             android:inputType="numberPassword"
             android:hint="인증번호 입력"
             android:textSize="14sp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:gravity="center"
-        android:layout_marginHorizontal="20dp"
-        android:orientation="vertical">
 
         <Button
             android:id="@+id/editBtPNOk"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginVertical="10dp"
             android:background="@drawable/ok_button"
             android:fontFamily="@font/nanumsquare_aac"
             android:text="확인"
             android:textAllCaps="false"
             android:textColor="@drawable/ok_button_text_color"
-            android:textSize="14sp"  />
-    </LinearLayout>
+            android:textSize="14sp" />
 
+    </LinearLayout>
 
 </LinearLayout>

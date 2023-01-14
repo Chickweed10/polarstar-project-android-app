@@ -20,7 +20,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,11 +54,16 @@
                 android:textColor="#006BBF"
                 android:textSize="16sp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="20dp"
+                android:orientation="vertical">
+
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:text="회원 정보"
                 android:textColor="#454545"
@@ -68,7 +74,6 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="6dp"
                 android:text="기본 정보"
@@ -86,7 +91,6 @@
                     android:id="@+id/textView19"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="이름"
                     android:textColor="#454545"
@@ -95,7 +99,7 @@
 
                 <EditText
                     android:id="@+id/mProflNameN"
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:ems="10"
@@ -110,13 +114,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingVertical="4dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/textView20"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:layout_gravity="center"
                     android:ems="10"
                     android:text="전화번호"
@@ -127,11 +131,12 @@
 
                 <TextView
                     android:id="@+id/mProflPhoneNumN"
-                    android:layout_width="192dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
                     android:layout_marginStart="14dp"
                     android:layout_marginEnd="4dp"
-                    android:layout_marginVertical="10dp"
                     android:clickable="true"
                     android:ems="10"
                     android:focusable="false"
@@ -151,9 +156,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="5dp"
-                    android:layout_marginEnd="20dp"
                     android:padding="0dp"
-                    android:layout_weight="1"
                     android:background="@drawable/ok_button"
                     android:textColor="@drawable/ok_button_text_color"
                     android:fontFamily="@font/nanumsquare_aac"
@@ -166,7 +169,6 @@
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:text="계정 관리"
                 android:textColor="#454545"
@@ -176,13 +178,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="4dp"
+
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:text="이메일"
@@ -191,10 +193,9 @@
 
                 <EditText
                     android:id="@+id/mProflEmailN"
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="4dp"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:hint="(ex. OOO@mail.com)"
@@ -209,13 +210,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingVertical="4dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/textView17"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:layout_gravity="center"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
@@ -227,8 +228,9 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="4dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -245,10 +247,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="5dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_gravity="center"
                     android:padding="0dp"
-                    android:layout_weight="1"
                     android:background="@drawable/ok_button"
                     android:textColor="@drawable/ok_button_text_color"
                     android:fontFamily="@font/nanumsquare_aac"
@@ -261,7 +261,6 @@
                 android:id="@+id/textView18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="6dp"
                 android:fontFamily="@font/nanumsquare_aac"
@@ -278,7 +277,6 @@
                     android:id="@+id/textView25"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:layout_gravity="center"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
@@ -288,8 +286,10 @@
 
                 <TextView
                     android:id="@+id/mProflAddressN"
-                    android:layout_width="192dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
                     android:layout_marginStart="14dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginVertical="10dp"
@@ -310,10 +310,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="5dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_gravity="center"
                     android:padding="0dp"
-                    android:layout_weight="1"
                     android:background="@drawable/ok_button"
                     android:textColor="@drawable/ok_button_text_color"
                     android:fontFamily="@font/nanumsquare_aac"
@@ -330,7 +328,6 @@
                     android:id="@+id/textView30"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="상세주소"
                     android:textColor="#454545"
@@ -339,9 +336,8 @@
 
                 <EditText
                     android:id="@+id/mProflDetailAddressN"
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
                     android:layout_marginStart="10dp"
                     android:ems="10"
                     android:hint="상세주소 입력"
@@ -361,7 +357,6 @@
                     android:id="@+id/textView22"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="생년월일"
                     android:textColor="#454545"
@@ -370,10 +365,9 @@
 
                 <EditText
                     android:id="@+id/mProflBirthN"
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="4dp"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
@@ -393,7 +387,6 @@
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="20dp"
                     android:ems="10"
                     android:text="성별 "
                     android:textColor="#454545"
@@ -427,25 +420,29 @@
                 </RadioGroup>
             </LinearLayout>
 
-
-            <Button
-                android:id="@+id/mProflBtEditN"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="40dp"
-                android:background="@drawable/ok_button"
-                android:textColor="@drawable/ok_button_text_color"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:text="프로필 수정"
-                android:textSize="16sp"/>
+            </LinearLayout>
 
 
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/mProflBtEditN"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ok_button"
+            android:fontFamily="@font/nanumsquare_aac"
+            android:text="프로필 수정"
+            android:textColor="@drawable/ok_button_text_color"
+            android:textSize="16sp" />
+    </LinearLayout>
 
 </LinearLayout>
 
