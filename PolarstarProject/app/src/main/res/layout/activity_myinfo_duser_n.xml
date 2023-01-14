@@ -101,14 +101,26 @@
                     android:id="@+id/mProflNameN"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="10dp"
                     android:ems="10"
                     android:hint="이름 입력"
+                    android:backgroundTint = "#474747"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="10dp"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:background="@drawable/background_color"
+                    style="?android:attr/borderlessButtonStyle"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -131,12 +143,11 @@
 
                 <TextView
                     android:id="@+id/mProflPhoneNumN"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="center"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="10dp"
                     android:clickable="true"
                     android:ems="10"
                     android:focusable="false"
@@ -152,10 +163,10 @@
 
                 <Button
                     android:id="@+id/mProflPNReqN"
-                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
                     android:padding="0dp"
                     android:background="@drawable/ok_button"
                     android:textColor="@drawable/ok_button_text_color"
@@ -184,7 +195,6 @@
                 <TextView
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:text="이메일"
@@ -196,14 +206,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:layout_weight="1"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:hint="(ex. OOO@mail.com)"
+                    android:backgroundTint = "#474747"
                     android:inputType="textEmailAddress"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:textSize="14sp" />
 
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="10dp"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:background="@drawable/background_color"
+                    style="?android:attr/borderlessButtonStyle"/>
 
             </LinearLayout>
 
@@ -225,7 +245,7 @@
                     android:textSize="14sp" />
 
                 <LinearLayout
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
@@ -246,7 +266,7 @@
                     android:id="@+id/mProflBtPWChageN"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="10dp"
                     android:layout_gravity="center"
                     android:padding="0dp"
                     android:background="@drawable/ok_button"
@@ -290,8 +310,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="center"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginVertical="10dp"
                     android:clickable="true"
                     android:ems="10"
@@ -309,7 +328,7 @@
                     android:id="@+id/mProflFdAddN"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="10dp"
                     android:layout_gravity="center"
                     android:padding="0dp"
                     android:background="@drawable/ok_button"
@@ -338,16 +357,28 @@
                     android:id="@+id/mProflDetailAddressN"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="10dp"
                     android:ems="10"
                     android:hint="상세주소 입력"
+                    android:backgroundTint = "#474747"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
 
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="10dp"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:background="@drawable/background_color"
+                    style="?android:attr/borderlessButtonStyle"/>
+
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -367,19 +398,32 @@
                     android:id="@+id/mProflBirthN"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="10dp"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:padding="11dp"
                     android:singleLine="true"
                     android:hint="(ex. 19001231) "
+                    android:backgroundTint = "#474747"
                     android:inputType="date"
                     android:textSize="14sp" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="10dp"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:background="@drawable/background_color"
+                    style="?android:attr/borderlessButtonStyle"/>
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginVertical="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -408,6 +452,7 @@
                         android:id="@+id/mProflBtGenderMN"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:text="남" />
 
                     <RadioButton
@@ -415,6 +460,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:fontFamily="@font/nanumsquare_aab"
                         android:text="여" />
 
                 </RadioGroup>

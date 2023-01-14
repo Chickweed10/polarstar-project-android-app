@@ -34,23 +34,23 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
                 android:background="@android:color/transparent"
+                android:src="@drawable/profileimage"
+                app:civ_border_color="#FFFFFF"
                 app:civ_border_overlay="true"
                 app:civ_border_width="3dp"
-                app:civ_border_color="#FFFFFF"
-                android:src="@drawable/profileimage"
                 />
 
             <Button
                 android:id="@+id/joinBtProflN"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
                 android:background="#00ff0000"
-                android:textColor="#006BBF"
-                android:layout_gravity="center"
                 android:fontFamily="@font/nanumsquare_aab"
                 android:text="프로필 사진 변경"
+                android:textColor="#006BBF"
                 android:textSize="16sp"
                 />
 
@@ -72,12 +72,12 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
-                        android:hint="이메일 입력"
                         android:fontFamily="@font/nanumsquare_aab"
+                        android:hint="이메일 입력"
+                        android:inputType="textEmailAddress"
                         android:padding="11dp"
                         android:singleLine="true"
-                        android:textSize="16sp"
-                        android:inputType="textEmailAddress"/>
+                        android:textSize="16sp"/>
 
                     <Button
                         android:id="@+id/joinBtEmailCkN"
@@ -151,7 +151,8 @@
                         android:textSize="16sp" />
 
                     <Button
-                        android:id="@+id/joinPNReqN"                        android:layout_width="wrap_content"
+                        android:id="@+id/joinPNReqN"
+                        android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/ok_button"
@@ -171,7 +172,8 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/joinPNCkN"                        android:layout_width="wrap_content"
+                        android:id="@+id/joinPNCkN"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
@@ -182,7 +184,8 @@
                         android:singleLine="true"
                         android:textSize="16sp" />
                     <Button
-                        android:id="@+id/joinPNReqCkN"                        android:layout_width="wrap_content"
+                        android:id="@+id/joinPNReqCkN"
+                        android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/ok_button"
@@ -200,20 +203,97 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/joinBirthN"                        android:layout_width="wrap_content"
+                        android:id="@+id/joinRoadAddressN"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="1"
+                        android:clickable="true"
                         android:ems="10"
+                        android:focusable="false"
                         android:fontFamily="@font/nanumsquare_aab"
-                        android:hint="생년월일 (ex. 19001231)"
-                        android:inputType="number"
+                        android:hint="도로명 주소"
+                        android:inputType="textPersonName"
                         android:padding="11dp"
                         android:singleLine="true"
                         android:textSize="16sp" />
+                    <Button
+                        android:id="@+id/joinFdAddN"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ok_button"
+                        android:textColor="@drawable/ok_button_text_color"
+                        android:fontFamily="@font/nanumsquare_aac"
+                        android:text="검색"
+                        android:textAllCaps="false"
+                        android:textSize="14sp" />
 
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/joinDetailAddressN"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:hint="상세 주소"
+                    android:inputType="textPersonName"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView26"
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:fontFamily="@font/nanumsquare_aab"
+                        android:text="생년월일"
+                        android:textColor="#454545"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:id="@+id/joinBirthN"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/nanumsquare_aab"
+                        android:background="@drawable/line_color"
+                        android:textSize="16sp"
+                        android:text="btn_year_month_picker" />
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:ems="10"
+                        android:fontFamily="@font/nanumsquare_aab"
+                        android:text="성별"
+                        android:textColor="#454545"
+                        android:textSize="14sp" />
 
                     <RadioGroup
-                        android:id="@+id/joinBtGenderN"                        android:layout_width="wrap_content"
+                        android:id="@+id/joinBtGenderN"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="10dp"
@@ -231,57 +311,12 @@
                             android:id="@+id/joinBtGenderFN"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
                             android:fontFamily="@font/nanumsquare_aab"
                             android:text="여" />
 
                     </RadioGroup>
-
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/joinRoadAddressN"                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:ems="10"
-                        android:focusable="false"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:hint="도로명 주소"
-                        android:inputType="textPersonName"
-                        android:padding="11dp"
-                        android:singleLine="true"
-                        android:textSize="16sp" />
-                    <Button
-                        android:id="@+id/joinFdAddN"                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_marginStart="10dp"
-                        android:background="@drawable/ok_button"
-                        android:textColor="@drawable/ok_button_text_color"
-                        android:fontFamily="@font/nanumsquare_aac"
-                        android:text="검색"
-                        android:textAllCaps="false"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/joinDetailAddressN"                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:ems="10"
-                    android:fontFamily="@font/nanumsquare_aab"
-                    android:hint="상세 주소"
-                    android:inputType="textPersonName"
-                    android:padding="11dp"
-                    android:singleLine="true"
-                    android:textSize="16sp" />
-
 
                 <Button
                     android:id="@+id/joinBtN"

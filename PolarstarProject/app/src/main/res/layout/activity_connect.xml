@@ -61,26 +61,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:paddingHorizontal="40dp"
         android:layout_marginTop="30dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
+
 
             <TextView
-                android:layout_width="190dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="0.7"
                 android:fontFamily="@font/nanumsquare_aac"
                 android:hint="내 연결코드"
                 android:inputType="phone"
                 android:textColorHint="#454545"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:textSize="18sp" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,7 +89,6 @@
                 android:id="@+id/tvMyCode"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
                 android:layout_weight="0.7"
                 android:fontFamily="@font/nanumsquare_aab"
                 android:hint="내 연결코드 텍스트 뷰"
@@ -105,67 +101,43 @@
                 android:layout_width="30dp"
                 android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="40dp"
                 android:background="@drawable/ok_button"
                 android:textColor="@drawable/ok_button_text_color"
                 android:layout_weight="1"
                 android:fontFamily="@font/nanumsquare_aac"
                 android:text="복사"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
+            android:fontFamily="@font/nanumsquare_aac"
+            android:hint="상대방 연결코드"
+            android:inputType="phone"
+            android:textColorHint="#454545"
+            android:textSize="18sp" />
 
-            <TextView
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_weight="0.7"
-                android:fontFamily="@font/nanumsquare_aac"
-                android:hint="상대방 연결코드"
-                android:inputType="phone"
-                android:textColorHint="#454545"
-                android:textSize="16sp" />
-        </LinearLayout>
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/editOtherCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/editOtherCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="37dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginBottom="30dp"
-                android:ems="10"
-                android:fontFamily="@font/nanumsquare_aab"
-                android:hint="상대방 연결코드를 입력해주세요"
-                android:singleLine="true"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginBottom="30dp"
+            android:ems="10"
+            android:fontFamily="@font/nanumsquare_aab"
+            android:hint="상대방 연결코드를 입력해주세요"
+            android:padding="11dp"
+            android:singleLine="true"
+            android:textSize="16sp" />
 
             <Button
                 android:id="@+id/btnConnect"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
                 android:background="@drawable/ok_button"
                 android:textColor="@drawable/ok_button_text_color"
                 android:layout_weight="1"
@@ -177,7 +149,3 @@
 
 
     </LinearLayout>
-
-
-
-</LinearLayout>
