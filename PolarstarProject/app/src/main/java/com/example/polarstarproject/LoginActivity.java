@@ -242,6 +242,8 @@ public class LoginActivity extends AppCompatActivity {
         clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                reference.child("clientage").child(user.getUid()).child("password").setValue(pwd);
+
                 Connect myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
@@ -266,6 +268,8 @@ public class LoginActivity extends AppCompatActivity {
         guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                reference.child("guardian").child(user.getUid()).child("password").setValue(pwd);
+
                 Connect myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
