@@ -1,18 +1,24 @@
 package com.example.polarstarproject;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -50,6 +56,12 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -60,12 +72,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 //장애인 회원가입
 public class ClientageRegisterActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
+    BirthDialog birthDialog; //생년월일
 
-    EditText joinEmail, joinPW, joinPWCk, joinName, joinPhoneNum, joinPNCk, joinBirth, joinRoadAddress, joinDetailAddress;
-    //Spinner joinDrDisG;
+    EditText joinEmail, joinPW, joinPWCk, joinName, joinPhoneNum, joinPNCk, joinRoadAddress, joinDetailAddress;
     RadioGroup joinBtGender;
-    Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinFdAdd, joinBt, joinBtProfl;
+    Button joinBtEmailCk, joinPNReq, joinPNReqCk, joinFdAdd, joinBt, joinBtProfl, joinBirth;
     CircleImageView ivRprofl; //UI 변수
+    
+    String birth = null; //생년월일
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -85,7 +99,6 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
     String VID = "", sex = "남";
     int certificationFlag = 0, emailDuplicateCheckFlag = 0, phoneNumberDuplicateCheckFlag = 0, verificationCodeFlag = 0;
     //인증 여부 판단, 이메일 중복 여부 판단 (0: 기본값, 1: 중복, 2: 통과), 전화번호 중복 여부 판단 (0: 기본값, 1: 중복), 인증번호 요청 예외 처리
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +123,11 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
         joinPNReq = (Button) findViewById(R.id.joinPNReq); //전화번호 인증
         joinPNCk = (EditText) findViewById(R.id.joinPNCk); //인증번호
         joinPNReqCk = (Button) findViewById(R.id.joinPNReqCk); //인증번호 확인
-        joinBirth = (EditText) findViewById(R.id.joinBirth); //생년월일
         joinBtGender = findViewById(R.id.joinBtGender); //성별
         joinRoadAddress = (EditText) findViewById(R.id.joinRoadAddress); //도로명 주소
         joinDetailAddress = (EditText) findViewById(R.id.joinDetailAddress); //상세 주소
-        //joinDrDisG = (Spinner)findViewById(R.id.joinDrDisG); //장애등급
+        joinBirth = (Button) findViewById(R.id.joinBirth); //생년월일
+        joinBirth.setText("1900-01-01");
         joinFdAdd = (Button) findViewById(R.id.joinFdAdd); //우편번호 찾기
         joinBt = (Button) findViewById(R.id.joinBt); //회원가입
 
@@ -126,6 +139,10 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
         joinPNReqCk.setOnClickListener(this);
         joinFdAdd.setOnClickListener(this);
         joinBt.setOnClickListener(this);
+        joinBirth.setOnClickListener(this);
+
+        birthDialog = new BirthDialog(this);
+        birthDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
 
         joinBtGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { //성별 버튼 클릭시
             @Override
@@ -645,13 +662,10 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
             joinPNCk.setError(null);
         }
 
-        String birth = joinBirth.getText().toString();
-        if (TextUtils.isEmpty(birth)) { //생년월일 editText가 공란이면
-            joinBirth.setError("생년월일을 입력해주세요.");
+        if (birth == null) { //생년월일 선택안했을 경운
+            Toast.makeText(ClientageRegisterActivity.this, "생년월일을 선택해주세요.", Toast.LENGTH_SHORT).show();
             valid = false;
-        } else {
-            joinBirth.setError(null);
-        }
+        } 
 
         String roadAddress = joinRoadAddress.getText().toString();
         if (TextUtils.isEmpty(roadAddress)) { //도로명 주소 editText가 공란이면
@@ -709,9 +723,27 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
                 startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                 break;
 
+            case R.id.joinBirth: //생년월일
+                birthDialog = new BirthDialog(this);
+                birthDialog.setDialogListener(new BirthDialog.BirthDialogListener() {
+                    @Override
+                    public void onOkClicked(int year, int monthOfYear, int dayOfMonth) { //선택한 생년월일 가져오기
+                        birth = Integer.toString(year)+String.format("%02d", monthOfYear+1)+String.format("%02d", dayOfMonth);
+                        String setBirth = Integer.toString(year) + "-" + String.format("%02d", monthOfYear+1) + "-" + String.format("%02d", dayOfMonth);
+                        joinBirth.setText(setBirth); //선택한 생년월일로 버튼 text 변경
+                    }
+
+                    @Override
+                    public void onCancleClicked() {
+
+                    }
+                });
+                birthDialog.show();
+                break;
+
             case R.id.joinBt: //회원가입
                 signUp(joinEmail.getText().toString(), joinPW.getText().toString(), joinName.getText().toString(),
-                        joinPhoneNum.getText().toString(), joinBirth.getText().toString(), sex,
+                        joinPhoneNum.getText().toString(), birth, sex,
                         joinRoadAddress.getText().toString(), joinDetailAddress.getText().toString());
         }
     }
