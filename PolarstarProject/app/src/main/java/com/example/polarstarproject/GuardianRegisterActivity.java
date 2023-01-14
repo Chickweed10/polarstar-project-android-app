@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -48,11 +49,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 //보호자 회원가입
 public class GuardianRegisterActivity extends AppCompatActivity implements View.OnClickListener{
     Toolbar toolbar;
+    BirthDialog birthDialog; //생년월일
 
-    EditText joinEmailN, joinPWN, joinPWCkN, joinNameN, joinPhoneNumN, joinPNCkN, joinBirthN, joinRoadAddressN, joinDetailAddressN;
+    EditText joinEmailN, joinPWN, joinPWCkN, joinNameN, joinPhoneNumN, joinPNCkN, joinRoadAddressN, joinDetailAddressN;
     RadioGroup joinBtGenderN;
-    Button joinBtEmailCkN, joinPNReqN, joinPNReqCkN, joinFdAddN, joinBtN, joinBtProflN;
+    Button joinBtEmailCkN, joinPNReqN, joinPNReqCkN, joinFdAddN, joinBtN, joinBtProflN, joinBirthN;
     CircleImageView ivRproflN; //UI 변수
+
+    String birth = null; //생년월일
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference reference = database.getReference();
@@ -95,7 +99,8 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         joinPNReqN = (Button) findViewById(R.id.joinPNReqN); //전화번호 인증
         joinPNCkN = (EditText) findViewById(R.id.joinPNCkN); //인증번호 요청
         joinPNReqCkN = (Button) findViewById(R.id.joinPNReqCkN); //인증번호 확인
-        joinBirthN = (EditText) findViewById(R.id.joinBirthN); //생년월일
+        joinBirthN = (Button) findViewById(R.id.joinBirthN); //생년월일
+        joinBirthN.setText("1900-01-01");
         joinBtGenderN = findViewById(R.id.joinBtGenderN); //성별
         joinRoadAddressN = (EditText) findViewById(R.id.joinRoadAddressN); //도로명 주소
         joinDetailAddressN = (EditText) findViewById(R.id.joinDetailAddressN); //상세 주소
@@ -110,6 +115,10 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         joinPNReqCkN.setOnClickListener(this);
         joinFdAddN.setOnClickListener(this);
         joinBtN.setOnClickListener(this);
+        joinBirthN.setOnClickListener(this);
+
+        birthDialog = new BirthDialog(this);
+        birthDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
 
         joinBtGenderN.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { //성별 버튼 클릭 시
             @Override
@@ -542,12 +551,9 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
             joinPNCkN.setError(null);
         }
 
-        String birth = joinBirthN.getText().toString();
-        if (TextUtils.isEmpty(birth)) { //생년월일 editText가 공란이면
-            joinBirthN.setError("생년월일을 입력해주세요.");
+        if (birth == null) { //생년월일 선택안했을 경운
+            Toast.makeText(GuardianRegisterActivity.this, "생년월일을 선택해주세요.", Toast.LENGTH_SHORT).show();
             valid = false;
-        } else {
-            joinBirthN.setError(null);
         }
 
         String roadAddress = joinRoadAddressN.getText().toString();
@@ -606,9 +612,27 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
                 startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                 break;
 
+            case R.id.joinBirthN: //생년월일
+                birthDialog = new BirthDialog(this);
+                birthDialog.setDialogListener(new BirthDialog.BirthDialogListener() {
+                    @Override
+                    public void onOkClicked(int year, int monthOfYear, int dayOfMonth) { //선택한 생년월일 가져오기
+                        birth = Integer.toString(year)+String.format("%02d", monthOfYear+1)+String.format("%02d", dayOfMonth);
+                        String setBirth = Integer.toString(year) + "-" + String.format("%02d", monthOfYear+1) + "-" + String.format("%02d", dayOfMonth);
+                        joinBirthN.setText(setBirth); //선택한 생년월일로 버튼 text 변경
+                    }
+
+                    @Override
+                    public void onCancleClicked() {
+
+                    }
+                });
+                birthDialog.show();
+                break;
+
             case R.id.joinBtN: //회원가입
                 signUp(joinEmailN.getText().toString(), joinPWN.getText().toString(), joinNameN.getText().toString(),
-                        joinPhoneNumN.getText().toString(), joinBirthN.getText().toString(), sex,
+                        joinPhoneNumN.getText().toString(), birth, sex,
                         joinRoadAddressN.getText().toString(), joinDetailAddressN.getText().toString());
         }
     }
