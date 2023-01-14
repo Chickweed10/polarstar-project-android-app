@@ -201,6 +201,53 @@
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
+                    <EditText
+                        android:id="@+id/joinRoadAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:fontFamily="@font/nanumsquare_aab"
+                        android:hint="도로명 주소"
+                        android:inputType="textPersonName"
+                        android:padding="11dp"
+                        android:singleLine="true"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/joinFdAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ok_button"
+                        android:fontFamily="@font/nanumsquare_aac"
+                        android:text="검색"
+                        android:textAllCaps="false"
+                        android:textColor="@drawable/ok_button_text_color"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/joinDetailAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:ems="10"
+                    android:fontFamily="@font/nanumsquare_aab"
+                    android:hint="상세 주소"
+                    android:inputType="textPersonName"
+                    android:padding="11dp"
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/textView26"
                         android:layout_width="70dp"
@@ -214,10 +261,11 @@
                     <Button
                         android:id="@+id/joinBirth"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/nanumsquare_aab"
+                        android:background="@drawable/line_color"
                         android:textSize="16sp"
                         android:text="btn_year_month_picker" />
 
@@ -226,6 +274,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -258,59 +307,13 @@
                             android:id="@+id/joinBtGenderF"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
                             android:fontFamily="@font/nanumsquare_aab"
                             android:text="여" />
 
                     </RadioGroup>
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/joinRoadAddress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:ems="10"
-                        android:focusable="false"
-                        android:fontFamily="@font/nanumsquare_aab"
-                        android:hint="도로명 주소"
-                        android:inputType="textPersonName"
-                        android:padding="11dp"
-                        android:singleLine="true"
-                        android:textSize="16sp" />
-
-                    <Button
-                        android:id="@+id/joinFdAdd"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_marginStart="10dp"
-                        android:background="@drawable/ok_button"
-                        android:textColor="@drawable/ok_button_text_color"
-                        android:fontFamily="@font/nanumsquare_aac"
-                        android:text="검색"
-                        android:textAllCaps="false"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/joinDetailAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:ems="10"
-                    android:fontFamily="@font/nanumsquare_aab"
-                    android:hint="상세 주소"
-                    android:inputType="textPersonName"
-                    android:padding="11dp"
-                    android:singleLine="true"
-                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/joinBt"
