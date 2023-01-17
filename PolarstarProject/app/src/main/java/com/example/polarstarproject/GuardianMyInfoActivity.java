@@ -51,8 +51,8 @@ public class GuardianMyInfoActivity extends AppCompatActivity implements View.On
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, Birth, dAddress;
-    TextView PhoneNum, Address;
+    EditText Name, dAddress;
+    TextView Email, Birth, PhoneNum, Address;
     Button Bt, mProflBtChnN, mProflBtPWChageN, mProflFdAddN, mProflPNReqN;
     String sex,  cSex;
     RadioGroup rdgGroup;
@@ -95,10 +95,10 @@ public class GuardianMyInfoActivity extends AppCompatActivity implements View.On
 
         Profl = (ImageView) findViewById(R.id.ProflN); //프로필 사진
         Name = (EditText) findViewById(R.id.mProflNameN); //이름
-        Email = (EditText) findViewById(R.id.mProflEmailN); //이메일
+        Email = (TextView) findViewById(R.id.mProflEmailN); //이메일
         PhoneNum = (TextView) findViewById(R.id.mProflPhoneNumN); //전화번호
         mProflPNReqN = (Button) findViewById(R.id.mProflPNReqN); //전화번호 인증 버튼
-        Birth = (EditText) findViewById(R.id.mProflBirthN); //생년월일
+        Birth = (TextView) findViewById(R.id.mProflBirthN); //생년월일
         
         Address = (TextView) findViewById(R.id.mProflAddressN); //주소
         mProflFdAddN = (Button) findViewById(R.id.mProflFdAddN); // 주소 버튼

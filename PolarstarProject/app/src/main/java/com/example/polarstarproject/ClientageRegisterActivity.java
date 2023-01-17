@@ -61,6 +61,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -127,7 +128,6 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
         joinRoadAddress = (EditText) findViewById(R.id.joinRoadAddress); //도로명 주소
         joinDetailAddress = (EditText) findViewById(R.id.joinDetailAddress); //상세 주소
         joinBirth = (Button) findViewById(R.id.joinBirth); //생년월일
-        joinBirth.setText("1900-01-01");
         joinFdAdd = (Button) findViewById(R.id.joinFdAdd); //우편번호 찾기
         joinBt = (Button) findViewById(R.id.joinBt); //회원가입
 
@@ -140,6 +140,12 @@ public class ClientageRegisterActivity extends AppCompatActivity implements View
         joinFdAdd.setOnClickListener(this);
         joinBt.setOnClickListener(this);
         joinBirth.setOnClickListener(this);
+
+        //생년월일 버튼 초기화
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date now = new Date();
+        String nowTime = simpleDateFormat.format(now);
+        joinBirth.setText(nowTime);
 
         birthDialog = new BirthDialog(this);
         birthDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거

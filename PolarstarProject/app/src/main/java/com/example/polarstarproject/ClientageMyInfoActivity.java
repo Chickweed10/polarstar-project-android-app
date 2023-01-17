@@ -52,8 +52,8 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
     private DatabaseReference mDatabase;
 
     ImageView Profl;
-    EditText Name, Email, Birth, mProflDetailAddress;
-    TextView PhoneNum, Address;
+    EditText Name, mProflDetailAddress;
+    TextView Email, Birth, PhoneNum, Address;
     Button Bt, mProflBtChn, mProflBtPWChage, mProflFdAdd, mProflPNReq;
     String sex,  cSex;
     //Spinner DrDisG;
@@ -98,10 +98,10 @@ public class ClientageMyInfoActivity extends AppCompatActivity implements View.O
         Profl = (ImageView) findViewById(R.id.Profl); //프로필 사진
 
         Name = (EditText) findViewById(R.id.mProflName); //이름
-        Email = (EditText) findViewById(R.id.mProflEmail); //이메일
+        Email = (TextView) findViewById(R.id.mProflEmail); //이메일
         PhoneNum = (TextView) findViewById(R.id.mProflPhoneNum); //전화번호
         mProflPNReq = (Button) findViewById(R.id.mProflPNReq); // 전화번호 인증 버튼
-        Birth = (EditText) findViewById(R.id.mProflBirth); //생년월일
+        Birth = (TextView) findViewById(R.id.mProflBirth); //생년월일
 
         Address = (TextView) findViewById(R.id.mProflAddress); //주소 텍스트
         mProflFdAdd = (Button) findViewById(R.id.mProflFdAdd); // 주소 버튼
