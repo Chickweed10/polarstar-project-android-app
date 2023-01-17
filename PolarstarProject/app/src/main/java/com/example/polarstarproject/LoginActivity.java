@@ -242,8 +242,6 @@ public class LoginActivity extends AppCompatActivity {
         clientageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                reference.child("clientage").child(user.getUid()).child("password").setValue(pwd);
-
                 Connect myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
@@ -251,6 +249,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 1;
+                    reference.child("clientage").child(user.getUid()).child("password").setValue(pwd);
                     connectCheck(user, classificationUserFlag); //연결 여부 확인
                 }
                 else {
@@ -268,8 +267,6 @@ public class LoginActivity extends AppCompatActivity {
         guardianQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                reference.child("guardian").child(user.getUid()).child("password").setValue(pwd);
-
                 Connect myConnect = new Connect();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     myConnect = ds.getValue(Connect.class);
@@ -277,6 +274,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(myConnect.getMyCode() != null && !myConnect.getMyCode().isEmpty()){
                     classificationUserFlag = 2;
+                    reference.child("guardian").child(user.getUid()).child("password").setValue(pwd);
                     connectCheck(user, classificationUserFlag); //연결 여부 확인
                 }
                 else {
