@@ -39,6 +39,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -100,7 +102,6 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         joinPNCkN = (EditText) findViewById(R.id.joinPNCkN); //인증번호 요청
         joinPNReqCkN = (Button) findViewById(R.id.joinPNReqCkN); //인증번호 확인
         joinBirthN = (Button) findViewById(R.id.joinBirthN); //생년월일
-        joinBirthN.setText("1900-01-01");
         joinBtGenderN = findViewById(R.id.joinBtGenderN); //성별
         joinRoadAddressN = (EditText) findViewById(R.id.joinRoadAddressN); //도로명 주소
         joinDetailAddressN = (EditText) findViewById(R.id.joinDetailAddressN); //상세 주소
@@ -116,6 +117,12 @@ public class GuardianRegisterActivity extends AppCompatActivity implements View.
         joinFdAddN.setOnClickListener(this);
         joinBtN.setOnClickListener(this);
         joinBirthN.setOnClickListener(this);
+
+        //생년월일 버튼 초기화
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date now = new Date();
+        String nowTime = simpleDateFormat.format(now);
+        joinBirthN.setText(nowTime);
 
         birthDialog = new BirthDialog(this);
         birthDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 제거
