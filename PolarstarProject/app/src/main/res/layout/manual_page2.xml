@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:text="※(4) - 보호자만 가능"
+                    android:text="※(3), (4) - 보호자만 가능"
                     android:textColor="#2748FF"
                     android:textSize="16sp"
                     android:textStyle="bold" />
