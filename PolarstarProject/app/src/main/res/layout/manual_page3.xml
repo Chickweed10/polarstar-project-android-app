@@ -61,19 +61,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:text="1. 앱 '북극성'에서는 상대방과 연결 후,"
+                    android:text="1. 앱 '북극성'에서는 상대방과 연결 후, 서로의 정보를 확인할 수 있습니다."
                     android:textColor="#4A4A4A"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="서로의 정보를 확인할 수 있습니다."
-                    android:textColor="#4A4A4A"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
@@ -81,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanumsquare_aac"
-                android:text="2. 평상시가 아닐 때, 서로의 정보를 확인하여 피보호자의 실종 예방 및 대처"
+                android:text="2. 위급상황 시, 서로의 정보를 확인하여 피보호자의 실종 예방 및 대처"
                 android:layout_marginTop="20dp"
                 android:textColor="#4A4A4A"
                 android:textSize="18sp"

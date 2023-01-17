@@ -100,24 +100,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="7dp"
                     android:ems="10"
                     android:hint="이름 입력"
                     android:backgroundTint = "#474747"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:padding="11dp"
+                    android:paddingStart="13dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
 
                 <Button
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="10dp"
-                    android:enabled="false"
-                    android:clickable="false"
+                    android:layout_gravity="center"
                     android:background="@drawable/background_color"
-                    style="?android:attr/borderlessButtonStyle"/>
+                    android:clickable="false"
+                    android:enabled="false" />
 
             </LinearLayout>
 
@@ -152,7 +153,7 @@
                     android:focusable="false"
                     android:hint="전화번호 변경"
                     android:gravity="center|left"
-                    android:paddingStart="7dp"
+                    android:paddingStart="10dp"
                     android:paddingVertical="4dp"
                     android:singleLine="true"
                     style="@style/Hyperlink"
@@ -187,7 +188,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -195,29 +196,34 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:fontFamily="@font/nanumsquare_aab"
+                    android:layout_gravity="center"
                     android:text="이메일"
                     android:textColor="#454545"
                     android:textSize="14sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/mProflEmail"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="7dp"
+                    android:clickable="true"
                     android:ems="10"
-                    android:fontFamily="@font/nanumsquare_aab"
+                    android:focusable="false"
                     android:hint="(ex. OOO@mail.com)"
-                    android:backgroundTint = "#474747"
-                    android:inputType="textEmailAddress"
-                    android:padding="11dp"
+                    android:gravity="center|left"
+                    android:paddingStart="10dp"
+                    android:paddingVertical="4dp"
                     android:singleLine="true"
+                    style="@style/Hyperlink"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14sp" />
-
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="10dp"
+                    android:layout_gravity="center"
                     android:enabled="false"
                     android:clickable="false"
                     android:background="@drawable/background_color"
@@ -287,6 +293,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -307,13 +314,12 @@
                     android:layout_weight="1"
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
-                    android:layout_marginVertical="10dp"
                     android:clickable="true"
                     android:ems="10"
                     android:focusable="false"
                     android:hint="도로명 주소"
                     android:gravity="center|left"
-                    android:paddingStart="7dp"
+                    android:paddingStart="10dp"
                     android:paddingVertical="4dp"
                     android:singleLine="true"
                     style="@style/Hyperlink"
@@ -357,12 +363,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="7dp"
                     android:ems="10"
                     android:hint="상세주소 입력"
                     android:backgroundTint = "#474747"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:padding="11dp"
+                    android:paddingStart="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
@@ -371,6 +377,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="10dp"
+                    android:layout_gravity="center"
                     android:enabled="false"
                     android:clickable="false"
                     android:background="@drawable/background_color"
@@ -389,29 +396,35 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:text="생년월일"
+                    android:layout_gravity="center"
                     android:textColor="#454545"
                     android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/mProflBirth"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_gravity="center"
                     android:layout_marginStart="10dp"
+                    android:clickable="true"
                     android:ems="10"
-                    android:fontFamily="@font/nanumsquare_aab"
-                    android:padding="11dp"
-                    android:singleLine="true"
+                    android:focusable="false"
                     android:hint="(ex. 19001231) "
-                    android:backgroundTint = "#474747"
-                    android:inputType="date"
+                    android:gravity="center|left"
+                    android:paddingStart="10dp"
+                    android:paddingVertical="4dp"
+                    android:singleLine="true"
+                    style="@style/Hyperlink"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14sp" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="10dp"
+                    android:layout_gravity="center"
                     android:enabled="false"
                     android:clickable="false"
                     android:background="@drawable/background_color"

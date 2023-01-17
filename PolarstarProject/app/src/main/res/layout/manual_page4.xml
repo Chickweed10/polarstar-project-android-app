@@ -84,28 +84,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:text="3. 위치 수집 시 조회 간격 시간이 "
+                    android:text="3. 위치는 20초 마다 수집됩니다."
                     android:layout_marginTop="20dp"
                     android:textColor="#4A4A4A"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView29"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanumsquare_aac"
-                    android:text="20초 정도 소요됩니다."
-                    android:textColor="#4A4A4A"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-
-                <TextView
                     android:id="@+id/textView13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nanumsquare_aac"
-                    android:text="4. 기록된 위치는 30일만 저장되어 그 이후의 기록은 남지 않습니다."
+                    android:text="4. 기록된 위치는 30일만 저장됩니다."
                     android:layout_marginTop="20dp"
                     android:textColor="#4A4A4A"
                     android:textSize="20sp"

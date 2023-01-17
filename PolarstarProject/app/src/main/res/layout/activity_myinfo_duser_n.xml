@@ -85,6 +85,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -102,16 +103,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="7dp"
                     android:ems="10"
                     android:hint="이름 입력"
                     android:backgroundTint = "#474747"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:padding="11dp"
+                    android:paddingStart="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
-
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
@@ -189,7 +189,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -201,19 +201,23 @@
                     android:textColor="#454545"
                     android:textSize="14sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/mProflEmailN"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="7dp"
+                    android:clickable="true"
                     android:ems="10"
-                    android:fontFamily="@font/nanumsquare_aab"
+                    android:focusable="false"
                     android:hint="(ex. OOO@mail.com)"
-                    android:backgroundTint = "#474747"
-                    android:inputType="textEmailAddress"
-                    android:padding="11dp"
+                    android:gravity="center|left"
+                    android:paddingStart="10dp"
+                    android:paddingVertical="4dp"
                     android:singleLine="true"
+                    style="@style/Hyperlink"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14sp" />
 
                 <Button
@@ -291,6 +295,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -311,7 +316,6 @@
                     android:layout_weight="1"
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
-                    android:layout_marginVertical="10dp"
                     android:clickable="true"
                     android:ems="10"
                     android:focusable="false"
@@ -358,12 +362,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="7dp"
                     android:ems="10"
                     android:hint="상세주소 입력"
                     android:backgroundTint = "#474747"
                     android:fontFamily="@font/nanumsquare_aab"
-                    android:padding="11dp"
+                    android:paddingStart="11dp"
                     android:singleLine="true"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
@@ -394,19 +398,23 @@
                     android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/mProflBirthN"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_gravity="center"
                     android:layout_marginStart="10dp"
+                    android:clickable="true"
                     android:ems="10"
-                    android:fontFamily="@font/nanumsquare_aab"
-                    android:padding="11dp"
-                    android:singleLine="true"
+                    android:focusable="false"
                     android:hint="(ex. 19001231) "
-                    android:backgroundTint = "#474747"
-                    android:inputType="date"
+                    android:gravity="center|left"
+                    android:paddingStart="10dp"
+                    android:paddingVertical="4dp"
+                    android:singleLine="true"
+                    style="@style/Hyperlink"
+                    android:fontFamily="@font/nanumsquare_aab"
                     android:textSize="14sp" />
 
                 <Button

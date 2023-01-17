@@ -28,9 +28,9 @@
             android:fontFamily="@font/nanumsquare_aab"
             android:gravity="center"
             android:padding="1dp"
-            android:text="장애인 실종 예방 서비스"
+            android:text="실종 예방 위치 추적 서비스"
             android:textColor="#757477"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
