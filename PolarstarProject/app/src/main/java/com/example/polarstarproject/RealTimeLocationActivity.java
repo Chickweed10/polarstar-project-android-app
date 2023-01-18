@@ -130,14 +130,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
     AddressGeocoding addressGeocoding;
     public static double clientageAddressLatitude, clientageAddressLongitude;  //피보호자 집 주소 지오코딩
     public double distance; //거리
-    private final double DEFAULTDISTANCE= 1; //출도착 거리 기준
+    private final double DEFAULTDISTANCE= 0.3; //출도착 거리 기준
     private final String DEFAULT = "DEFAULT";
     public boolean inFlag = false, outFlag = false; //복귀, 이탈 플래그
     DepartureArrivalStatus departureArrivalStatus; //출도착 플래그 변수
 
     public LocationManager manager; //GPS 위치 권한
 
-    int permissionFlag = 0; //위치 권한 플래그
+    public int permissionFlag = 0; //위치 권한 플래그
 
     String counterpartyName; //상대방 이름
     Intent notificationIntent;
@@ -928,10 +928,11 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
         clientageAddressLongitude = addressGeocoding.getAddressLongitude();
 
         distance = Math.sqrt(((counterpartyCurPoint.longitude-clientageAddressLongitude)*(counterpartyCurPoint.longitude-clientageAddressLongitude))+((counterpartyCurPoint.latitude-clientageAddressLatitude)*(counterpartyCurPoint.latitude-clientageAddressLatitude)));
+        Log.w(TAG, "거리: " + distance + ", " + DEFAULTDISTANCE);
 
         if(clientageAddressLatitude != 0.0 && clientageAddressLongitude != 0.0){
             if(!departureArrivalStatus.departureStatus){ //아직 출발 안했을 경우 (집 출발 알림)
-                if(distance*200 > DEFAULTDISTANCE) { //1000곱하면 단위가 미터임
+                if(distance*1000 > DEFAULTDISTANCE) { //1000곱하면 단위가 미터임
                     if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
                         DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(true, false); //출발 true, 도착 플래그 초기화
                         reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
@@ -942,7 +943,7 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
             if(!departureArrivalStatus.arrivalStatus){ //아직 도착안했을 경우 (집 도착 알림)
                 if(departureArrivalStatus.getDepartureStatus()){ //출발함
-                    if(distance*200 < DEFAULTDISTANCE) {
+                    if(distance*1000 < DEFAULTDISTANCE) {
                         if(counterpartyCurPoint.longitude != -122.0840064 && counterpartyCurPoint.latitude != 37.4219965){
                             DepartureArrivalStatus departureArrivalStatus = new DepartureArrivalStatus(false, true); //도착 true, 출발 플래그 초기화
                             reference.child("departurearrivalstatus").child(counterpartyUID).setValue(departureArrivalStatus); //출도착 플래그 초기화
@@ -966,14 +967,14 @@ public class RealTimeLocationActivity extends AppCompatActivity implements OnMap
 
                 if(!trackingStatus.getStatus()){ //추적 불가 상태
                     if(permissionFlag == 0){
+                        permissionFlag++;
                         trackingImpossibleNotification(DEFAULT, 3);
-                        permissionFlag = 1;
                     }
                 }
                 else { //추적 가능
-                    if(permissionFlag == 1){
-                        trackingPossibleNotification(DEFAULT, 4);
+                    if(permissionFlag > 0){
                         permissionFlag = 0;
+                        trackingPossibleNotification(DEFAULT, 4);
                     }
                 }
             }
